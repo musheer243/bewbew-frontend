@@ -1,0 +1,32 @@
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Login from './components/auth/Login';
+import Signup from './components/auth/Signup';
+import VerifyOtp from './components/auth/VerifyOtp';
+import UploadProfilePic from './components/auth/UploadProfilePic';
+import ForgetPassword from './components/auth/ForgetPassword';
+import ResetPassword from './components/auth/ResetPassword';
+import LoginSuccess from './components/auth/LoginSuccess';
+import Dashboard from './components/dashboard/Dashboard';
+import Profile from './components/dashboard/Profile';
+import AIChatting from './components/dashboard/AIChatting';
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/verify-otp" element={<VerifyOtp />} />
+        <Route path="/upload-profile-pic" element={<UploadProfilePic />} />
+        <Route path="/forget-password" element={<ForgetPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/login-success" element={<LoginSuccess />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/ai-chatting" element={<AIChatting />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
