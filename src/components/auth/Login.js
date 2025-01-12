@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import "../../styles/Login.css";
 import { Link, useNavigate } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MdOutlineLogin } from "react-icons/md";
+import DOMPurify from "dompurify";
+
 function Login() {
   const [credentials, setcredentials] = useState({
     username: "",
@@ -11,24 +13,53 @@ function Login() {
   });
 
   const [showPassword] = useState(false); // State for password visibility
-
   const navigate = useNavigate(); // For redirection
+
+  const validateInputs = () => {
+    if (!credentials.username.trim()) {
+      toast.error("Username/Email cannot be empty.");
+      return false;
+    }
+    if (!credentials.password.trim()) {
+      toast.error("Password cannot be empty.");
+      return false;
+    }
+    if (credentials.password.length < 6) {
+      toast.error("Password must be at least 6 characters long.");
+      return false;
+    }
+    return true;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Input validation
+    if (!validateInputs()) {
+      return;
+    }
+
+    // Sanitize inputs
+    const sanitizedUsername = DOMPurify.sanitize(credentials.username);
+    const sanitizedPassword = DOMPurify.sanitize(credentials.password);
+
     try {
       const response = await fetch(
         "http://34.227.206.93:9090/api/v1/auth/login",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(credentials),
+          body: JSON.stringify({
+            username: sanitizedUsername,
+            password: sanitizedPassword,
+          }),
         }
       );
       const data = await response.json();
 
       if (response.ok) {
         // Handle successful login
+        toast.success("Login successful!");
         console.log("Login successful:", data);
 
         // Store JWT token and user details in localStorage
@@ -38,9 +69,11 @@ function Login() {
         localStorage.setItem("userId", data.userId); // Assuming data contains userId
         navigate("/dashboard"); // Redirect to dashboard
       } else {
+        toast.error(data.message || "Login failed.");
         console.error("Login failed:", data.message);
       }
     } catch (error) {
+      toast.error("An error occurred while logging in.");
       console.error("Login failed:", error);
     }
   };
@@ -55,7 +88,6 @@ function Login() {
 
             {/* Login Credentials */}
             <p>Email/Username</p>
-
             <input
               type="text"
               placeholder="Enter here"
@@ -68,7 +100,6 @@ function Login() {
             />
 
             <p>Password</p>
-
             <input
               type={showPassword ? "text" : "password"}
               name="password"
