@@ -16,12 +16,12 @@ const Dashboard = () => {
       try {
         const userId = localStorage.getItem("userId");
         const token = localStorage.getItem("jwtToken");
-  
+
         if (!userId || !token) {
           console.error("User ID or token is missing!");
           return;
         }
-  
+
         const response = await axios.get(
           `http://34.227.206.93:9090/api/users/${userId}`,
           {
@@ -30,7 +30,7 @@ const Dashboard = () => {
             },
           }
         );
-  
+
         if (response.status === 200) {
           const profileData = response.data;
           setProfile(profileData);
@@ -42,7 +42,7 @@ const Dashboard = () => {
         console.error("Error fetching user profile:", error);
       }
     };
-  
+
     const cachedProfile = localStorage.getItem("cachedProfile");
     if (cachedProfile) {
       const parsedProfile = JSON.parse(cachedProfile);
@@ -53,7 +53,6 @@ const Dashboard = () => {
       fetchProfileData();
     }
   }, []);
-  
 
   const handleGoToProfile = () => {
     if (profile) {
@@ -64,19 +63,19 @@ const Dashboard = () => {
   const toggleDarkMode = async () => {
     try {
       const newPreference = darkMode ? "light" : "dark"; // Toggle preference
-  
+
       const token = localStorage.getItem("jwtToken");
       if (!profile || !token) {
         console.error("User profile or token is missing!");
         return;
       }
-  
+
       // Optimistically update the UI
       setDarkMode(!darkMode);
       const updatedProfile = { ...profile, userPreference: newPreference };
       setProfile(updatedProfile); // Update state
       localStorage.setItem("cachedProfile", JSON.stringify(updatedProfile)); // Update cache
-  
+
       // Update the preference via API
       await axios.put(
         "http://34.227.206.93:9090/api/users/update-preference",
@@ -91,7 +90,7 @@ const Dashboard = () => {
           },
         }
       );
-  
+
       console.log("Preference updated successfully!");
     } catch (error) {
       console.error("Error updating user preference:", error);
@@ -99,7 +98,6 @@ const Dashboard = () => {
       setDarkMode(darkMode);
     }
   };
-  
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -108,14 +106,14 @@ const Dashboard = () => {
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
-  
+
       if (!token) {
         console.error("No token found, user may not be logged in.");
         localStorage.clear();
         navigate("/login");
         return;
       }
-  
+
       // Send logout request to the backend
       await axios.post(
         "http://34.227.206.93:9090/api/v1/auth/logout", // Replace with your logout endpoint
@@ -126,7 +124,7 @@ const Dashboard = () => {
           },
         }
       );
-  
+
       // Clear client-side authentication
       localStorage.clear();
       navigate("/");
@@ -136,7 +134,6 @@ const Dashboard = () => {
       navigate("/");
     }
   };
-  
 
   return (
     <div
@@ -148,6 +145,11 @@ const Dashboard = () => {
       {/* Navbar */}
       <nav
         style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          zIndex: 1000,
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
@@ -159,34 +161,13 @@ const Dashboard = () => {
         }}
       >
         <div style={{ fontSize: "24px", fontWeight: "bold" }}>BewBew</div>
-        <div
-          style={{
-            flex: 1,
-            margin: "0 20px",
-            maxWidth: "650px",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          <input
-            type="text"
-            placeholder="Search user, post"
-            style={{
-              width: "100%",
-              padding: "10px 20px",
-              borderRadius: "30px",
-              border: "1px solid #ccc",
-              outline: "none",
-              backgroundColor: darkMode ? "#555" : "white",
-              color: darkMode ? "white" : "black",
-            }}
-          />
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap:"nowrap", }}>
           <button
             onClick={toggleDarkMode}
             style={{
-              border: "none",
+              border: "0", // Ensures no border
+              outline: "none", // Removes focus outline (optional)
               background: "transparent",
               cursor: "pointer",
               fontSize: "20px",
@@ -223,6 +204,38 @@ const Dashboard = () => {
         </div>
       </nav>
 
+      {/* Search Bar */}
+      <div
+        style={{
+          position: "fixed",
+          top: "60px",
+          width: "100%",
+          zIndex: 999,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: "3px",
+          padding: "10px 0", // Adds consistent padding
+          backgroundColor: darkMode ? "#222" : "#f9f9f9", // Match container to theme
+        }}
+      >
+        <input
+          type="text"
+          placeholder="Search users, posts"
+          style={{
+            width: "50%", // Adjust the width for responsiveness
+            maxWidth: "650px", // Limit the maximum width
+            padding: "10px 20px",
+            borderRadius: "30px",
+            border: "1px solid #ccc",
+            outline: "none",
+            backgroundColor: darkMode ? "#555" : "white",
+            color: darkMode ? "white" : "black",
+            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)", // Adds subtle shadow
+          }}
+        />
+      </div>
+
       {/* Sidebar Toggle Button */}
       <button
         onClick={toggleSidebar}
@@ -245,7 +258,6 @@ const Dashboard = () => {
           <GoSidebarExpand size={24} />
         ) : (
           <GoSidebarCollapse size={24} />
-
         )}
       </button>
 
@@ -272,7 +284,10 @@ const Dashboard = () => {
             { name: "Home", onClick: () => navigate("/dashboard") },
             { name: "Profile", onClick: handleGoToProfile },
             { name: "Friends", onClick: () => navigate("/friends") },
-            { name: "Notifications", onClick: () => navigate("/notifications") },
+            {
+              name: "Notifications",
+              onClick: () => navigate("/notifications"),
+            },
             { name: "Ask AI", onClick: () => navigate("/ai-chatting") },
             { name: "Settings", onClick: () => navigate("/settings") },
             { name: "My Posts", onClick: () => navigate("/my-posts") },
@@ -291,23 +306,23 @@ const Dashboard = () => {
           ))}
         </ul>
         <button
-  onClick={handleLogout}
-  style={{
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    marginTop: "auto",
-    padding: "10px 20px",
-    cursor: "pointer",
-    border: "none",
-    background: "none",
-    color: darkMode ? "white" : "black",
-    fontSize: "16px",
-  }}
->
-  <BiLogOut size={20} /> {/* Updated icon */}
-  Logout
-</button>
+          onClick={handleLogout}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            marginTop: "auto",
+            padding: "10px 20px",
+            cursor: "pointer",
+            border: "none",
+            background: "none",
+            color: darkMode ? "white" : "black",
+            fontSize: "16px",
+          }}
+        >
+          <BiLogOut size={20} /> {/* Updated icon */}
+          Logout
+        </button>
       </div>
 
       <style>
