@@ -1,0 +1,151 @@
+/* Styling for the Signup Box */
+.register-box {
+    width: 400px; /* Same width as the login box */
+    margin: 50px auto; /* Center the box horizontally */
+    padding: 30px ; /* Add padding inside the box */
+    border: 1px solid #ddd; /* Light gray border */
+    border-radius: 10px; /* Rounded corners */
+    background-color: #fff; /* White background */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  }
+  
+  /* Container to hold the line and the dot */
+  #line-container {
+    position: relative;
+    width: 100%; /* Full width of the container */
+    margin: 20px 0; /* Add vertical spacing above and below */
+  }
+  
+  /* Styling for the horizontal line */
+  .horizontal-line {
+    width: 100%; /* Extend line to the container's full width */
+    height: 2px; /* Line thickness */
+    background-color: #ccc; /* Line color */
+    position: relative;
+  }
+  
+  /* Styling for the dot in the center */
+  #Signup-page.dot {
+    width: 10px; /* Dot width */
+    height: 10px; /* Dot height */
+    background-color: #ccc; /* Dot color */
+    border-radius: 50%; /* Makes the dot circular */
+    position: absolute;
+    top: -4px; /* Vertically center the dot */
+    left: 50%; /* Horizontally position the dot at the center */
+    transform: translateX(-50%); /* Adjust for the dot's width */
+  }
+  
+  
+  /* Ensure the input fields fill the box width */
+  #Signup-page input,
+  #Signup-page textarea {
+    width: 100%; /* Make input fields fill the box width */
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  
+  /* Button Container */
+  #Signup-page .button-container {
+    display: flex; /* Enables Flexbox for alignment */
+    justify-content: space-between; /* Adds space between buttons */
+    gap: 10px; /* Optional: Adds a gap between buttons */
+    margin-top: 20px; /* Adjusts spacing above the buttons */
+  }
+  
+  /* Buttons */
+  #Signup-page .register-btn,
+  #Signup-page .upload-btn,
+  #Signup-page .reset-btn {
+    flex: 1; /* Makes each button take up equal width */
+    width: 165px; /* Ensures buttons don't exceed 50% (with space for gaps) */
+    padding: 10px;
+    background-color: #f8f9fa;
+    color: #000000;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center; /* Centers the text in the button */
+  }
+  
+  #Signup-page .register-btn:hover,
+  #Signup-page .upload-btn:hover,
+  #Signup-page .reset-btn:hover {
+    background: #e2e6ea; /* Slightly darker background on hover */
+  }
+  
+  
+  /* Google Button */
+  #Signup-page .google-login-btn {
+    display: inline-block;
+    background-color: #f2f2f2; /* Light gray background */
+    border: 1px solid #ccc; /* Light gray border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 5px; /* Padding around the image */
+    margin-top: 10px;
+    width: 100%; /* Adjust size of the Google logo */
+    text-align: center;
+    text-decoration: none; /* Remove underline */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Smooth hover effect */
+  }
+  .google-login-btn img {
+    height: auto;
+    width: 190px; /* Adjust size of the Google logo */
+  }
+  .google-login-btn:hover {
+    background-color: #e8f0fe; /* Light blue background on hover */
+    border-color: #4285f4; /* Darker blue border */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow on hover */
+    cursor: pointer; /* Pointer cursor */
+  }
+  
+  /*Or Divider*/
+  #Signup-page .or-divider {
+    display: flex; /* Enables Flexbox for alignment */
+    align-items: center; /* Vertically centers the elements */
+    justify-content: center; /* Horizontally centers the elements */
+    margin: 10px 0; /* Adds spacing around the divider */
+    position: relative; /* Allows precise control over the child elements */
+    text-align: center; /* Ensures the text aligns properly */
+  }
+  
+  #Signup-page .or-divider:before,
+  #Signup-page .or-divider:after {
+    content: '';
+    flex: 1; /* Fills remaining space equally on both sides of "OR" */
+    height: 1px; /* Thickness of the line */
+    background-color: #3a3a3a; /* Color of the line */
+    margin: 0 10px; /* Adds spacing between the line and the "OR" */
+  }
+  
+  #Signup-page .or-divider span {
+    font-size: 14px; /* Font size for the "OR" text */
+    color: #474747; /* Color of the text */
+    padding: 0 10px; /* Adds padding around the text */
+    background-color: #fff; /* Matches the form background */
+    z-index: 1; /* Ensures the text appears above the lines */
+  }
+  
+  
+  /* Adjust header alignment */
+  #Signup-page h2,
+  #Signup-page h3 {
+    text-align: center;
+  }
+  
+  #Signup-page .form-container {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transition: all 0.6s ease-in-out;
+  }
+  
+  #Signup-page .sign-in-container {
+    left: 0;
+    width: 100%;
+    z-index: 2;
+  }
