@@ -24,8 +24,8 @@ function Login() {
       toast.error("Password cannot be empty.");
       return false;
     }
-    if (credentials.password.length < 6) {
-      toast.error("Password must be at least 6 characters long.");
+    if (credentials.password.length < 7) {
+      toast.error("Password must be at least 8 characters long.");
       return false;
     }
     return true;

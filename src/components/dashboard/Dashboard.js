@@ -5,6 +5,14 @@ import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
 import { MdDarkMode, MdOutlineLightMode } from "react-icons/md";
 import { BiLogOut } from "react-icons/bi";
 import "../../styles/Dashboard.css"; // Import the CSS file
+import { CiSearch } from "react-icons/ci";
+import { IoHomeOutline } from "react-icons/io5"; // Import the icon
+import { FaRegUser } from "react-icons/fa";
+import { FaUsers } from "react-icons/fa6";
+import { MdOutlineNotificationsActive } from "react-icons/md";
+import { RiRobot2Fill } from "react-icons/ri";
+import { LiaToolsSolid } from "react-icons/lia";
+import { TfiGallery } from "react-icons/tfi";
 
 const Dashboard = () => {
   const [profile, setProfile] = useState(null); // State to store profile data
@@ -160,11 +168,14 @@ const Dashboard = () => {
 
       {/* Search Bar */}
       <div className="search-bar">
-        <input
-          type="text"
-          placeholder="Search users, posts"
-          className="search-input"
-        />
+        <div className="search-input-container">
+          <CiSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search users, posts"
+            className="search-input"
+          />
+        </div>
       </div>
 
       {/* Sidebar Toggle Button */}
@@ -172,31 +183,65 @@ const Dashboard = () => {
         onClick={toggleSidebar}
         className={`sidebar-toggle ${isSidebarOpen ? "open" : ""}`}
       >
-        {isSidebarOpen ? <GoSidebarExpand size={24} /> : <GoSidebarCollapse size={24} />}
+        {isSidebarOpen ? (
+          <GoSidebarExpand size={24} />
+        ) : (
+          <GoSidebarCollapse size={24} />
+        )}
       </button>
 
-      {/* Sidebar */}
-      <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
-        <ul className="sidebar-menu">
-          {[
-            { name: "Home", onClick: () => navigate("/dashboard") },
-            { name: "Profile", onClick: handleGoToProfile },
-            { name: "Friends", onClick: () => navigate("/friends") },
-            { name: "Notifications", onClick: () => navigate("/notifications") },
-            { name: "Ask AI", onClick: () => navigate("/ai-chatting") },
-            { name: "Settings", onClick: () => navigate("/settings") },
-            { name: "My Posts", onClick: () => navigate("/my-posts") },
-          ].map((item, index) => (
-            <li key={index} className="sidebar-item" onClick={item.onClick}>
-              {item.name}
-            </li>
-          ))}
-        </ul>
-        <button onClick={handleLogout} className="logout-button">
-          <BiLogOut size={20} />
-          Logout
-        </button>
-      </div>
+{/* Sidebar */}
+<div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
+  <ul className="sidebar-menu">
+    {[
+      {
+        name: "Home",
+        icon: <IoHomeOutline size={20} />,
+        onClick: () => navigate("/dashboard"),
+      },
+      {
+        name: "Profile",
+        icon: <FaRegUser size={20} />,
+        onClick: handleGoToProfile,
+      },
+      {
+        name: "Friends",
+        icon: <FaUsers size={20} />,
+        onClick: () => navigate("/friends"),
+      },
+      {
+        name: "Notifications",
+        icon: <MdOutlineNotificationsActive size={20} />,
+        onClick: () => navigate("/notifications"),
+      },
+      {
+        name: "Ask AI",
+        icon: <RiRobot2Fill size={20} />,
+        onClick: () => navigate("/ai-chatting"),
+      },
+      {
+        name: "Settings",
+        icon: <LiaToolsSolid size={20} />,
+        onClick: () => navigate("/settings"),
+      },
+      {
+        name: "My Posts",
+        icon: <TfiGallery size={20} />,
+        onClick: () => navigate("/my-posts"),
+      },
+    ].map((item, index) => (
+      <li key={index} className="sidebar-item" onClick={item.onClick}>
+        {item.icon && <span className="icon">{item.icon}</span>}
+        <span className="text">{item.name}</span>
+      </li>
+    ))}
+  </ul>
+  <button onClick={handleLogout} className="logout-button">
+    <BiLogOut size={20} />
+    Logout
+  </button>
+</div>
+
     </div>
   );
 };
