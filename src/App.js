@@ -10,6 +10,7 @@ import LoginSuccess from './components/auth/LoginSuccess';
 import Dashboard from './components/dashboard/Dashboard';
 import Profile from './components/dashboard/Profile';
 import AIChatting from './components/dashboard/AIChatting';
+import MyPosts from './components/dashboard/MyPosts';
 function App() {
   return (
     <Router>
@@ -24,6 +25,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/ai-chatting" element={<AIChatting />} />
+        <Route path="/my-posts" element={<MyPosts />} />
       </Routes>
     </Router>
   );

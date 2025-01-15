@@ -1,0 +1,21 @@
+.my-posts {
+    padding: 16px;
+  }
+  
+  .my-posts h1 {
+    font-size: 2rem;
+    margin-bottom: 16px;
+  }
+  
+  .no-posts {
+    font-size: 1.2rem;
+    color: #888;
+    text-align: center;
+  }
+  
+  .error {
+    color: red;
+    text-align: center;
+    margin: 16px 0;
+  }
+  
