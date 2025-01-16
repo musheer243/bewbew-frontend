@@ -1,21 +1,26 @@
 .my-posts {
-    padding: 16px;
-  }
-  
-  .my-posts h1 {
-    font-size: 2rem;
-    margin-bottom: 16px;
-  }
-  
-  .no-posts {
-    font-size: 1.2rem;
-    color: #888;
-    text-align: center;
-  }
-  
-  .error {
-    color: red;
-    text-align: center;
-    margin: 16px 0;
-  }
-  
+  padding: 16px;
+  max-width: 800px; /* Set the maximum width */
+  margin: 0 auto; /* Center the container */
+  background-color: #f9f9f9; /* Optional: Add a background for better visuals */
+  border-radius: 8px; /* Optional: Add rounded corners */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for depth */
+}
+
+.my-posts h1 {
+  font-size: 2rem;
+  margin-bottom: 16px;
+  text-align: center; /* Center the title */
+}
+
+.no-posts {
+  font-size: 1.2rem;
+  color: #888;
+  text-align: center;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin: 16px 0;
+}
