@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import "../../styles/SinglePost.css";
-import { IoMdHeartEmpty } from "react-icons/io";
 import { FaHeart } from "react-icons/fa";
 import { FaRegComment } from "react-icons/fa";
-import { PiShareFat } from "react-icons/pi";
-import { CiBookmark } from "react-icons/ci";
+import { PiShareFatBold } from "react-icons/pi";
 import { FaBookmark } from "react-icons/fa";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { FaRegHeart } from "react-icons/fa";
+import { FaRegBookmark } from "react-icons/fa";
+
+
 
 const SinglePost = ({ post }) => {
-  const { title, mediaFileNames = [], content, addedDate } = post;
+  const { title, mediaFileNames = [], content, addedDate, user } = post;
+  const { username, profilepic } = user || {};
   const [currentIndex, setCurrentIndex] = useState(0); // Track the current image index
   const [liked, setLiked] = useState(false); // Track if post is liked
   const [saved, setSaved] = useState(false); // Track if post is saved
@@ -17,7 +21,7 @@ const SinglePost = ({ post }) => {
   const formattedDate = addedDate
     ? new Date(...addedDate).toLocaleDateString("en-US", {
         year: "numeric",
-        month: "long",
+        month: "short", // Shortened month format
         day: "numeric",
       })
     : "Unknown Date";
@@ -38,6 +42,17 @@ const SinglePost = ({ post }) => {
 
   return (
     <div className="single-post">
+      {/* Post Header */}
+      <div className="post-header">
+        <div className="user-info">
+          <img src={profilepic} alt="Profile" className="profile-pic" />
+          <span className="username">{username}</span>
+        </div>
+        <button className="menu-btn">
+        <BsThreeDotsVertical />
+        </button>
+      </div>
+
       <h2 className="post-title">{title}</h2>
 
       <div className="post-media">
@@ -71,19 +86,20 @@ const SinglePost = ({ post }) => {
             onClick={() => setLiked(!liked)}
             style={{ color: liked ? "red" : "black" }}
           >
-            {liked ? <FaHeart /> : <IoMdHeartEmpty />}
+            {liked ? <FaHeart /> : <FaRegHeart />
+            }
           </button>
           <button className="comment-btn">
             <FaRegComment />
           </button>
           <button className="share-btn">
-            <PiShareFat />
+            <PiShareFatBold />
           </button>
           <button
             className="save-btn"
             onClick={() => setSaved(!saved)}
           >
-            {saved ? <FaBookmark /> : <CiBookmark />}
+            {saved ? <FaBookmark /> : <FaRegBookmark />}
           </button>
         </div>
         <span className="post-date">{formattedDate}</span>

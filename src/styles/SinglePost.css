@@ -1,16 +1,59 @@
+/* General Post Styling */
 .single-post {
   border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px;
-  margin: 16px 0;
+  border-radius: 12px;
+  padding: 24px; /* Increased padding */
+  margin: 24px 0; /* More space between posts */
   background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* Slightly larger shadow for emphasis */
+  max-width: 1200px; /* Ensure the post doesn't grow too wide */
+  margin-left: auto;
+  margin-right: auto; /* Center the post */
 }
 
-.post-title {
-  font-size: 1.5rem;
-  font-weight: bold;
+/* Post Header Styling */
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 12px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.username {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #757575;
+}
+
+/* Media Styling */
+.post-media {
+  position: relative;
+  width: 100%;
+  max-height: 600px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
 }
 
 .post-media img,
@@ -22,83 +65,22 @@
   border-radius: 8px;
 }
 
-.post-content {
-  font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 16px;
-}
-
-.post-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 1px solid #eee;
-  padding-top: 8px;
-}
-
-.post-buttons {
-  display: flex;
-  gap: 8px;
-}
-
-.post-buttons button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: black;
-  transition: color 0.3s ease;
-}
-
-.post-buttons button:hover {
-  color: gray;
-}
-
-.like-btn {
-  background-color: #f1f3f4;
-  color: black;
-  font-size: 1.5rem; /* Slightly reduced size */
-}
-
-.comment-btn {
-  background-color: #e0f7fa;
-  font-size: 1.3rem; /* Slightly reduced size */
-
-}
-
-.share-btn {
-  background-color: #e3f2fd;
-  font-size: 1.5rem; /* Slightly reduced size */
-}
-
-.save-btn {
-  background-color: #ffe0b2;
-  color: black;
-  font-size: 1.5rem; /* Slightly reduced size */
-}
-
-.post-date {
-  font-size: 0.8rem;
-  color: #757575;
-}
-
-/* New styles for better media display */
-.post-media {
-  position: relative;
-  width: 100%;
-  max-height: 400px;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-}
-
 .media-container {
   position: relative;
 }
 
 .main-image {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: cover;
+  width: 100%;
+  height: auto;
+  max-width: 1200px;
+  max-height: 1200px;
+  display: block;
+  aspect-ratio: 1 / 1; /* Enforces 1:1 aspect ratio */
+  object-fit: contain; /* Scales down the image to fit inside the container */
+  background-color: #fff; /* Adds white border where necessary */
+  border-radius: 8px; /* Optional: Keeps rounded corners */
+  padding: 8px; /* Adds a consistent padding for the border */
+  box-sizing: border-box; /* Includes padding in the dimensions */
 }
 
 .prev-btn,
@@ -121,4 +103,66 @@
 
 .next-btn {
   right: 10px;
+}
+
+/* Post Content */
+.post-content {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #eee;
+  padding-top: 8px;
+}
+
+/* Buttons */
+.post-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.post-buttons button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: black;
+  transition: color 0.3s ease;
+}
+
+.post-buttons button:hover {
+  color: gray;
+}
+
+/* Like, Comment, Share, Save Buttons */
+.like-btn {
+  background-color: #f1f3f4;
+  color: black;
+  font-size: 1.5rem; /* Slightly reduced size */
+}
+
+.comment-btn {
+  background-color: #e0f7fa;
+  font-size: 1.4rem; /* Slightly reduced size */
+}
+
+.share-btn {
+  background-color: #e3f2fd;
+  font-size: 1.5rem; /* Slightly reduced size */
+}
+
+.save-btn {
+  background-color: #ffe0b2;
+  color: black;
+  font-size: 1.5rem; /* Slightly reduced size */
+}
+
+/* Post Date */
+.post-date {
+  font-size: 0.8rem;
+  color: #757575;
 }
