@@ -134,45 +134,6 @@
   right: 10px;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 1024px) {
-  .post-media {
-    max-width: 90%; /* Slightly smaller width for tablets */
-    margin: 0 auto; /* Center the container */
-  }
-
-  .media-container {
-    height: 500px; /* Adjust height for tablets */
-  }
-}
-
-@media (max-width: 768px) {
-  .post-media {
-    max-width: 100%; /* Full width for mobile devices */
-  }
-
-  .media-container {
-    height: 400px; /* Adjust height for phones */
-  }
-}
-
-@media (max-width: 480px) {
-  .post-media {
-    max-width: 100%; /* Full width for smaller phones */
-  }
-
-  .media-container {
-    height: 300px; /* Adjust height for small phones */
-  }
-
-  .prev-btn,
-  .next-btn {
-    font-size: 18px; /* Reduce button size for smaller screens */
-    padding: 8px;
-  }
-}
-
-
 /* Post Content */
 .post-content {
   font-size: 13px;
@@ -268,4 +229,84 @@
 
 .dropdown-item:hover {
   background-color: #e5e5e5;
+}
+
+/* Base layout for larger screens (default styling) */
+
+/* Media Query for Mobile S (320px) */
+@media (max-width: 320px) {
+  .post-media {
+    max-width: 300px; /* Adjust width for narrow screens */
+  }
+  .aspect-ratio-box {
+    padding-top: 62.5%; /* Slightly taller ratio to better fill narrow viewports */
+  }
+  .main-image {
+    width: 90%; /* Reduce image width slightly */
+  }
+}
+
+/* Media Query for Mobile M (375px) */
+@media (max-width: 375px) {
+  .post-media {
+    max-width: 340px;
+  }
+  .aspect-ratio-box {
+    padding-top: 60%; /* Still prioritize height for balance */
+  }
+  .main-image {
+    width: 95%; /* Center the image nicely */
+  }
+}
+
+/* Media Query for Mobile L (425px) */
+@media (max-width: 425px) {
+  .post-media {
+    max-width: 380px;
+  }
+  .aspect-ratio-box {
+    padding-top: 56.25%; /* Return to standard 16:9 for slightly wider phones */
+  }
+  .main-image {
+    width: 100%; /* Fill the container */
+  }
+}
+
+/* Media Query for Tablet (768px) */
+@media (max-width: 768px) {
+  .post-media {
+    max-width: 720px;
+  }
+  .aspect-ratio-box {
+    padding-top: 56.25%; /* Maintain 16:9 ratio for tablets */
+  }
+  .main-image {
+    width: 100%; /* Fully utilize available width */
+  }
+}
+
+/* Media Query for Laptop (1024px) */
+@media (max-width: 1024px) {
+  .post-media {
+    max-width: 900px;
+  }
+  .aspect-ratio-box {
+    padding-top: 56.25%;
+  }
+  .main-image {
+    width: 100%;
+  }
+}
+
+/* Media Query for Laptop L (1440px) */
+@media (max-width: 1440px) {
+  .post-media {
+    max-width: 1200px;
+  }
+  .aspect-ratio-box {
+    padding-top: 56.25%;
+  }
+  .main-image {
+    width: 100%;
+  }
 }
