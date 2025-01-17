@@ -79,27 +79,30 @@ const SinglePost = ({ post, onDelete, onEdit }) => {
         <h2 className="post-title" style={{ fontSize: "20px" }}>{title}</h2>
 
         <div className="post-media">
-          {mediaFileNames.length > 0 && (
-            <div className="media-container">
-              <img
-  src={mediaFileNames[currentIndex]}
-  alt={`Media ${currentIndex + 1}`}
-  className="main-image"
-/>
+  {mediaFileNames.length > 0 && (
+    <div className="media-container">
+      <div className="aspect-ratio-box">
+        <img
+          src={mediaFileNames[currentIndex]}
+          alt={`Media ${currentIndex + 1}`}
+          className="main-image"
+        />
+      </div>
 
-              {mediaFileNames.length > 1 && (
-                <>
-                  <button className="prev-btn" onClick={prevImage}>
-                    ←
-                  </button>
-                  <button className="next-btn" onClick={nextImage}>
-                    →
-                  </button>
-                </>
-              )}
-            </div>
-          )}
-        </div>
+      {mediaFileNames.length > 1 && (
+        <>
+          <button className="prev-btn" onClick={prevImage}>
+            ←
+          </button>
+          <button className="next-btn" onClick={nextImage}>
+            →
+          </button>
+        </>
+      )}
+    </div>
+  )}
+</div>
+
 
         <p className="post-content">{content}</p>
 
