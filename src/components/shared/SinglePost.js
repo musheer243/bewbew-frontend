@@ -1,6 +1,15 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "../../styles/SinglePost.css";
-import { FaHeart, FaRegComment, FaBookmark, FaRegHeart, FaRegBookmark } from "react-icons/fa";
+import {
+  FaHeart,
+  FaRegComment,
+  FaBookmark,
+  FaRegHeart,
+  FaRegBookmark,
+} from "react-icons/fa";
+import { MdEdit, MdDelete } from "react-icons/md";
+import { IoIosShareAlt } from "react-icons/io";
+import { HiTranslate } from "react-icons/hi";
 import { PiShareFatBold } from "react-icons/pi";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
@@ -12,7 +21,6 @@ const SinglePost = ({ post, onDelete, onEdit }) => {
   const [saved, setSaved] = useState(false); // Track if post is saved
   const [showOptions, setShowOptions] = useState(false); // State for dropdown
 
-   
   useEffect(() => {
     document.title = "BewBew • My Posts";
   }, []);
@@ -41,10 +49,26 @@ const SinglePost = ({ post, onDelete, onEdit }) => {
 
   const toggleOptions = () => {
     setShowOptions(!showOptions);
+    console.log("Dropdown state:", !showOptions);
   };
 
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      // Close dropdown if click is outside the menu-container
+      if (!event.target.closest(".menu-container")) {
+        setShowOptions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    // Cleanup listener on component unmount
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
   return (
-   
     <div className="single-post-container">
       <div className="single-post">
         {/* Post Header */}
@@ -57,52 +81,58 @@ const SinglePost = ({ post, onDelete, onEdit }) => {
             <button className="menu-btn" onClick={toggleOptions}>
               <BsThreeDotsVertical />
             </button>
-            {showOptions && (
-              <div className="dropdown-menu">
-                <button  className="dropdown-item" style={{color:'red'}}>
-                  Delete
-                </button>
-                <button  className="dropdown-item">
-                  Edit
-                </button>
-                <button className="dropdown-item">
-                  Share
-                  </button>
-              </div>
-            )}
+            <div className={`dropdown-menu ${showOptions ? "show" : ""}`}>
+              <button className="dropdown-item">
+                <MdEdit style={{ marginRight: "8px" }} />
+                Edit
+              </button>
+              <button className="dropdown-item">
+                <IoIosShareAlt style={{ marginRight: "8px" }} />
+                Share
+              </button>
+              <button className="dropdown-item">
+                <HiTranslate style={{ marginRight: "8px" }} />
+                Translate
+              </button>
+              <button className="dropdown-item">
+                <MdDelete style={{ marginRight: "8px" }} />
+                Delete
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Divider Line */}
         <div className="post-header-divider"></div>
 
-        <h2 className="post-title" style={{ fontSize: "20px" }}>{title}</h2>
+        <h2 className="post-title" style={{ fontSize: "20px" }}>
+          {title}
+        </h2>
 
         <div className="post-media">
-  {mediaFileNames.length > 0 && (
-    <div className="media-container">
-      <div className="aspect-ratio-box">
-        <img
-          src={mediaFileNames[currentIndex]}
-          alt={`Media ${currentIndex + 1}`}
-          className="main-image"
-        />
-      </div>
+          {mediaFileNames.length > 0 && (
+            <div className="media-container">
+              <div className="aspect-ratio-box">
+                <img
+                  src={mediaFileNames[currentIndex]}
+                  alt={`Media ${currentIndex + 1}`}
+                  className="main-image"
+                />
+              </div>
 
-      {mediaFileNames.length > 1 && (
-        <>
-          <button className="prev-btn" onClick={prevImage}>
-            ←
-          </button>
-          <button className="next-btn" onClick={nextImage}>
-            →
-          </button>
-        </>
-      )}
-    </div>
-  )}
-</div>
-
+              {mediaFileNames.length > 1 && (
+                <>
+                  <button className="prev-btn" onClick={prevImage}>
+                    ←
+                  </button>
+                  <button className="next-btn" onClick={nextImage}>
+                    →
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+        </div>
 
         <p className="post-content">{content}</p>
 
@@ -121,10 +151,7 @@ const SinglePost = ({ post, onDelete, onEdit }) => {
             <button className="share-btn">
               <PiShareFatBold />
             </button>
-            <button
-              className="save-btn"
-              onClick={() => setSaved(!saved)}
-            >
+            <button className="save-btn" onClick={() => setSaved(!saved)}>
               {saved ? <FaBookmark /> : <FaRegBookmark />}
             </button>
           </div>
@@ -132,7 +159,6 @@ const SinglePost = ({ post, onDelete, onEdit }) => {
         </div>
       </div>
     </div>
-
   );
 };
 
