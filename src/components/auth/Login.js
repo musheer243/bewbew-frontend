@@ -45,7 +45,7 @@ function Login() {
 
     try {
       const response = await fetch(
-        "http://34.227.206.93:9090/api/v1/auth/login",
+        "http://3.225.10.130:9090/api/v1/auth/login",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

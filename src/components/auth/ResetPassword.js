@@ -18,7 +18,7 @@ function ResetPassword() {
     }
 
     try {
-      const response = await fetch('http://34.227.206.93:9090/api/password/reset-password', {
+      const response = await fetch('http://3.225.10.130:9090/api/password/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ email, newPassword }),

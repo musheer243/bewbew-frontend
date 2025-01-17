@@ -32,7 +32,7 @@ const Dashboard = () => {
         }
 
         const response = await axios.get(
-          `http://34.227.206.93:9090/api/users/${userId}`,
+          `http://3.225.10.130:9090/api/users/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -87,7 +87,7 @@ const Dashboard = () => {
 
       // Update the preference via API
       await axios.put(
-        "http://34.227.206.93:9090/api/users/update-preference",
+        "http://3.225.10.130:9090/api/users/update-preference",
         {},
         {
           headers: {
@@ -125,7 +125,7 @@ const Dashboard = () => {
 
       // Send logout request to the backend
       await axios.post(
-        "http://34.227.206.93:9090/api/v1/auth/logout", // Replace with your logout endpoint
+        "http://3.225.10.130:9090/api/v1/auth/logout", // Replace with your logout endpoint
         {},
         {
           headers: {

@@ -11,7 +11,7 @@ function ForgetPassword() {
   const handleSendOtp = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:9090/api/password/forget', {
+      const response = await fetch('http://3.225.10.130:9090/api/password/forget', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ email }),
@@ -32,7 +32,7 @@ function ForgetPassword() {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:9090/api/password/verify-otp', {
+      const response = await fetch('http://3.225.10.130:9090/api/password/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ email, otp }),

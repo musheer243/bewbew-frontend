@@ -20,7 +20,7 @@ function UploadProfilePic() {
     if (image) formData.append('image', image); // Include image if provided
 
     try {
-      const response = await fetch('http://34.227.206.93:9090/api/v1/auth/upload-profile-pic', {
+      const response = await fetch('http://3.225.10.130:9090/api/v1/auth/upload-profile-pic', {
         method: 'POST',
         body: formData,
       });

@@ -15,7 +15,7 @@ const AIChatting = () => {
 
     try {
       const res = await axios.get(
-        `http://34.227.206.93:9090/api/ai/generate?message=${encodeURIComponent(message)}`
+        `http://3.225.10.130:9090/api/ai/generate?message=${encodeURIComponent(message)}`
       );
       const aiMessage = { sender: 'ai', text: res.data.generation || 'No response from AI' };
       setChat((prevChat) => [...prevChat, aiMessage]);

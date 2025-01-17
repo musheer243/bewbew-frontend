@@ -23,7 +23,7 @@ function Signup(){
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://34.227.206.93:9090/api/v1/auth/register', {
+      const response = await fetch('http://3.225.10.130:9090/api/v1/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userDetails),
@@ -34,8 +34,8 @@ function Signup(){
         navigate('/verify-otp', { state: { email: userDetails.email } });
       } else {
         const error = await response.text();
-        alert('Signup failed: ${error}');
-      }
+        alert(`Signup failed: ${error}`);
+      }      
     } catch (error) {
       console.error('Signup failed', error);
     }

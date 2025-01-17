@@ -35,7 +35,7 @@ const MyPosts = () => {
         setLoading(true); // Set loading to true before the API call
 
         const response = await axios.get(
-          `http://34.227.206.93:9090/api/user/${userId}/posts`,
+          `http://3.225.10.130:9090/api/user/${userId}/posts`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
