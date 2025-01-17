@@ -1,8 +1,19 @@
 /* General Post Styling */
 .single-post {
+  /* border: 1px solid #ddd; */
+  /* border-radius: 12px; */
+  padding: 24px; /* Increased padding */
+  margin: 24px 0; /* More space between posts */
+  background-color: #fff;
+  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); Slightly larger shadow for emphasis */
+  max-width: 1200px; /* Ensure the post doesn't grow too wide */
+  margin-left: auto;
+  margin-right: auto; /* Center the post */
+}
+
+.single-post-container {
   border: 1px solid #ddd;
   border-radius: 12px;
-  padding: 24px; /* Increased padding */
   margin: 24px 0; /* More space between posts */
   background-color: #fff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* Slightly larger shadow for emphasis */
@@ -16,26 +27,34 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px; /* Space below the header */
+}
+
+.header-container {
+  background-color: #f0f0f0; /* Change this color as needed */
+  padding: 16px; /* Add some padding to give space around the content */
+  border-radius: 12px 12px 0 0; /* Round the top corners */
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 8px; /* Space between profile pic and username */
 }
 
 .profile-pic {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  object-fit: cover;
 }
 
 .username {
-  font-size: 1rem;
   font-weight: bold;
-  margin-left: 5px;
+}
+
+.post-header-divider {
+  border-top: 1px solid #d3d3d3; /* Adjust the divider color to match the design */
+  margin: 8px 0; /* Add vertical spacing */
 }
 
 .menu-btn {
@@ -49,40 +68,34 @@
 /* Media Styling */
 .post-media {
   position: relative;
-  width: 100%;
-  max-height: 600px;
+  width: 100%; /* Full width for responsiveness */
+  max-width: 618px; /* Preserve the original width for larger screens */
+  height: auto; /* Automatically adjust height */
   overflow: hidden;
   display: flex;
   justify-content: center;
-}
-
-.post-media img,
-.post-media video {
-  width: 100%;
-  max-height: 300px;
-  object-fit: cover;
-  margin-bottom: 16px;
-  border-radius: 8px;
+  background: #ffffff;
+  margin: 0 auto; /* Center the media container */
 }
 
 .media-container {
   position: relative;
+  width: 100%; /* Make container responsive */
+  height: 600px; /* Maintain original height for larger screens */
 }
 
 .main-image {
-  width: 100%;
-  height: auto;
-  max-width: 1200px;
-  max-height: 1200px;
-  display: block;
-  aspect-ratio: 1 / 1; /* Enforces 1:1 aspect ratio */
-  object-fit: contain; /* Scales down the image to fit inside the container */
-  background-color: #fff; /* Adds white border where necessary */
-  border-radius: 8px; /* Optional: Keeps rounded corners */
-  padding: 8px; /* Adds a consistent padding for the border */
-  box-sizing: border-box; /* Includes padding in the dimensions */
+  width: 100%; /* Scale the image to fit the container's width */
+  height: 100%; /* Scale the image to fit the container's height */
+  object-fit: contain; /* Ensure the image covers the area without distortion */
+  object-position: center; /* Center the image within the container */
+  display: block; /* Remove inline spacing issues */
+  border-radius: 8px; /* Rounded corners for aesthetics */
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* Navigation buttons */
 .prev-btn,
 .next-btn {
   position: absolute;
@@ -105,18 +118,58 @@
   right: 10px;
 }
 
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+  .post-media {
+    max-width: 90%; /* Slightly smaller width for tablets */
+    margin: 0 auto; /* Center the container */
+  }
+
+  .media-container {
+    height: 500px; /* Adjust height for tablets */
+  }
+}
+
+@media (max-width: 768px) {
+  .post-media {
+    max-width: 100%; /* Full width for mobile devices */
+  }
+
+  .media-container {
+    height: 400px; /* Adjust height for phones */
+  }
+}
+
+@media (max-width: 480px) {
+  .post-media {
+    max-width: 100%; /* Full width for smaller phones */
+  }
+
+  .media-container {
+    height: 300px; /* Adjust height for small phones */
+  }
+
+  .prev-btn,
+  .next-btn {
+    font-size: 18px; /* Reduce button size for smaller screens */
+    padding: 8px;
+  }
+}
+
+
 /* Post Content */
 .post-content {
-  font-size: 1rem;
+  font-size: 13px;
   line-height: 1.6;
   margin-bottom: 16px;
+  margin-top: inherit;
 }
 
 .post-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid #eee;
+  border-top: 1px solid #acacac;
   padding-top: 8px;
 }
 
@@ -165,4 +218,38 @@
 .post-date {
   font-size: 0.8rem;
   color: #757575;
+}
+
+.menu-container {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  color: #000;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  min-width: 127px;
+}
+
+.dropdown-item {
+  padding: 10px;
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+      width: 100%;
+}
+
+.dropdown-item:hover {
+  background-color: #e5e5e5;
 }

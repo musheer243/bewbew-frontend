@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
@@ -13,12 +13,94 @@ import { MdOutlineNotificationsActive } from "react-icons/md";
 import { RiRobot2Fill } from "react-icons/ri";
 import { LiaToolsSolid } from "react-icons/lia";
 import { TfiGallery } from "react-icons/tfi";
+import SinglePost from "../shared/SinglePost";
 
 const Dashboard = () => {
   const [profile, setProfile] = useState(null); // State to store profile data
   const [darkMode, setDarkMode] = useState(false); // State for dark mode
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Sidebar starts closed by default
+  const [posts, setPosts] = useState([]); // State to store posts data
+  const [loading, setLoading] = useState(false); // State to handle loading status
+  const [error, setError] = useState(null); // State to handle errors
+  const [pageNumber, setPageNumber] = useState(0); // State to manage pagination
+  const [totalPages, setTotalPages] = useState(1); // Total pages for pagination
+  const postsContainerRef = useRef(null); // Reference for the posts container
   const navigate = useNavigate();
+
+  // Handle infinite scrolling
+  const handleScroll = useCallback((e) => {
+    const bottom =
+      e.target.scrollHeight === e.target.scrollTop + e.target.clientHeight;
+    if (bottom && !loading && pageNumber < totalPages - 1) {
+      setPageNumber((prevPageNumber) => prevPageNumber + 1);
+    }
+  }, [loading, pageNumber, totalPages]);
+
+// Fetch posts function with useCallback
+const fetchPosts = useCallback(async () => {
+  try {
+    const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("jwtToken");
+    if (!userId || !token) {
+      setError("User ID or token is missing.");
+      return;
+    }
+
+    setLoading(true); // Set loading to true before the API call
+
+    const response = await axios.get(
+      `http://3.225.10.130:9090/api/post/byfollowing/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          pageNumber: pageNumber,
+          pageSize: 10,
+          sortBy: "addedDate",
+          sortDir: "desc",
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      const newPosts = response.data.content || [];
+      setPosts((prevPosts) => [
+        ...prevPosts.filter(
+          (post) => !newPosts.some((newPost) => newPost.postId === post.postId)
+        ),
+        ...newPosts,
+      ]);
+      setTotalPages(response.data.totalPages);
+    } else {
+      setError("Failed to fetch posts.");
+    }
+  } catch (err) {
+    console.error("Error fetching posts:", err);
+    setError("An error occurred while fetching posts.");
+  } finally {
+    setLoading(false); // Set loading to false after the API call
+  }
+}, [pageNumber]);
+
+// Trigger fetchPosts when pageNumber changes
+useEffect(() => {
+  fetchPosts();
+}, [pageNumber, fetchPosts]);
+
+// Detect when the user reaches the bottom of the page
+useEffect(() => {
+  const postContainer = postsContainerRef.current;
+  if (postContainer) {
+    postContainer.addEventListener("scroll", handleScroll);
+  }
+
+  return () => {
+    if (postContainer) {
+      postContainer.removeEventListener("scroll", handleScroll);
+    }
+  };
+}, [handleScroll]);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -144,6 +226,9 @@ const Dashboard = () => {
     }
   };
 
+  if (loading && pageNumber === 0) return <div>Loading...</div>;
+  if (error) return <div className="error">{error}</div>;
+
   return (
     <div className={`dashboard-container ${darkMode ? "dark" : "light"}`}>
       {/* Navbar */}
@@ -176,6 +261,16 @@ const Dashboard = () => {
             className="search-input"
           />
         </div>
+      </div>
+
+       {/* Posts Section */}
+       <div className="posts-section" ref={postsContainerRef}>
+        {posts.length > 0 ? (
+          posts.map((post) => <SinglePost key={post.postId} post={post} />)
+        ) : (
+          <p className="no-posts-message">No posts available</p>
+        )}
+        {loading && <div className="loading-indicator">Loading more posts...</div>}
       </div>
 
       {/* Sidebar Toggle Button */}
