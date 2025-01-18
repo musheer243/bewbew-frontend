@@ -84,19 +84,34 @@ const MyPosts = () => {
     };
   }, [handleScroll]); // Include handleScroll in the dependency array
 
-  if (loading && pageNumber === 0) return <div>Loading...</div>;
-  if (error) return <div className="error">{error}</div>;
+  // if (loading && pageNumber === 0) return <div>Loading...</div>;
+  // if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="my-posts" ref={postsContainerRef}>
-      <h1>My Posts</h1>
-      {posts.length === 0 ? (
-        <div className="no-posts">You have not created any posts yet.</div>
-      ) : (
-        posts.map((post) => <SinglePost key={post.postId} post={post} />)
-      )}
-      {loading && <div className="loading-indicator">Loading more posts...</div>}
-    </div>
+    <h1>My Posts</h1>
+
+    {/* Error Handling */}
+    {error && <div className="error">{error}</div>}
+
+    {/* Initial Loading */}
+    {loading && posts.length === 0 && (
+      <div className="loading-indicator">Loading...</div>
+    )}
+
+    {/* Posts Display */}
+    {posts.length > 0 ? (
+      posts.map((post) => <SinglePost key={post.postId} post={post} />)
+    ) : (
+      /* No Posts Message */
+      !loading && <div className="no-posts">You have not created any posts yet.</div>
+    )}
+
+    {/* Loading More Posts */}
+    {loading && posts.length > 0 && (
+      <div className="loading-indicator">Loading more posts...</div>
+    )}
+  </div>
   );
 };
 

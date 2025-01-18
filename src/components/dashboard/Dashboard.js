@@ -28,79 +28,83 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   // Handle infinite scrolling
-  const handleScroll = useCallback((e) => {
-    const bottom =
-      e.target.scrollHeight === e.target.scrollTop + e.target.clientHeight;
-    if (bottom && !loading && pageNumber < totalPages - 1) {
-      setPageNumber((prevPageNumber) => prevPageNumber + 1);
-    }
-  }, [loading, pageNumber, totalPages]);
-
-// Fetch posts function with useCallback
-const fetchPosts = useCallback(async () => {
-  try {
-    const userId = localStorage.getItem("userId");
-    const token = localStorage.getItem("jwtToken");
-    if (!userId || !token) {
-      setError("User ID or token is missing.");
-      return;
-    }
-
-    setLoading(true); // Set loading to true before the API call
-
-    const response = await axios.get(
-      `http://3.225.10.130:9090/api/post/byfollowing/${userId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params: {
-          pageNumber: pageNumber,
-          pageSize: 10,
-          sortBy: "addedDate",
-          sortDir: "desc",
-        },
+  const handleScroll = useCallback(
+    (e) => {
+      const bottom =
+        e.target.scrollHeight === e.target.scrollTop + e.target.clientHeight;
+      if (bottom && !loading && pageNumber < totalPages - 1) {
+        setPageNumber((prevPageNumber) => prevPageNumber + 1);
       }
-    );
+    },
+    [loading, pageNumber, totalPages]
+  );
 
-    if (response.status === 200) {
-      const newPosts = response.data.content || [];
-      setPosts((prevPosts) => [
-        ...prevPosts.filter(
-          (post) => !newPosts.some((newPost) => newPost.postId === post.postId)
-        ),
-        ...newPosts,
-      ]);
-      setTotalPages(response.data.totalPages);
-    } else {
-      setError("Failed to fetch posts.");
+  // Fetch posts function with useCallback
+  const fetchPosts = useCallback(async () => {
+    try {
+      const userId = localStorage.getItem("userId");
+      const token = localStorage.getItem("jwtToken");
+      if (!userId || !token) {
+        setError("User ID or token is missing.");
+        return;
+      }
+
+      setLoading(true); // Set loading to true before the API call
+
+      const response = await axios.get(
+        `http://3.225.10.130:9090/api/post/byfollowing/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            pageNumber: pageNumber,
+            pageSize: 10,
+            sortBy: "addedDate",
+            sortDir: "desc",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        const newPosts = response.data.content || [];
+        setPosts((prevPosts) => [
+          ...prevPosts.filter(
+            (post) =>
+              !newPosts.some((newPost) => newPost.postId === post.postId)
+          ),
+          ...newPosts,
+        ]);
+        setTotalPages(response.data.totalPages);
+      } else {
+        setError("Failed to fetch posts.");
+      }
+    } catch (err) {
+      console.error("Error fetching posts:", err);
+      setError("An error occurred while fetching posts.");
+    } finally {
+      setLoading(false); // Set loading to false after the API call
     }
-  } catch (err) {
-    console.error("Error fetching posts:", err);
-    setError("An error occurred while fetching posts.");
-  } finally {
-    setLoading(false); // Set loading to false after the API call
-  }
-}, [pageNumber]);
+  }, [pageNumber]);
 
-// Trigger fetchPosts when pageNumber changes
-useEffect(() => {
-  fetchPosts();
-}, [pageNumber, fetchPosts]);
+  // Trigger fetchPosts when pageNumber changes
+  useEffect(() => {
+    fetchPosts();
+  }, [pageNumber, fetchPosts]);
 
-// Detect when the user reaches the bottom of the page
-useEffect(() => {
-  const postContainer = postsContainerRef.current;
-  if (postContainer) {
-    postContainer.addEventListener("scroll", handleScroll);
-  }
-
-  return () => {
+  // Detect when the user reaches the bottom of the page
+  useEffect(() => {
+    const postContainer = postsContainerRef.current;
     if (postContainer) {
-      postContainer.removeEventListener("scroll", handleScroll);
+      postContainer.addEventListener("scroll", handleScroll);
     }
-  };
-}, [handleScroll]);
+
+    return () => {
+      if (postContainer) {
+        postContainer.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [handleScroll]);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -226,8 +230,8 @@ useEffect(() => {
     }
   };
 
-  if (loading && pageNumber === 0) return <div>Loading...</div>;
-  if (error) return <div className="error">{error}</div>;
+  // if (loading && pageNumber === 0) return <div>Loading...</div>;
+  // if (error) return <div className="error">{error}</div>;
 
   return (
     <div className={`dashboard-container ${darkMode ? "dark" : "light"}`}>
@@ -263,14 +267,26 @@ useEffect(() => {
         </div>
       </div>
 
-       {/* Posts Section */}
-       <div className="posts-section" ref={postsContainerRef}>
-        {posts.length > 0 ? (
-          posts.map((post) => <SinglePost key={post.postId} post={post} />)
-        ) : (
-          <p className="no-posts-message">No posts available</p>
+      {/* Posts Section */}
+      <div className="posts-section" ref={postsContainerRef}>
+        {/* Error message */}
+        {error && <div className="error-message">{error}</div>}
+
+        {/* Loading indicator for initial load */}
+        {loading && posts.length === 0 && (
+          <div className="loading-indicator">Loading...</div>
         )}
-        {loading && <div className="loading-indicator">Loading more posts...</div>}
+
+        {/* Display posts */}
+        {posts.length > 0
+          ? posts.map((post) => <SinglePost key={post.postId} post={post} />)
+          : /* No posts message, only when not loading */
+            !loading && <p className="no-posts-message">No posts available</p>}
+
+        {/* Loading indicator for additional posts (infinite scroll) */}
+        {loading && posts.length > 0 && (
+          <div className="loading-indicator">Loading more posts...</div>
+        )}
       </div>
 
       {/* Sidebar Toggle Button */}
@@ -285,58 +301,57 @@ useEffect(() => {
         )}
       </button>
 
-{/* Sidebar */}
-<div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
-  <ul className="sidebar-menu">
-    {[
-      {
-        name: "Home",
-        icon: <IoHomeOutline size={20} />,
-        onClick: () => navigate("/dashboard"),
-      },
-      {
-        name: "Profile",
-        icon: <FaRegUser size={20} />,
-        onClick: handleGoToProfile,
-      },
-      {
-        name: "Friends",
-        icon: <FaUsers size={20} />,
-        onClick: () => navigate("/friends"),
-      },
-      {
-        name: "Notifications",
-        icon: <MdOutlineNotificationsActive size={20} />,
-        onClick: () => navigate("/notifications"),
-      },
-      {
-        name: "Ask AI",
-        icon: <RiRobot2Fill size={20} />,
-        onClick: () => navigate("/ai-chatting"),
-      },
-      {
-        name: "Settings",
-        icon: <LiaToolsSolid size={20} />,
-        onClick: () => navigate("/settings"),
-      },
-      {
-        name: "My Posts",
-        icon: <TfiGallery size={20} />,
-        onClick: () => navigate("/my-posts"),
-      },
-    ].map((item, index) => (
-      <li key={index} className="sidebar-item" onClick={item.onClick}>
-        {item.icon && <span className="icon">{item.icon}</span>}
-        <span className="text">{item.name}</span>
-      </li>
-    ))}
-  </ul>
-  <button onClick={handleLogout} className="logout-button">
-    <BiLogOut size={20} />
-    Logout
-  </button>
-</div>
-
+      {/* Sidebar */}
+      <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
+        <ul className="sidebar-menu">
+          {[
+            {
+              name: "Home",
+              icon: <IoHomeOutline size={20} />,
+              onClick: () => navigate("/dashboard"),
+            },
+            {
+              name: "Profile",
+              icon: <FaRegUser size={20} />,
+              onClick: handleGoToProfile,
+            },
+            {
+              name: "Friends",
+              icon: <FaUsers size={20} />,
+              onClick: () => navigate("/friends"),
+            },
+            {
+              name: "Notifications",
+              icon: <MdOutlineNotificationsActive size={20} />,
+              onClick: () => navigate("/notifications"),
+            },
+            {
+              name: "Ask AI",
+              icon: <RiRobot2Fill size={20} />,
+              onClick: () => navigate("/ai-chatting"),
+            },
+            {
+              name: "Settings",
+              icon: <LiaToolsSolid size={20} />,
+              onClick: () => navigate("/settings"),
+            },
+            {
+              name: "My Posts",
+              icon: <TfiGallery size={20} />,
+              onClick: () => navigate("/my-posts"),
+            },
+          ].map((item, index) => (
+            <li key={index} className="sidebar-item" onClick={item.onClick}>
+              {item.icon && <span className="icon">{item.icon}</span>}
+              <span className="text">{item.name}</span>
+            </li>
+          ))}
+        </ul>
+        <button onClick={handleLogout} className="logout-button">
+          <BiLogOut size={20} />
+          Logout
+        </button>
+      </div>
     </div>
   );
 };

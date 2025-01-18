@@ -5,6 +5,7 @@
   background-color: #f9f9f9; /* Optional: Add a background for better visuals */
   border-radius: 8px; /* Optional: Add rounded corners */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for depth */
+  min-height: 560px;
 }
 
 .my-posts h1 {

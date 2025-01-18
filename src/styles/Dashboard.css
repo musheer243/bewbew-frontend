@@ -18,7 +18,7 @@
   
   /* Navbar */
   .navbar {
-    position: fixed;
+    position: fixed !important;
     top: 0;
     left: 0;
     width: 100%;
@@ -81,8 +81,8 @@
     justify-content: center;
     align-items: center;
     z-index: 999;
-   /* padding: 10px 0;
-    background-color: var(--search-bar-bg);*/
+   /* padding: 10px 0;*/
+    /* background-color: var(--search-bar-bg); */
   }
   
   /* Container for icon and input */
@@ -169,9 +169,17 @@
   .sidebar-item {
     display: flex;
     align-items: center;
-    padding: 10px 0;
+    padding: 10px 15px;
+    margin: 5px 0;
     cursor: pointer;
     border-bottom: 1px solid #ccc;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+  }
+
+  .sidebar-item:hover {
+    transform: scale(1.1); /* Zoom in the item */
+    background-color: var(--search-bar-bg); /* Optional: change background color */
+    border-radius: 8px; /* Optional: rounded edges on hover */
   }
   
   .sidebar-item .icon {
@@ -219,30 +227,42 @@
     --sidebar-toggle-bg: #555;
   }
    
-  .posts-section {
-    margin: 20px auto;
-    padding: 10px;
-    max-width: 800px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    overflow-y: auto;
-    height: 500px; /* Adjust according to your design */
-  }
-  
-  .loading-indicator {
-    text-align: center;
-    font-size: 1.2rem;
-    color: gray;
-    margin-top: 20px;
-  }
-  
-  .no-posts-message {
-    text-align: center;
-    color: gray;
-    font-size: 1.2rem;
-    margin-top: 20px;
-  }
+ /* Posts section styling for Dashboard */
+.posts-section {
+  padding: 16px;
+  padding-top: 95px;
+  max-width: 700px; /* Same width as in MyPost */
+  margin: 0 auto; /* Center the container */
+  background-color: #f9f9f9; /* Optional: Add a background for better visuals */
+  border-radius: 8px; /* Optional: Add rounded corners */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for depth */
+  /* display: flex; */
+  flex-direction: column;
+  align-items: center; /* Center content horizontally */
+  justify-content: center; /* Center content vertically */
+    min-height: 560px;
+  /* gap: 20px; */
+  overflow-y: auto; /* Keeps scroll for overflow, but can be adjusted */
+  height: auto; /* Let the height adjust automatically based on content */
+}
+
+/* Loading indicator */
+.loading-indicator {
+  text-align: center;
+  font-size: 1.2rem;
+  color: gray;
+  margin-top: 20px;
+}
+
+/* No posts message */
+.no-posts-message {
+  text-align: center;
+  color: gray;
+  font-size: 1.2rem;
+margin-top: 200px;
+}
+
+
   
   /* Responsive Design */
 /*@media (max-width: 1024px) {
