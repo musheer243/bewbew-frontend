@@ -230,6 +230,18 @@ const Dashboard = () => {
     }
   };
 
+  useEffect(() => {
+    // Sync darkMode state with the document's body class
+    if (darkMode) {
+      document.body.classList.add("dark-mode");
+      document.body.classList.remove("light-mode");
+    } else {
+      document.body.classList.add("light-mode");
+      document.body.classList.remove("dark-mode");
+    }
+  }, [darkMode]);
+  
+
   // if (loading && pageNumber === 0) return <div>Loading...</div>;
   // if (error) return <div className="error">{error}</div>;
 
@@ -279,7 +291,7 @@ const Dashboard = () => {
 
         {/* Display posts */}
         {posts.length > 0
-          ? posts.map((post) => <SinglePost key={post.postId} post={post} />)
+          ? posts.map((post) => <SinglePost key={post.postId} post={post} darkModeFromDashboard={darkMode}  />)
           : /* No posts message, only when not loading */
             !loading && <p className="no-posts-message">No posts available</p>}
 
@@ -338,7 +350,7 @@ const Dashboard = () => {
             {
               name: "My Posts",
               icon: <TfiGallery size={20} />,
-              onClick: () => navigate("/my-posts"),
+              onClick: () => navigate("/my-posts", { state: { darkMode } }),
             },
           ].map((item, index) => (
             <li key={index} className="sidebar-item" onClick={item.onClick}>

@@ -13,7 +13,7 @@ import { HiTranslate } from "react-icons/hi";
 import { PiShareFatBold } from "react-icons/pi";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
-const SinglePost = ({ post, onDelete, onEdit }) => {
+const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
   const { title, mediaFileNames = [], content, addedDate, user } = post;
   const { username, profilepic } = user || {};
   const [currentIndex, setCurrentIndex] = useState(0); // Track the current image index
@@ -24,6 +24,12 @@ const SinglePost = ({ post, onDelete, onEdit }) => {
   useEffect(() => {
     document.title = "BewBew • My Posts";
   }, []);
+
+  useEffect(() => {
+    // Update the document body class whenever darkModeFromDashboard changes
+    document.body.classList.toggle("dark-mode", darkModeFromDashboard);
+  }, [darkModeFromDashboard]);
+  
   // Format addedDate (from array to readable string)
   const formattedDate = addedDate
     ? new Date(...addedDate).toLocaleDateString("en-US", {

@@ -1,9 +1,14 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import { useLocation } from "react-router-dom"; // Import useLocation
 import axios from "axios";
 import SinglePost from "../shared/SinglePost"; // Import the SinglePost component
 import "../../styles/MyPosts.css";
 
 const MyPosts = () => {
+
+  const location = useLocation(); // Access location to retrieve state
+  const darkMode = location.state?.darkMode || false; // Default to light mode if not provided
+
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -12,6 +17,16 @@ const MyPosts = () => {
 
   const postsContainerRef = useRef(null); // Ref to the posts container
 
+
+   // Apply dark mode class to the body
+   useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+  }, [darkMode]);
+  
   // Handle scroll and load next page
   const handleScroll = useCallback((e) => {
     const bottom =
@@ -88,7 +103,7 @@ const MyPosts = () => {
   // if (error) return <div className="error">{error}</div>;
 
   return (
-    <div className="my-posts" ref={postsContainerRef}>
+    <div className={`my-posts ${darkMode ? "dark" : "light"}`} ref={postsContainerRef}>
     <h1>My Posts</h1>
 
     {/* Error Handling */}
@@ -101,7 +116,7 @@ const MyPosts = () => {
 
     {/* Posts Display */}
     {posts.length > 0 ? (
-      posts.map((post) => <SinglePost key={post.postId} post={post} />)
+      posts.map((post) => <SinglePost key={post.postId} post={post} darkMode={darkMode} />)
     ) : (
       /* No Posts Message */
       !loading && <div className="no-posts">You have not created any posts yet.</div>

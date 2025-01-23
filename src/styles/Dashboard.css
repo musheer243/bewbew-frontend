@@ -215,6 +215,11 @@
     --search-input-bg: white;
     --sidebar-bg: #fff;
     --sidebar-toggle-bg: white;
+    --posts-bg: #f9f9f9;
+    --posts-text: #000;
+    --posts-shadow: rgba(0, 0, 0, 0.1);
+    --no-posts-color: gray;
+    --loading-indicator-color: gray;
   }
   
   .dashboard-container.dark {
@@ -225,6 +230,11 @@
     --search-input-bg: #555;
     --sidebar-bg: #444;
     --sidebar-toggle-bg: #555;
+   --posts-bg: #222; /* Dark background for posts */
+  --posts-text: #f5f5f5; /* Light text for contrast */
+  --posts-shadow: rgba(255, 255, 255, 0.1); /* Subtle light shadow */
+  --no-posts-color: #aaa; /* Slightly lighter for readability */
+  --loading-indicator-color: #ccc; /* Softer gray for dark mode */
   }
    
  /* Posts section styling for Dashboard */
@@ -233,7 +243,7 @@
   padding-top: 95px;
   max-width: 700px; /* Same width as in MyPost */
   margin: 0 auto; /* Center the container */
-  background-color: #f9f9f9; /* Optional: Add a background for better visuals */
+  /* background-color: #f9f9f9; Optional: Add a background for better visuals */
   border-radius: 8px; /* Optional: Add rounded corners */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for depth */
   /* display: flex; */
@@ -244,20 +254,21 @@
   /* gap: 20px; */
   overflow-y: auto; /* Keeps scroll for overflow, but can be adjusted */
   height: auto; /* Let the height adjust automatically based on content */
+  background-color: var(--posts-bg);
 }
 
 /* Loading indicator */
 .loading-indicator {
   text-align: center;
   font-size: 1.2rem;
-  color: gray;
+  color: var(--loading-indicator-color);
   margin-top: 20px;
 }
 
 /* No posts message */
 .no-posts-message {
   text-align: center;
-  color: gray;
+  color: var(--no-posts-color);
   font-size: 1.2rem;
 margin-top: 200px;
 }

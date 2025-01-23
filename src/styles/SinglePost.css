@@ -1,22 +1,32 @@
+/* General Styles */
+body {
+  background-color: var(--body-bg);
+  color: var(--text-color);
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
 /* General Post Styling */
 .single-post {
-  /* border: 1px solid #ddd; */
+  /* border: 1px solid var(--single-post-border); */
   /* border-radius: 12px; */
   padding: 24px; /* Increased padding */
   margin: 24px 0; /* More space between posts */
-  background-color: #fff;
+  background-color: var(--single-post-bg);
   /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); Slightly larger shadow for emphasis */
   max-width: 1200px; /* Ensure the post doesn't grow too wide */
   margin-left: auto;
   margin-right: auto; /* Center the post */
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .single-post-container {
-  border: 1px solid #ddd;
+  border: 1px solid var(--single-post-border);
   border-radius: 12px;
   margin: 24px 0; /* More space between posts */
-  background-color: #fff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* Slightly larger shadow for emphasis */
+  background-color: var(--single-post-bg);
+  box-shadow: 0 4px 6px var(--single-post-shadow); /* Slightly larger shadow for emphasis */
   max-width: 1200px; /* Ensure the post doesn't grow too wide */
   margin-left: auto;
   margin-right: auto; /* Center the post */
@@ -31,7 +41,7 @@
 }
 
 .header-container {
-  background-color: #f0f0f0; /* Change this color as needed */
+  background-color: var(--header-bg); /* Change this color as needed */
   padding: 16px; /* Add some padding to give space around the content */
   border-radius: 12px 12px 0 0; /* Round the top corners */
 }
@@ -53,7 +63,7 @@
 }
 
 .post-header-divider {
-  border-top: 1px solid #d3d3d3; /* Adjust the divider color to match the design */
+  border-top: 1px solid var(--header-border); /* Adjust the divider color to match the design */
   margin: 8px 0; /* Add vertical spacing */
 }
 
@@ -62,7 +72,7 @@
   border: none;
   cursor: pointer;
   font-size: 1.5rem;
-  color: #757575;
+  color: var(--menu-btn-color);
 }
 
 /* Post media container */
@@ -71,7 +81,7 @@
   width: 100%;
   max-width: 618px;
   margin: 0 auto; /* Center the container */
-  background-color: #ffffff; /* White background */
+  background-color: var(--media-bg); /* White background */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -85,6 +95,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: var(--media-bg);
+  box-shadow: 0 4px 6px var(--media-shadow);
 }
 
 /* Aspect Ratio Box */
@@ -92,10 +104,10 @@
   position: relative;
   width: 100%;
   padding-top: 56.25%; /* 16:9 aspect ratio (9 / 16 * 100) */
-  background-color: #ffffff; /* White background for non-16:9 images */
+  background-color: var(--media-bg); /* White background for non-16:9 images */
   overflow: hidden;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px var(--media-shadow);
 }
 
 /* Main image */
@@ -146,7 +158,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid #acacac;
+  border-top: 1px solid var(--post-footer-border);
   padding-top: 8px;
 }
 
@@ -170,23 +182,23 @@
 
 /* Like, Comment, Share, Save Buttons */
 .like-btn {
-  background-color: #f1f3f4;
-  color: black;
+  background-color: var(--like-btn-bg);
+  background-color: var(--like-btn-bg);
   font-size: 1.5rem; /* Slightly reduced size */
 }
 
 .comment-btn {
-  background-color: #e0f7fa;
+  background-color: var(--comment-btn-bg);
   font-size: 1.4rem; /* Slightly reduced size */
 }
 
 .share-btn {
-  background-color: #e3f2fd;
+  background-color: var(--share-btn-bg);
   font-size: 1.5rem; /* Slightly reduced size */
 }
 
 .save-btn {
-  background-color: #ffe0b2;
+  background-color: var(--save-btn-bg);
   color: black;
   font-size: 1.5rem; /* Slightly reduced size */
 }
@@ -194,7 +206,7 @@
 /* Post Date */
 .post-date {
   font-size: 0.8rem;
-  color: #757575;
+  color: var(--post-date-color);
 }
 
 .menu-container {
@@ -218,8 +230,8 @@
   position: absolute;
   top: 30px;
   right: 0;
-  background-color: #fff;
-  border: 1px solid #ccc;
+  background-color: var(--dropdown-bg);
+  border: 1px solid var(--dropdown-border);
   border-radius: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 9999;
@@ -244,18 +256,68 @@
 
 /* Add a line below each button */
 .dropdown-item:not(:last-child) {
-  border-bottom: 1px solid #ccc; /* Adds a line below every item except the last one */
+  border-bottom: 1px solid var(--dropdown-border); /* Adds a line below every item except the last one */
 }
 
 .dropdown-item:hover {
-  background-color: #e5e5e5; /* Light gray background on hover */
-  color: #007bff; /* Change text color to blue on hover */
+  background-color: var(--dropdown-item-hover-bg); /* Light gray background on hover */
+  color: var(--dropdown-item-hover-color); /* Change text color to blue on hover */
 }
 
 /* Optional: Customize icon size */
 .dropdown-item svg {
   font-size: 16px; /* Icon size */
 }
+
+/* Default Light Mode Variables */
+:root {
+  --body-bg: #ffffff;
+  --text-color: #000000;
+  --single-post-bg: #ffffff;
+  --single-post-border: #dddddd;
+  --single-post-shadow: rgba(0, 0, 0, 0.1);
+  --header-bg: #f9f9f9;
+  --header-border: #eeeeee;
+  --menu-btn-color: #333333;
+  --media-bg: #ffffff;
+  --media-shadow: rgba(0, 0, 0, 0.1);
+  --post-footer-border: #cccccc;
+  --post-date-color: #666666;
+  --dropdown-bg: #ffffff;
+  --dropdown-border: #dddddd;
+  --dropdown-item-hover-bg: #f5f5f5;
+  --dropdown-item-hover-color: #007bff;
+  --like-btn-bg: transparent;
+  --comment-btn-bg: transparent;
+  --share-btn-bg: transparent;
+  --save-btn-bg: transparent;
+  --button-bg: #007bff;
+  --button-text: #ffffff;
+}
+
+
+/* Dark Mode Variables */
+body.dark-mode {
+  --body-bg: #121212;
+  --text-color: #e0e0e0;
+  --single-post-bg: #1e1e1e;
+  --single-post-border: #333333;
+  --single-post-shadow: rgba(0, 0, 0, 0.7);
+  --header-bg: #2c2c2c;
+  --header-border: #444444;
+  --menu-btn-color: #dddddd;
+  --media-bg: #2c2c2c;
+  --media-shadow: rgba(0, 0, 0, 0.5);
+  --post-footer-border: #444444;
+  --post-date-color: #bbbbbb;
+  --dropdown-bg: #2e2e2e;
+  --dropdown-border: #444444;
+  --dropdown-item-hover-bg: #3a3a3a;
+  --dropdown-item-hover-color: #66b2ff;
+  --button-bg: #444444;
+  --button-text: #ffffff;
+}
+
 
 /* Base layout for larger screens (default styling) */
 

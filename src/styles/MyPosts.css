@@ -1,22 +1,25 @@
+/* Default styles for My Posts component */
 .my-posts {
   padding: 16px;
   max-width: 700px; /* Set the maximum width */
   margin: 0 auto; /* Center the container */
-  background-color: #f9f9f9; /* Optional: Add a background for better visuals */
+  background-color: var(--posts-bg, #f9f9f9); /* Use CSS variable for background */
+  color: var(--posts-text, #000); /* Use CSS variable for text color */
   border-radius: 8px; /* Optional: Add rounded corners */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for depth */
-  min-height: 560px;
+  box-shadow: 0 2px 8px var(--posts-shadow, rgba(0, 0, 0, 0.1)); /* Optional: Add shadow */
+  min-height: 560px; /* Ensure consistent height */
 }
 
 .my-posts h1 {
   font-size: 2rem;
   margin-bottom: 16px;
   text-align: center; /* Center the title */
+  color: var(--posts-text, #000);
 }
 
 .no-posts {
   font-size: 1.2rem;
-  color: #888;
+  color: var(--no-posts-color, #888);
   text-align: center;
 }
 
@@ -24,4 +27,46 @@
   color: red;
   text-align: center;
   margin: 16px 0;
+}
+
+/* Loading indicator */
+.loading-indicator {
+  text-align: center;
+  font-size: 1.2rem;
+  color: var(--loading-indicator-color, gray);
+  margin-top: 20px;
+}
+
+/* Global CSS variables for light mode */
+:root {
+  --posts-bg: #f9f9f9; /* Light background color */
+  --posts-text: #000; /* Light text color */
+  --posts-shadow: rgba(0, 0, 0, 0.1); /* Light shadow */
+  --no-posts-color: gray; /* Default color for "no posts" message */
+  --loading-indicator-color: gray; /* Default color for loading indicator */
+}
+
+/* Dark mode variables */
+.my-posts.dark {
+  --posts-bg: #222; /* Dark background color */
+  --posts-text: #f5f5f5; /* Light text color for dark mode */
+  --posts-shadow: rgba(255, 255, 255, 0.1); /* Subtle light shadow */
+  --no-posts-color: #aaa; /* Slightly lighter gray */
+  --loading-indicator-color: #ccc; /* Softer gray for dark mode */
+}
+
+/* Light mode specific styles */
+.my-posts.light {
+  --posts-bg: #f9f9f9; /* Light background color */
+  --posts-text: #000; /* Dark text for contrast */
+}
+
+/* Ensure proper theme switching */
+.my-posts {
+  background-color: var(--posts-bg);
+  color: var(--posts-text);
+}
+
+.my-posts h1 {
+  color: var(--posts-text);
 }
