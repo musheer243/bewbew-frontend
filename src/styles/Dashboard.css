@@ -273,6 +273,14 @@
 margin-top: 200px;
 }
 
+/* Add Post Button Container */
+.add-post-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
 /* Add Post Button Styling */
 .add-post-btn {
   position: fixed;
@@ -281,8 +289,8 @@ margin-top: 200px;
   background: var(--sidebar-toggle-bg);
   border: none;
   border-radius: 50%;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -317,6 +325,74 @@ margin-top: 200px;
 
 .dashboard-container.dark .add-post-btn:hover {
   box-shadow: 0px 6px 12px rgba(255, 255, 255, 0.3); /* Subtle light shadow */
+}
+
+/* Post Options */
+.post-options {
+  position: absolute;
+  bottom: -5px; /* Adjusted to create proper spacing */
+  right: 20px;
+  /* display: flex;
+  flex-direction: column; */
+  align-items: center;
+  gap: 15px; /* Space between buttons */
+  transition: all 0.3s ease;
+  pointer-events: none; /* Disable interaction by default */
+}
+
+.post-options.expanded {
+  pointer-events: auto; /* Enable interaction when expanded */
+}
+
+.post-option-btn {
+  position: relative;
+  background-color: var(--search-input-bg);
+  color: var(--text-color);
+  border: 1px solid #ffffff;
+  padding: 6px 10px;
+  font-size: 12px; /* Smaller text size */
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 0; /* Hidden by default */
+}
+
+.post-option-btn:hover {
+  background-color: var(--search-bar-bg);
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Expanded State Positions */
+.post-options.expanded .post-option-btn:nth-child(1) {
+  transform: translate(24px, -22px);
+  opacity: 1;
+}
+
+.post-options.expanded .post-option-btn:nth-child(2) {
+  transform: translate(-64px, -20px); /* 45° */
+  opacity: 1;
+}
+
+.post-options.expanded .post-option-btn:nth-child(3) {
+  transform: translateX(-100px); /* 90° */
+  opacity: 1;
+}
+
+/* Collapsed State */
+.post-options.collapsed .post-option-btn {
+  transform: translate(0, 0);
+  opacity: 0;
+}
+
+/* Dark Mode Adjustments */
+.dashboard-container.dark .post-option-btn {
+  background-color: var(--search-bar-bg);
+  color: var(--text-color);
+}
+
+.dashboard-container.dark .post-option-btn:hover {
+  background-color: var(--sidebar-bg);
+  box-shadow: 0px 4px 6px rgba(255, 255, 255, 0.2);
 }
 
   /* Responsive Design */

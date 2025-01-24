@@ -25,8 +25,28 @@ const Dashboard = () => {
   const [error, setError] = useState(null); // State to handle errors
   const [pageNumber, setPageNumber] = useState(0); // State to manage pagination
   const [totalPages, setTotalPages] = useState(1); // Total pages for pagination
+  const [showPostOptions, setShowPostOptions] = useState(false);
+  const addPostRef = useRef(null); // Ref for Add Post button and menu
   const postsContainerRef = useRef(null); // Reference for the posts container
   const navigate = useNavigate();
+
+  const togglePostOptions = () => {
+    setShowPostOptions((prev) => !prev);
+  };
+
+  // Collapse the menu when clicking outside
+  const handleClickOutside = (event) => {
+    if (addPostRef.current && !addPostRef.current.contains(event.target)) {
+      setShowPostOptions(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Handle infinite scrolling
   const handleScroll = useCallback(
@@ -301,10 +321,34 @@ const Dashboard = () => {
           <div className="loading-indicator">Loading more posts...</div>
         )}
 
-        {/* Floating Plus Button */}
-  <button className="add-post-btn" onClick={() => navigate("/add-post")}>
-    <BiImageAdd size={30} />
-  </button>
+       {/* Floating Plus Button with Branching Options */}
+       <div className="add-post-container" ref={addPostRef}>
+          <button className="add-post-btn" onClick={togglePostOptions}>
+            <BiImageAdd size={24} />
+          </button>
+
+            <div    className={`post-options ${showPostOptions ? "expanded" : "collapsed"}`}
+>
+              <button
+                className="post-option-btn"
+                onClick={() => alert("Schedule Post")}
+              >
+                Schedule Post
+              </button>
+              <button
+                className="post-option-btn"
+                onClick={() => alert("Create Post")}
+              >
+                Create Post
+              </button>
+              <button
+                className="post-option-btn"
+                onClick={() => alert("Close Friends Post")}
+              >
+                for Close Friends
+              </button>
+            </div>
+        </div>
       </div>
 
       {/* Sidebar Toggle Button */}
