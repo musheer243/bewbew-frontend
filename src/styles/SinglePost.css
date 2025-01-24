@@ -232,6 +232,7 @@ body {
   right: 0;
   background-color: var(--dropdown-bg);
   border: 1px solid var(--dropdown-border);
+  color: var(--text-color);
   border-radius: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 9999;
@@ -244,12 +245,13 @@ body {
 .dropdown-item {
   padding: 10px;
   border: none;
-  background: none;
+  background-color: transparent;
+  color: var(--text-color);
   text-align: left;
   font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
-  display: flex; /* Make buttons display inline with the icon */
+  transition: background-color 0.3s, color 0.3s;
+    display: flex; /* Make buttons display inline with the icon */
   align-items: center;
   width: 100%;
 }
@@ -267,6 +269,23 @@ body {
 /* Optional: Customize icon size */
 .dropdown-item svg {
   font-size: 16px; /* Icon size */
+}
+
+/* Dropdown Menu in Dark Mode */
+body.dark-mode .dropdown-menu {
+  background-color: var(--dropdown-bg);
+  border-color: var(--dropdown-border);
+  color: var(--text-color);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.7);
+}
+
+body.dark-mode .dropdown-item {
+  color: var(--text-color);
+}
+
+body.dark-mode .dropdown-item:hover {
+  background-color: var(--dropdown-item-hover-bg);
+  color: var(--dropdown-item-hover-color);
 }
 
 /* Default Light Mode Variables */
@@ -313,7 +332,7 @@ body.dark-mode {
   --dropdown-bg: #2e2e2e;
   --dropdown-border: #444444;
   --dropdown-item-hover-bg: #3a3a3a;
-  --dropdown-item-hover-color: #66b2ff;
+  --dropdown-item-hover-color: #121212;
   --button-bg: #444444;
   --button-text: #ffffff;
 }

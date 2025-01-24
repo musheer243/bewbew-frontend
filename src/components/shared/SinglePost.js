@@ -154,11 +154,11 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
             <button className="comment-btn">
               <FaRegComment />
             </button>
-            <button className="share-btn">
-              <PiShareFatBold />
-            </button>
             <button className="save-btn" onClick={() => setSaved(!saved)}>
               {saved ? <FaBookmark /> : <FaRegBookmark />}
+            </button>
+            <button className="share-btn">
+              <PiShareFatBold />
             </button>
           </div>
           <span className="post-date">{formattedDate}</span>
