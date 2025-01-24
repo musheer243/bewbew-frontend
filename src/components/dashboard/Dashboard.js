@@ -14,6 +14,7 @@ import { RiRobot2Fill } from "react-icons/ri";
 import { LiaToolsSolid } from "react-icons/lia";
 import { TfiGallery } from "react-icons/tfi";
 import SinglePost from "../shared/SinglePost";
+import { BiImageAdd } from "react-icons/bi";
 
 const Dashboard = () => {
   const [profile, setProfile] = useState(null); // State to store profile data
@@ -299,6 +300,11 @@ const Dashboard = () => {
         {loading && posts.length > 0 && (
           <div className="loading-indicator">Loading more posts...</div>
         )}
+
+        {/* Floating Plus Button */}
+  <button className="add-post-btn" onClick={() => navigate("/add-post")}>
+    <BiImageAdd size={30} />
+  </button>
       </div>
 
       {/* Sidebar Toggle Button */}

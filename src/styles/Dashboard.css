@@ -273,8 +273,52 @@
 margin-top: 200px;
 }
 
+/* Add Post Button Styling */
+.add-post-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  cursor: pointer;
+  z-index: 1000;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
 
+/* Hover Effect */
+.add-post-btn:hover {
+  transform: scale(1.1); /* Slightly enlarge on hover */
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3); /* More pronounced shadow */
+}
   
+/* Light Mode Icon */
+.add-post-btn svg {
+  fill: white; /* Fill color for light mode */
+  stroke: black; /* Stroke color for light mode */
+}
+
+/* Dark Mode Specific Colors */
+.dashboard-container.dark .add-post-btn {
+  color: var(--sidebar-bg); /* Darker text color for better contrast */
+}
+
+/* Dark Mode Icon */
+.dashboard-container.dark .add-post-btn svg {
+  fill: black; /* Fill color for dark mode */
+  stroke: white; /* Stroke color for dark mode */
+}
+
+.dashboard-container.dark .add-post-btn:hover {
+  box-shadow: 0px 6px 12px rgba(255, 255, 255, 0.3); /* Subtle light shadow */
+}
+
   /* Responsive Design */
 /*@media (max-width: 1024px) {
   .sidebar {
