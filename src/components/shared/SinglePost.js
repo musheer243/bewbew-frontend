@@ -14,7 +14,9 @@ import { PiShareFatBold } from "react-icons/pi";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
 const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
-  const { title, mediaFileNames = [], content, addedDate, user } = post;
+  const { title, mediaFileNames = [], content, addedDate, user, likeCount,
+    saveCount,
+    commentCount, } = post;
   const { username, profilepic } = user || {};
   const [currentIndex, setCurrentIndex] = useState(0); // Track the current image index
   const [liked, setLiked] = useState(false); // Track if post is liked
@@ -150,12 +152,15 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
               style={{ color: liked ? "red" : "black" }}
             >
               {liked ? <FaHeart /> : <FaRegHeart />}
+              <span className="count">{likeCount}</span>
             </button>
             <button className="comment-btn">
               <FaRegComment />
+              <span className="count">{commentCount}</span>
             </button>
             <button className="save-btn" onClick={() => setSaved(!saved)}>
               {saved ? <FaBookmark /> : <FaRegBookmark />}
+              <span className="count">{saveCount}</span>
             </button>
             <button className="share-btn">
               <PiShareFatBold />

@@ -166,6 +166,8 @@ body {
 .post-buttons {
   display: flex;
   gap: 8px;
+  justify-content: center; /* Center the buttons horizontally */
+  align-items: center; /* Ensure alignment */
 }
 
 .post-buttons button {
@@ -182,7 +184,6 @@ body {
 
 /* Like, Comment, Share, Save Buttons */
 .like-btn {
-  background-color: var(--like-btn-bg);
   background-color: var(--like-btn-bg);
   font-size: 1.5rem; /* Slightly reduced size */
 }
@@ -288,6 +289,18 @@ body.dark-mode .dropdown-item:hover {
   color: var(--dropdown-item-hover-color);
 }
 
+/* Counts Styling */
+.post-buttons .count {
+  font-size: 0.85rem; /* Slightly smaller font size for counts */
+  font-weight: bold; /* Make counts bold for better visibility */
+  font-weight: 500; /* Moderate emphasis */
+  color: var(--count-color);
+  display: inline-block; /* Align with the icons */
+  transition: color 0.3s ease; /* Smooth color transition */
+  margin-top: 2px; /* Add slight spacing below the icon */
+  margin-left: 2px;
+}
+
 /* Default Light Mode Variables */
 :root {
   --body-bg: #ffffff;
@@ -312,6 +325,7 @@ body.dark-mode .dropdown-item:hover {
   --save-btn-bg: transparent;
   --button-bg: #007bff;
   --button-text: #ffffff;
+  --count-color: #000000; /* Neutral color for light mode */
 }
 
 
@@ -335,6 +349,7 @@ body.dark-mode {
   --dropdown-item-hover-color: #121212;
   --button-bg: #444444;
   --button-text: #ffffff;
+  --count-color: #bbbbbb; /* Softer color for dark mode */
 }
 
 
