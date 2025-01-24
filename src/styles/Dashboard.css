@@ -278,7 +278,7 @@ margin-top: 200px;
   position: fixed;
   bottom: 20px;
   right: 20px;
-  color: white;
+  background: var(--sidebar-toggle-bg);
   border: none;
   border-radius: 50%;
   width: 60px;
@@ -300,19 +300,19 @@ margin-top: 200px;
   
 /* Light Mode Icon */
 .add-post-btn svg {
-  fill: white; /* Fill color for light mode */
-  stroke: black; /* Stroke color for light mode */
+  font-size: 20px;
+  color: var(--text-color);
 }
 
 /* Dark Mode Specific Colors */
 .dashboard-container.dark .add-post-btn {
-  color: var(--sidebar-bg); /* Darker text color for better contrast */
+  background: var(--sidebar-toggle-bg);
+  color: var(--text-color);
 }
 
 /* Dark Mode Icon */
 .dashboard-container.dark .add-post-btn svg {
-  fill: black; /* Fill color for dark mode */
-  stroke: white; /* Stroke color for dark mode */
+  color: var(--text-color);
 }
 
 .dashboard-container.dark .add-post-btn:hover {
