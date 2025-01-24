@@ -22,7 +22,9 @@ const MyPosts = () => {
    useEffect(() => {
     if (darkMode) {
       document.body.classList.add("dark");
+      document.body.classList.remove("light");
     } else {
+      document.body.classList.add("light");
       document.body.classList.remove("dark");
     }
   }, [darkMode]);
@@ -103,6 +105,7 @@ const MyPosts = () => {
   // if (error) return <div className="error">{error}</div>;
 
   return (
+    <div className={`my-posts-container ${darkMode ? "dark" : "light"}`}>
     <div className={`my-posts ${darkMode ? "dark" : "light"}`} ref={postsContainerRef}>
     <h1>My Posts</h1>
 
@@ -116,7 +119,7 @@ const MyPosts = () => {
 
     {/* Posts Display */}
     {posts.length > 0 ? (
-      posts.map((post) => <SinglePost key={post.postId} post={post} darkMode={darkMode} />)
+      posts.map((post) => <SinglePost key={post.postId} post={post} darkModeFromDashboard={darkMode} />)
     ) : (
       /* No Posts Message */
       !loading && <div className="no-posts">You have not created any posts yet.</div>
@@ -126,6 +129,7 @@ const MyPosts = () => {
     {loading && posts.length > 0 && (
       <div className="loading-indicator">Loading more posts...</div>
     )}
+  </div>
   </div>
   );
 };

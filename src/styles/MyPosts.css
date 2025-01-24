@@ -70,3 +70,14 @@
 .my-posts h1 {
   color: var(--posts-text);
 }
+
+/* Global background for light and dark modes */
+.my-posts-container.light {
+  background-color: #ffffff; /* Light mode background */
+  color: #000; /* Default text color for light mode */
+}
+
+.my-posts-container.dark {
+  background-color: #222; /* Dark mode background */
+  color: #f5f5f5; /* Default text color for dark mode */
+}
