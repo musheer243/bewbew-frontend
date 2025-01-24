@@ -250,7 +250,7 @@
   flex-direction: column;
   align-items: center; /* Center content horizontally */
   justify-content: center; /* Center content vertically */
-    min-height: 560px;
+    min-height: 100vh;
   /* gap: 20px; */
   overflow-y: auto; /* Keeps scroll for overflow, but can be adjusted */
   height: auto; /* Let the height adjust automatically based on content */
