@@ -11,6 +11,7 @@ import Dashboard from './components/dashboard/Dashboard';
 import Profile from './components/dashboard/Profile';
 import AIChatting from './components/dashboard/AIChatting';
 import MyPosts from './components/dashboard/MyPosts';
+import CreatePostPage from './components/dashboard/CreatePostPage';
 function App() {
   return (
     <Router>
@@ -26,6 +27,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/ai-chatting" element={<AIChatting />} />
         <Route path="/my-posts" element={<MyPosts />} />
+        <Route path="/create-post" element={<CreatePostPage />} />
       </Routes>
     </Router>
   );

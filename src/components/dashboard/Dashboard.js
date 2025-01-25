@@ -337,7 +337,7 @@ const Dashboard = () => {
               </button>
               <button
                 className="post-option-btn"
-                onClick={() => alert("Create Post")}
+                onClick={() => navigate("/create-post")}
               >
                 Create Post
               </button>
