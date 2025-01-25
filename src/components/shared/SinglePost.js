@@ -14,11 +14,12 @@ import { PiShareFatBold } from "react-icons/pi";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
 const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
-  const { title, mediaFileNames = [], content, addedDate, user, likeCount,
+  const { title, mediaFileNames = [], content, addedDate, user, likeCount: initialLikeCount,
     saveCount,
     commentCount, } = post;
   const { username, profilepic } = user || {};
   const [currentIndex, setCurrentIndex] = useState(0); // Track the current image index
+  const [likeCount, setLikeCount] = useState(initialLikeCount || 0);
   const [liked, setLiked] = useState(false); // Track if post is liked
   const [saved, setSaved] = useState(false); // Track if post is saved
   const [showOptions, setShowOptions] = useState(false); // State for dropdown
@@ -32,6 +33,41 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
     document.body.classList.toggle("dark-mode", darkModeFromDashboard);
   }, [darkModeFromDashboard]);
   
+  const handleLikeToggle = async () => {
+    try {
+      const userId = localStorage.getItem("userId");
+      const token = localStorage.getItem("jwtToken"); // Retrieve the token
+      if (!token) {
+        console.error("JWT token is missing in localStorage.");
+        return;
+      }
+
+      if (!userId || !token) {
+        console.error("User ID or JWT token not found in localStorage");
+        return;
+      }
+
+      const response = await fetch(`http://3.225.10.130:9090/api/post/${post.postId}/like?userId=${userId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const message = await response.text();
+        setLiked((prev) => !prev);
+        setLikeCount((prev) => (liked ? prev - 1 : prev + 1));
+        console.log(message);
+      } else {
+        console.error("Failed to toggle like");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   // Format addedDate (from array to readable string)
   const formattedDate = addedDate
     ? new Date(...addedDate).toLocaleDateString("en-US", {
@@ -148,7 +184,7 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
           <div className="post-buttons">
             <button
               className="like-btn"
-              onClick={() => setLiked(!liked)}
+              onClick={handleLikeToggle}
               style={{ color: liked ? "red" : "black" }}
             >
               {liked ? <FaHeart /> : <FaRegHeart />}
