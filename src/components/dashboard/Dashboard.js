@@ -233,7 +233,7 @@ const Dashboard = () => {
 
       // Send logout request to the backend
       await axios.post(
-        `h${API_BASE_URL}/api/v1/auth/logou`, // Replace with your logout endpoint
+        `h${API_BASE_URL}/api/v1/auth/logout`, // Replace with your logout endpoint
         {},
         {
           headers: {

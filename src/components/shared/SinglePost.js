@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/SinglePost.css";
 import {
-  FaHeart,
+ // FaHeart,
   FaRegComment,
   FaBookmark,
   FaRegHeart,
@@ -13,14 +13,17 @@ import { HiTranslate } from "react-icons/hi";
 import { PiShareFatBold } from "react-icons/pi";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { API_BASE_URL } from "../../config";
+import { FcLike } from "react-icons/fc";
+
 
 const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
   const { title, mediaFileNames = [], content, addedDate, user, likeCount: initialLikeCount,
-    saveCount,
+    saveCount: initialSaveCount,
     commentCount, } = post;
   const { username, profilepic } = user || {};
   const [currentIndex, setCurrentIndex] = useState(0); // Track the current image index
   const [likeCount, setLikeCount] = useState(initialLikeCount || 0);
+  const [saveCount, setSaveCount] = useState(initialSaveCount || 0);
   const [liked, setLiked] = useState(false); // Track if post is liked
   const [saved, setSaved] = useState(false); // Track if post is saved
   const [showOptions, setShowOptions] = useState(false); // State for dropdown
@@ -110,6 +113,44 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
     }
   };
 
+  const handleSaveToggle = async () => {
+    try {
+      const userId = localStorage.getItem("userId");
+      const token = localStorage.getItem("jwtToken"); // Retrieve the token
+      if (!token || !userId) {
+        console.error("User ID or JWT token is missing in localStorage.");
+        return;
+      }
+  
+      const response = await fetch(
+        `${API_BASE_URL}/api/post/${post.postId}/save?userId=${userId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      if (response.ok) {
+        const message = await response.text(); // Get the string response
+        if (message === "Post Saved successfully!") {
+          setSaved(true);
+          setSaveCount((prev) => prev + 1); // Increment save count
+        } else if (message === "Post UnSaved successfully!") {
+          setSaved(false);
+          setSaveCount((prev) => prev - 1); // Decrement save count
+        }
+        console.log(message);
+      } else {
+        console.error("Failed to toggle save");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  
   // Format addedDate (from array to readable string)
   const formattedDate = addedDate
     ? new Date(...addedDate).toLocaleDateString("en-US", {
@@ -227,16 +268,18 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
             <button
               className="like-btn"
               onClick={handleLikeToggle}
-              style={{ color: liked ? "red" : "black" }}
+              //style={{ color: liked ? "red" : "black" }}
             >
-              {liked ? <FaHeart /> : <FaRegHeart />}
+              {liked ? <FcLike /> : <FaRegHeart />}
               <span className="count">{likeCount}</span>
             </button>
             <button className="comment-btn">
               <FaRegComment />
               <span className="count">{commentCount}</span>
             </button>
-            <button className="save-btn" onClick={() => setSaved(!saved)}>
+            <button className="save-btn" onClick={handleSaveToggle}
+              //style={{ color: saved ? "blue" : "black" }}
+            >
               {saved ? <FaBookmark /> : <FaRegBookmark />}
               <span className="count">{saveCount}</span>
             </button>
