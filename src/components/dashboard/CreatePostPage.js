@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/CreatePostPage.css";
+import { API_BASE_URL } from "../../config";
 
 function CreatePostPage() {
   const [title, setTitle] = useState("");
@@ -18,7 +19,7 @@ function CreatePostPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch(`http://3.225.10.130:9090/api/categories/`, {
+        const response = await fetch(`${API_BASE_URL}/api/categories/`, {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
           },
@@ -26,10 +27,16 @@ function CreatePostPage() {
 
         if (response.ok) {
           const data = await response.json();
-          setCategories(data);
-          setFilteredCategories(data);
-          console.log("Fetched categories:", data);
- // Show all categories initially
+
+          // Sort categories alphabetically by categoryTitle
+          const sortedCategories = data.sort((a, b) => {
+            if ((a?.categoryTitle || "").toLowerCase() < (b?.categoryTitle || "").toLowerCase()) return -1;
+            if ((a?.categoryTitle || "").toLowerCase() > (b?.categoryTitle || "").toLowerCase()) return 1;
+            return 0;
+          });
+
+          setCategories(sortedCategories);
+          setFilteredCategories(sortedCategories); // Show all categories initially
         } else {
           console.error("Failed to fetch categories");
         }
@@ -41,15 +48,20 @@ function CreatePostPage() {
     fetchCategories();
   }, [jwtToken]);
 
-  // Update filtered categories based on the search keyword
   useEffect(() => {
     if (searchKeyword.trim() === "") {
-      setFilteredCategories(categories);
+      setFilteredCategories(categories); // Already sorted
     } else {
       setFilteredCategories(
-        categories.filter((category) =>
-          category.title.toLowerCase().includes(searchKeyword.toLowerCase())
-        )
+        categories
+          .filter((category) =>
+            (category?.categoryTitle || "").toLowerCase().includes(searchKeyword.toLowerCase())
+          )
+          .sort((a, b) => {
+            if ((a?.categoryTitle || "").toLowerCase() < (b?.categoryTitle || "").toLowerCase()) return -1;
+            if ((a?.categoryTitle || "").toLowerCase() > (b?.categoryTitle || "").toLowerCase()) return 1;
+            return 0;
+          })
       );
     }
   }, [searchKeyword, categories]);
@@ -72,7 +84,7 @@ function CreatePostPage() {
 
     try {
       const response = await fetch(
-        `http://3.225.10.130:9090/api/user/1/category/${selectedCategoryId}/posts/with-media`,
+`${API_BASE_URL}/api/user/1/category/${selectedCategoryId}/posts/with-media`,
         {
           method: "POST",
           headers: {
@@ -83,21 +95,17 @@ function CreatePostPage() {
       );
 
       if (response.ok) {
-        const data = await response.json();
-        console.log("Post created successfully:", data);
+        // const data = await response.json();
         alert("Post created successfully!");
-        // Clear form fields after successful submission
         setTitle("");
         setContent("");
         setMediaFiles([]);
         setSelectedCategoryId(null);
       } else {
-        const errorResponse = await response.json();
-        console.error("Failed to create post:", errorResponse);
+        // const errorResponse = await response.json();
         alert("Failed to create post. Please try again.");
       }
     } catch (error) {
-      console.error("Error creating post:", error);
       alert("An error occurred while creating the post.");
     }
   };
@@ -127,38 +135,46 @@ function CreatePostPage() {
           className="input-field"
         />
 
-        <div className="media-preview-container">
-          {mediaFiles.length > 0 && (
-            <div className="media-preview">
-              {mediaFiles[currentMediaIndex].type.startsWith("image/") ? (
-                <img
-                  src={URL.createObjectURL(mediaFiles[currentMediaIndex])}
-                  alt={`Uploaded Media ${currentMediaIndex + 1}`}
-                  className="media-preview-content"
-                />
-              ) : (
-                <video
-                  controls
-                  src={URL.createObjectURL(mediaFiles[currentMediaIndex])}
-                  className="media-preview-content"
-                />
-              )}
-              {mediaFiles.length > 1 && (
-                <div className="media-navigation">
-                  <button onClick={handlePreviousMedia}>{"<"}</button>
-                  <button onClick={handleNextMedia}>{">"}</button>
-                </div>
-              )}
-            </div>
-          )}
-          <input
-            type="file"
-            multiple
-            accept="image/*,video/*"
-            onChange={(e) => setMediaFiles([...e.target.files])}
-            className="input-field"
-          />
-        </div>
+<div className="media-preview-container">
+  <div className="media-preview">
+    {mediaFiles.length > 0 && mediaFiles[currentMediaIndex] ? (
+      mediaFiles[currentMediaIndex].type.startsWith("image/") ? (
+        <img
+          src={URL.createObjectURL(mediaFiles[currentMediaIndex])}
+          alt={`Uploaded Media ${currentMediaIndex + 1}`}
+          className="media-preview-content"
+        />
+      ) : (
+        <video
+          controls
+          src={URL.createObjectURL(mediaFiles[currentMediaIndex])}
+          className="media-preview-content"
+        />
+      )
+    ) : (
+      <span className="media-placeholder"></span>
+    )}
+    {mediaFiles.length > 1 && (
+      <div className="media-navigation">
+        <button onClick={handlePreviousMedia}>{"<"}</button>
+        <button onClick={handleNextMedia}>{">"}</button>
+      </div>
+    )}
+  </div>
+  <input
+    type="file"
+    multiple
+    accept="image/,video/"
+    onChange={(e) => {
+      const files = Array.from(e.target.files);
+      if (files.length > 0) {
+        setMediaFiles(files);
+        setCurrentMediaIndex(0);
+      }
+    }}
+    className="input-field"
+  />
+</div>
 
         <textarea
           placeholder="Enter the content of the post"
@@ -168,7 +184,6 @@ function CreatePostPage() {
           className="textarea-field"
         />
 
-        {/* Categories Dropdown */}
         <div className="dropdown-container">
           <div
             className="dropdown-header"

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from "../../config";
 
 function UploadProfilePic() {
   const location = useLocation(); // Get email from the previous step
@@ -20,7 +21,7 @@ function UploadProfilePic() {
     if (image) formData.append('image', image); // Include image if provided
 
     try {
-      const response = await fetch('http://3.225.10.130:9090/api/v1/auth/upload-profile-pic', {
+      const response = await fetch(`${API_BASE_URL}/api/v1/auth/upload-profile-pic`, {
         method: 'POST',
         body: formData,
       });

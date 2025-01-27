@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from "../../config";
 
 function ResetPassword() {
   const location = useLocation();
@@ -18,7 +19,7 @@ function ResetPassword() {
     }
 
     try {
-      const response = await fetch('http://3.225.10.130:9090/api/password/reset-password', {
+      const response = await fetch(`${API_BASE_URL}/api/password/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ email, newPassword }),

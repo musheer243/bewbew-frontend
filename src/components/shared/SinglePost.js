@@ -12,6 +12,7 @@ import { IoIosShareAlt } from "react-icons/io";
 import { HiTranslate } from "react-icons/hi";
 import { PiShareFatBold } from "react-icons/pi";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { API_BASE_URL } from "../../config";
 
 const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
   const { title, mediaFileNames = [], content, addedDate, user, likeCount: initialLikeCount,
@@ -33,7 +34,41 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
     document.body.classList.toggle("dark-mode", darkModeFromDashboard);
   }, [darkModeFromDashboard]);
   
+  useEffect(() => {
+    const checkIfPostIsLiked = async () => {
+      try {
+        const token = localStorage.getItem("jwtToken");
+        const userId = localStorage.getItem("userId");
+  
+        if (!token || !userId) {
+          console.error("User ID or JWT token is missing.");
+          return;
+        }
+  
+        const response = await fetch(
+          `${API_BASE_URL}/api/post/${post.postId}/isLiked?userId=${userId}`,
+            {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (response.ok) {
+          const isLiked = await response.json();
+          setLiked(isLiked);
+        } else {
+          console.error("Failed to check if the post is liked:", post.postId);
+        }
+      } catch (error) {
+        console.error("Error checking if the post is liked:", error);
+      }
+    };
+  
+    checkIfPostIsLiked();
+  }, [post.postId]);
+  
   const handleLikeToggle = async () => {
+    console.log("btn clicked");
     try {
       const userId = localStorage.getItem("userId");
       const token = localStorage.getItem("jwtToken"); // Retrieve the token
@@ -47,7 +82,9 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
         return;
       }
 
-      const response = await fetch(`http://3.225.10.130:9090/api/post/${post.postId}/like?userId=${userId}`, {
+      const response = await fetch(
+        `${API_BASE_URL}/api/post/${post.postId}/like?userId=${userId}`, 
+         {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -56,9 +93,14 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
       });
 
       if (response.ok) {
-        const message = await response.text();
-        setLiked((prev) => !prev);
-        setLikeCount((prev) => (liked ? prev - 1 : prev + 1));
+        const message = await response.text(); // Get the string response
+        if (message === "Post liked successfully!") {
+          setLiked(true);
+          setLikeCount((prev) => prev + 1); // Increment like count
+        } else if (message === "Post unliked successfully!") {
+          setLiked(false);
+          setLikeCount((prev) => prev - 1); // Decrement like count
+        }
         console.log(message);
       } else {
         console.error("Failed to toggle like");

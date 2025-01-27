@@ -5,7 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MdOutlineLogin } from "react-icons/md";
 import DOMPurify from "dompurify";
-
+import { API_BASE_URL } from "../../config";
 function Login() {
   const [credentials, setcredentials] = useState({
     username: "",
@@ -45,7 +45,7 @@ function Login() {
 
     try {
       const response = await fetch(
-        "http://3.225.10.130:9090/api/v1/auth/login",
+        `${API_BASE_URL}/api/v1/auth/login`, // Use API_BASE_URL here
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

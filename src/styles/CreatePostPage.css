@@ -52,6 +52,8 @@
   position: relative;
   margin-bottom: 15px;
   cursor: pointer;
+  border: 1px solid #ccc;
+  background: #fff;
 }
 
 /* Dropdown header */
@@ -68,6 +70,7 @@
 .dropdown-menu {
   position: absolute;
   top: 100%;
+  display: block;
   left: 0;
   width: 100%;
   background-color: #fff;
@@ -130,24 +133,45 @@
     position: relative;
   }
 
-  .media-preview {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16/9;
-    overflow: hidden;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f0f0f0;
-  }
+/* Wrapper for media preview with fixed aspect ratio */
+.media-preview {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9; /* Maintains a 16:9 ratio for the placeholder */
+  overflow: hidden;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+}
 
-  .media-preview-content {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+/* Placeholder styling for when no image is uploaded */
+.media-preview::before {
+  content: "No media uploaded";
+  color: #aaa;
+  font-size: 16px;
+  font-style: italic;
+  display: '${(mediaFiles.length > 0) ? 'none' : 'block'}';
+  position: absolute;
+}
+
+/* Media content inside the preview */
+.media-preview-content {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: '${(mediaFiles.length > 0) ? 'block' : 'none'}'; /* Only show if media exists */
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .media-preview {
+    aspect-ratio: 16/9;
   }
+}
+
   
   .media-navigation {
     position: absolute;
@@ -183,4 +207,3 @@
       font-size: 14px;
     }
   }
-  

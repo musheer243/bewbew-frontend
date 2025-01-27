@@ -15,6 +15,7 @@ import { LiaToolsSolid } from "react-icons/lia";
 import { TfiGallery } from "react-icons/tfi";
 import SinglePost from "../shared/SinglePost";
 import { BiImageAdd } from "react-icons/bi";
+import { API_BASE_URL } from "../../config";
 
 const Dashboard = () => {
   const [profile, setProfile] = useState(null); // State to store profile data
@@ -73,7 +74,7 @@ const Dashboard = () => {
       setLoading(true); // Set loading to true before the API call
 
       const response = await axios.get(
-        `http://3.225.10.130:9090/api/post/byfollowing/${userId}`,
+        `${API_BASE_URL}/api/post/byfollowing/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -139,7 +140,7 @@ const Dashboard = () => {
         }
 
         const response = await axios.get(
-          `http://3.225.10.130:9090/api/users/${userId}`,
+          `${API_BASE_URL}/api/users/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -194,7 +195,7 @@ const Dashboard = () => {
 
       // Update the preference via API
       await axios.put(
-        "http://3.225.10.130:9090/api/users/update-preference",
+        `${API_BASE_URL}/api/users/update-preference`,
         {},
         {
           headers: {
@@ -232,7 +233,7 @@ const Dashboard = () => {
 
       // Send logout request to the backend
       await axios.post(
-        "http://3.225.10.130:9090/api/v1/auth/logout", // Replace with your logout endpoint
+        `h${API_BASE_URL}/api/v1/auth/logou`, // Replace with your logout endpoint
         {},
         {
           headers: {

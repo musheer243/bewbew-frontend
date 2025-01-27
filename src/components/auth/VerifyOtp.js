@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate to handle redirection
+import { API_BASE_URL } from "../../config";
 
 function VerifyOtp() {
   const location = useLocation(); // Access the location object
@@ -20,7 +21,7 @@ function VerifyOtp() {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://3.225.10.130:9090/api/v1/auth/verify-otp', {
+      const response = await fetch(`${API_BASE_URL}/api/v1/auth/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp }),
@@ -40,7 +41,7 @@ function VerifyOtp() {
   const handleEditEmail = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://3.225.10.130:9090/api/v1/auth/edit-email', {
+      const response = await fetch(`${API_BASE_URL}/api/v1/auth/edit-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ oldEmail: email, newEmail }),
@@ -58,7 +59,7 @@ function VerifyOtp() {
 
   const handleResendOtp = async () => {
     try {
-      const response = await fetch(`http://3.225.10.130:9090/api/v1/auth/resend-otp?email=${email}`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/auth/resend-otp?email=${email}`, {
         method: 'POST',
       });
       const data = await response.text();

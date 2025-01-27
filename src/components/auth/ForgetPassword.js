@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from "../../config";
 
 function ForgetPassword() {
   const [email, setEmail] = useState('');
@@ -11,7 +12,7 @@ function ForgetPassword() {
   const handleSendOtp = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://3.225.10.130:9090/api/password/forget', {
+      const response = await fetch(`${API_BASE_URL}/api/password/forget`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ email }),
@@ -32,7 +33,7 @@ function ForgetPassword() {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://3.225.10.130:9090/api/password/verify-otp', {
+      const response = await fetch('http://API_BASE_URL:9090/api/password/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ email, otp }),

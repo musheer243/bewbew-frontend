@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { IoIosSend } from 'react-icons/io';
 import '../../styles/AIChatting.css';
+import { API_BASE_URL } from "../../config";
 
 const AIChatting = () => {
   const [message, setMessage] = useState('');
@@ -15,7 +16,7 @@ const AIChatting = () => {
 
     try {
       const res = await axios.get(
-        `http://3.225.10.130:9090/api/ai/generate?message=${encodeURIComponent(message)}`
+        `${API_BASE_URL}/api/ai/generate?message=${encodeURIComponent(message)}`
       );
       const aiMessage = { sender: 'ai', text: res.data.generation || 'No response from AI' };
       setChat((prevChat) => [...prevChat, aiMessage]);

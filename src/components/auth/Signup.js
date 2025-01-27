@@ -4,6 +4,7 @@ import { Button, Col, Form, FormGroup, Input, Label, Row } from "reactstrap";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';  // Import the CSS for toast notificationsimport CustomNavbar from "../../Components/CustomNavbar";
 import {Link, useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../../config";
 
 function Signup(){
   const [userDetails, setUserDetails] = useState({
@@ -23,7 +24,7 @@ function Signup(){
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://3.225.10.130:9090/api/v1/auth/register', {
+      const response = await fetch(`${API_BASE_URL}/api/v1/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userDetails),
@@ -128,7 +129,7 @@ function Signup(){
                   />
                 </FormGroup>
 
-                <div class="button-container">
+                <div className="button-container">
                    <div className="text-center">
                        <Button type="submit" className="register-btn">Sign In</Button>
                        <Button type="reset" className="ms-2 reset-btn" onClick={handleReset}>Reset</Button>

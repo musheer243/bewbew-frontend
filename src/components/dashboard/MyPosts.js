@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom"; // Import useLocation
 import axios from "axios";
 import SinglePost from "../shared/SinglePost"; // Import the SinglePost component
 import "../../styles/MyPosts.css";
+import { API_BASE_URL } from "../../config";
 
 const MyPosts = () => {
 
@@ -52,7 +53,7 @@ const MyPosts = () => {
         setLoading(true); // Set loading to true before the API call
 
         const response = await axios.get(
-          `http://3.225.10.130:9090/api/user/${userId}/posts`,
+          `${API_BASE_URL}/api/user/${userId}/posts`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
