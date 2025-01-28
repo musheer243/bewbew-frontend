@@ -240,12 +240,21 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
           {mediaFileNames.length > 0 && (
             <div className="media-container">
               <div className="aspect-ratio-box">
-                <img
-                  src={mediaFileNames[currentIndex]}
-                  alt={`Media ${currentIndex + 1}`}
-                  className="main-image"
-                />
-              </div>
+                {/* Check if the current media is a video or an image */}
+        {mediaFileNames[currentIndex].endsWith(".mp4") ? (
+          <video
+            controls
+            src={mediaFileNames[currentIndex]}
+            className="media-video"
+          />
+        ) : (
+          <img
+            src={mediaFileNames[currentIndex]}
+            alt={`Media ${currentIndex + 1}`}
+            className="main-image"
+          />
+        )}
+      </div>
 
               {mediaFileNames.length > 1 && (
                 <>
