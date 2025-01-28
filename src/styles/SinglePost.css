@@ -362,6 +362,48 @@ body.dark-mode {
   --count-color: #bbbbbb; /* Softer color for dark mode */
 }
 
+.share-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  text-align: center;
+}
+
+.share-popup p {
+  margin-bottom: 10px;
+}
+
+.share-input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.copy-btn,
+.close-btn {
+  padding: 8px 12px;
+  margin: 5px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.copy-btn:hover,
+.close-btn:hover {
+  background-color: #0056b3;
+}
+
+
 
 /* Base layout for larger screens (default styling) */
 

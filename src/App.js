@@ -12,6 +12,7 @@ import Profile from './components/dashboard/Profile';
 import AIChatting from './components/dashboard/AIChatting';
 import MyPosts from './components/dashboard/MyPosts';
 import CreatePostPage from './components/dashboard/CreatePostPage';
+import SharedPostViewer from './components/shared/SharedPostViewer';
 function App() {
   return (
     <Router>
@@ -28,6 +29,7 @@ function App() {
         <Route path="/ai-chatting" element={<AIChatting />} />
         <Route path="/my-posts" element={<MyPosts />} />
         <Route path="/create-post" element={<CreatePostPage />} />
+        <Route path="/api/post/view/:postId" element={<SharedPostViewer />} />
       </Routes>
     </Router>
   );

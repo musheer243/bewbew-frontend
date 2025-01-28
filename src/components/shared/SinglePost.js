@@ -27,6 +27,8 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
   const [liked, setLiked] = useState(false); // Track if post is liked
   const [saved, setSaved] = useState(false); // Track if post is saved
   const [showOptions, setShowOptions] = useState(false); // State for dropdown
+  const [showSharePopup, setShowSharePopup] = useState(false); // Share popup state
+  const [shareLink, setShareLink] = useState(""); // Shareable link
 
   useEffect(() => {
     document.title = "BewBew • My Posts";
@@ -179,6 +181,36 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
     console.log("Dropdown state:", !showOptions);
   };
 
+  // Fetch the shareable link from the backend
+  const handleShareClick = async () => {
+    const token = localStorage.getItem("jwtToken"); // Retrieve the token
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/post/share/${post.postId}`,{
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`, // Add Bearer token here
+          "Content-Type": "application/json", // Optional, but good practice
+        },
+      }
+
+      );
+      if (response.ok) {
+        const link = await response.text();
+        setShareLink(link);
+        setShowSharePopup(true);
+      } else {
+        console.error("Failed to fetch the shareable link.");
+      }
+    } catch (error) {
+      console.error("Error fetching the shareable link:", error);
+    }
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(shareLink);
+    alert("Link copied to clipboard!");
+  };
+
   useEffect(() => {
     const handleOutsideClick = (event) => {
       // Close dropdown if click is outside the menu-container
@@ -292,13 +324,26 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
               {saved ? <FaBookmark /> : <FaRegBookmark />}
               <span className="count">{saveCount}</span>
             </button>
-            <button className="share-btn">
+            <button className="share-btn" onClick={handleShareClick}>
               <PiShareFatBold />
             </button>
           </div>
           <span className="post-date">{formattedDate}</span>
         </div>
       </div>
+       {/* Share Popup */}
+{showSharePopup && (
+  <div className="share-popup">
+    <p>Share this link:</p>
+    <input type="text" value={shareLink} readOnly className="share-input" />
+    <button onClick={copyToClipboard} className="copy-btn">
+      Copy Link
+    </button>
+    <button onClick={() => setShowSharePopup(false)} className="close-btn">
+      Close
+    </button>
+  </div>
+)}
     </div>
   );
 };

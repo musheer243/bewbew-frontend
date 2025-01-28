@@ -1,0 +1,10 @@
+.my-post {
+    padding: 16px;
+    max-width: 700px; /* Set the maximum width */
+    margin: 0 auto; /* Center the container */
+    background-color: var(--posts-bg, #f9f9f9); /* Use CSS variable for background */
+    color: var(--posts-text, #000); /* Use CSS variable for text color */
+    border-radius: 8px; /* Optional: Add rounded corners */
+    box-shadow: 0 2px 8px var(--posts-shadow, rgba(0, 0, 0, 0.1)); /* Optional: Add shadow */
+    min-height: 100vh; /* Ensure consistent height */
+  }
