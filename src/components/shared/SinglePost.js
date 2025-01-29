@@ -40,7 +40,7 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
   }, [darkModeFromDashboard]);
   
   useEffect(() => {
-    const checkIfPostIsLiked = async () => {
+    const checkPostStatus = async () => {
       try {
         const token = localStorage.getItem("jwtToken");
         const userId = localStorage.getItem("userId");
@@ -51,27 +51,42 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
         }
   
         const response = await fetch(
-          `${API_BASE_URL}/api/post/${post.postId}/isLiked?userId=${userId}`,
-            {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+          `${API_BASE_URL}/api/post/${post.postId}/status?userId=${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
   
         if (response.ok) {
-          const isLiked = await response.json();
-          setLiked(isLiked);
+          const statusMessage = await response.text();
+  
+          // Set state based on the exact response message
+          if (statusMessage === "Post is liked and saved.") {
+            setLiked(true);
+            setSaved(true);
+          } else if (statusMessage === "Post is liked but not saved.") {
+            setLiked(true);
+            setSaved(false);
+          } else if (statusMessage === "Post is saved but not liked.") {
+            setLiked(false);
+            setSaved(true);
+          } else {
+            setLiked(false);
+            setSaved(false);
+          }
         } else {
-          console.error("Failed to check if the post is liked:", post.postId);
+          console.error("Failed to check post status:", post.postId);
         }
       } catch (error) {
-        console.error("Error checking if the post is liked:", error);
+        console.error("Error checking post status:", error);
       }
     };
   
-    checkIfPostIsLiked();
+    checkPostStatus();
   }, [post.postId]);
-  
+    
   const handleLikeToggle = async () => {
     console.log("btn clicked");
     try {
