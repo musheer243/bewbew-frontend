@@ -28,12 +28,12 @@ const SharedPostViewer = () => {
   }, [postId]);
 
   if (error) {
-    return <div>{error}</div>;
+    return <div className="my-post"><div>{error}</div></div>;
   }
 
   return (
     <div className="my-post">
-      {post ? <SinglePost post={post} /> : <div>Loading...</div>}
+      {post ? <SinglePost post={post} /> : <div className="loading-container">Loading...</div>}
     </div>
   );
 };

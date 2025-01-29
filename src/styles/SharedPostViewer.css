@@ -8,3 +8,18 @@
     box-shadow: 0 2px 8px var(--posts-shadow, rgba(0, 0, 0, 0.1)); /* Optional: Add shadow */
     min-height: 100vh; /* Ensure consistent height */
   }
+
+  .loading-container {
+    position: fixed; /* Ensures it covers the full screen */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.8); /* Optional: Light overlay effect */
+    font-size: 24px; /* Adjust size as needed */
+    font-weight: bold;
+    color: var(--posts-text, #333); /* Uses theme color */
+}
