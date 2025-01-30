@@ -37,6 +37,7 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
   const [liked, setLiked] = useState(false); // Track if post is liked
   const [saved, setSaved] = useState(false); // Track if post is saved
   const [comment, setComment] = useState("");
+  const [comments, setComments] = useState([]); // <-- Add this line
   const [showOptions, setShowOptions] = useState(false); // State for dropdown
   const [showSharePopup, setShowSharePopup] = useState(false); // Share popup state
   const [shareLink, setShareLink] = useState(""); // Shareable link
@@ -239,12 +240,12 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
     };
   }, []);
 
-  const handleSendComment = () => {
-    if (comment.trim()) {
-      console.log("Comment:", comment);
-      setComment(""); // Clear input after sending
-    }
-  };
+  // const handleSendComment = () => {
+  //   if (comment.trim()) {
+  //     console.log("Comment:", comment);
+  //     setComment(""); // Clear input after sending
+  //   }
+  // };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -254,6 +255,13 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
   const handleCommentClick = () => {
     setIsModalOpen(true);
     console.log("Modal Open:", isModalOpen);
+  };
+
+  const handleSendComment = () => {
+    if (comment.trim()) {
+      setComments([...comments, comment]); // Add new comment to the list
+      setComment(""); // Clear input field
+    }
   };
 
   return (
@@ -348,23 +356,46 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
               <span className="count">{commentCount}</span>
             </button>
             {isModalOpen && (
-        <div className="comment-modal">
-          <div className="modal-content">
-            <button className="close-btn2" onClick={handleCloseModal}>
-              <IoMdClose />
-            </button>
-            <h3>Write a Comment</h3>
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Type your comment..."
-            />
-            <button className="send-btn" onClick={handleSendComment}>
-              <FaPaperPlane />
-            </button>
-          </div>
-        </div>
-      )}
+  <div className="comment-modal">
+    {/* Header Section */}
+    <div className="modal-header">
+      <h3>Comments</h3>
+      <button className="close-btn2" onClick={handleCloseModal}>
+        <IoMdClose />
+      </button>
+    </div>
+
+
+
+    {/* Scrollable Comment List */}
+<div className="comment-list">
+  {comments && comments.length > 0 ? (
+    comments.map((c, index) => (
+      <div key={index} className="comment-item">
+        {c}
+      </div>
+    ))
+  ) : (
+    <p className="no-comments">No comments yet. Be the first to comment!</p>
+  )}
+</div>
+
+
+
+    {/* Input Section */}
+    <div className="comment-input">
+      <textarea
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        placeholder="Write a comment..."
+      />
+      <button className="send-btn" onClick={handleSendComment}>
+        <FaPaperPlane />
+      </button>
+    </div>
+  </div>
+)}
+
             <button
               className="save-btn"
               onClick={handleSaveToggle}

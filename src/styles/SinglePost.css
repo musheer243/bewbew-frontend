@@ -443,53 +443,85 @@ body.dark-mode {
   color: var(--icon-hover-color);
 }
 
-/* css for comment popup */
-/* Modal background */
+/* comment pop-up css */
 .comment-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5); /* Dark overlay */
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
+  position: absolute; /* Positioned relative to the post */
+  bottom: 5%; /* Adjusted to be slightly above the bottom */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 450px;
+  height: auto;
+  max-height: 400px; /* Increased height */
+  background: white;
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-/* Modal box */
-.modal-content {
-  background: white;
-  width: 400px;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  position: relative;
-  text-align: center;
+/* Modal header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Title styling */
+.modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
 }
 
 /* Close button */
 .close-btn2 {
-  position: absolute;
-  top: 10px;
-  right: 10px;
   background: none;
   border: none;
   font-size: 20px;
   cursor: pointer;
+  color: #333;
+}
+
+/* Scrollable comment list */
+.comment-list {
+  flex-grow: 1;
+  padding: 10px;
+  overflow-y: auto; /* Allows scrolling for comments */
+  max-height: 250px;
+}
+
+/* Individual comment */
+.comment-item {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+  color: #444;
+}
+
+/* Comment input area */
+.comment-input {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  background: #fff;
 }
 
 /* Textarea for comment */
-textarea {
-  width: calc(100% - 20px);
-  height: 100px;
-  padding: 10px;
+.comment-input textarea {
+  flex: 1;
+  height: 50px; /* Good visibility */
+  padding: 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
   resize: none;
   font-size: 14px;
-  margin-top: 10px;
 }
 
 /* Send button */
@@ -500,16 +532,23 @@ textarea {
   background-color: #007bff;
   color: white;
   border: none;
-  padding: 10px 15px;
+  padding: 8px 12px;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 10px;
-  font-size: 16px;
+  font-size: 14px;
+  margin-left: 10px;
 }
 
 /* Hover effect */
 .send-btn:hover {
   background-color: #0056b3;
+}
+
+.no-comments {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  padding: 20px;
 }
 
 
