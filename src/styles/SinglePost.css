@@ -374,6 +374,7 @@ body.dark-mode {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   text-align: center;
+  width: 300px;
 }
 
 .share-popup p {
@@ -388,10 +389,9 @@ body.dark-mode {
   border-radius: 4px;
 }
 
-.copy-btn,
-.close-btn {
+.copy-btn {
   padding: 8px 12px;
-  margin: 5px;
+  margin-top: 10px;
   border: none;
   background-color: #007bff;
   color: white;
@@ -399,9 +399,24 @@ body.dark-mode {
   cursor: pointer;
 }
 
-.copy-btn:hover,
-.close-btn:hover {
+.copy-btn:hover {
   background-color: #0056b3;
+}
+
+/* Close button positioned in top right */
+.close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #333;
+}
+
+.close-btn:hover {
+  color: #000;
 }
 
 /* css for comment popup */

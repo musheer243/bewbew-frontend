@@ -16,6 +16,8 @@ import { API_BASE_URL } from "../../config";
 import { FcLike } from "react-icons/fc";
 import { IoMdClose } from "react-icons/io";
 import { FaPaperPlane } from "react-icons/fa";
+import { IoClose } from "react-icons/io5";
+
 
 const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
   const {
@@ -381,6 +383,12 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
       {/* Share Popup */}
       {showSharePopup && (
         <div className="share-popup">
+          <button
+            onClick={() => setShowSharePopup(false)}
+            className="close-btn"
+          >
+      <IoClose size={20} />
+      </button>
           <p>Share this link:</p>
           <input
             type="text"
@@ -390,12 +398,6 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
           />
           <button onClick={copyToClipboard} className="copy-btn">
             Copy Link
-          </button>
-          <button
-            onClick={() => setShowSharePopup(false)}
-            className="close-btn"
-          >
-            Close
           </button>
         </div>
       )}
