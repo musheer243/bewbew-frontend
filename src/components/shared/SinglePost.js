@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/SinglePost.css";
 import {
- // FaHeart,
+  // FaHeart,
   FaRegComment,
   FaBookmark,
   FaRegHeart,
@@ -14,21 +14,31 @@ import { PiShareFatBold } from "react-icons/pi";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { API_BASE_URL } from "../../config";
 import { FcLike } from "react-icons/fc";
-
+import { IoMdClose } from "react-icons/io";
+import { FaPaperPlane } from "react-icons/fa";
 
 const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
-  const { title, mediaFileNames = [], content, addedDate, user, likeCount: initialLikeCount,
+  const {
+    title,
+    mediaFileNames = [],
+    content,
+    addedDate,
+    user,
+    likeCount: initialLikeCount,
     saveCount: initialSaveCount,
-    commentCount, } = post;
+    commentCount,
+  } = post;
   const { username, profilepic } = user || {};
   const [currentIndex, setCurrentIndex] = useState(0); // Track the current image index
   const [likeCount, setLikeCount] = useState(initialLikeCount || 0);
   const [saveCount, setSaveCount] = useState(initialSaveCount || 0);
   const [liked, setLiked] = useState(false); // Track if post is liked
   const [saved, setSaved] = useState(false); // Track if post is saved
+  const [comment, setComment] = useState("");
   const [showOptions, setShowOptions] = useState(false); // State for dropdown
   const [showSharePopup, setShowSharePopup] = useState(false); // Share popup state
   const [shareLink, setShareLink] = useState(""); // Shareable link
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     document.title = "BewBew • My Posts";
@@ -38,18 +48,18 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
     // Update the document body class whenever darkModeFromDashboard changes
     document.body.classList.toggle("dark-mode", darkModeFromDashboard);
   }, [darkModeFromDashboard]);
-  
+
   useEffect(() => {
     const checkPostStatus = async () => {
       try {
         const token = localStorage.getItem("jwtToken");
         const userId = localStorage.getItem("userId");
-  
+
         if (!token || !userId) {
           console.error("User ID or JWT token is missing.");
           return;
         }
-  
+
         const response = await fetch(
           `${API_BASE_URL}/api/post/${post.postId}/status?userId=${userId}`,
           {
@@ -58,10 +68,10 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
             },
           }
         );
-  
+
         if (response.ok) {
           const statusMessage = await response.text();
-  
+
           // Set state based on the exact response message
           if (statusMessage === "Post is liked and saved.") {
             setLiked(true);
@@ -83,10 +93,10 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
         console.error("Error checking post status:", error);
       }
     };
-  
+
     checkPostStatus();
   }, [post.postId]);
-    
+
   const handleLikeToggle = async () => {
     console.log("btn clicked");
     try {
@@ -103,14 +113,15 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
       }
 
       const response = await fetch(
-        `${API_BASE_URL}/api/post/${post.postId}/like?userId=${userId}`, 
-         {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+        `${API_BASE_URL}/api/post/${post.postId}/like?userId=${userId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.ok) {
         const message = await response.text(); // Get the string response
@@ -138,7 +149,7 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
         console.error("User ID or JWT token is missing in localStorage.");
         return;
       }
-  
+
       const response = await fetch(
         `${API_BASE_URL}/api/post/${post.postId}/save?userId=${userId}`,
         {
@@ -149,7 +160,7 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
           },
         }
       );
-  
+
       if (response.ok) {
         const message = await response.text(); // Get the string response
         if (message === "Post Saved successfully!") {
@@ -167,7 +178,7 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
       console.error("Error:", error);
     }
   };
-  
+
   // Format addedDate (from array to readable string)
   const formattedDate = addedDate
     ? new Date(...addedDate).toLocaleDateString("en-US", {
@@ -198,27 +209,11 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
 
   // Fetch the shareable link from the backend
   const handleShareClick = async () => {
-    const token = localStorage.getItem("jwtToken"); // Retrieve the token
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/post/share/${post.postId}`,{
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`, // Add Bearer token here
-          "Content-Type": "application/json", // Optional, but good practice
-        },
-      }
-
-      );
-      if (response.ok) {
-        const link = await response.text();
-        setShareLink(link);
-        setShowSharePopup(true);
-      } else {
-        console.error("Failed to fetch the shareable link.");
-      }
-    } catch (error) {
-      console.error("Error fetching the shareable link:", error);
-    }
+    const frontendBaseUrl = window.location.origin; // Gets http://localhost:3000 or the deployed URL
+    const shareableLink = `${frontendBaseUrl}/api/post/view/${post.postId}`;
+    
+    setShareLink(shareableLink);
+    setShowSharePopup(true);
   };
 
   const copyToClipboard = () => {
@@ -241,6 +236,23 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, []);
+
+  const handleSendComment = () => {
+    if (comment.trim()) {
+      console.log("Comment:", comment);
+      setComment(""); // Clear input after sending
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setComment(""); // Clear the input when closing
+  };
+
+  const handleCommentClick = () => {
+    setIsModalOpen(true);
+    console.log("Modal Open:", isModalOpen);
+  };
 
   return (
     <div className="single-post-container">
@@ -288,20 +300,20 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
             <div className="media-container">
               <div className="aspect-ratio-box">
                 {/* Check if the current media is a video or an image */}
-        {mediaFileNames[currentIndex].endsWith(".mp4") ? (
-          <video
-            controls
-            src={mediaFileNames[currentIndex]}
-            className="media-video"
-          />
-        ) : (
-          <img
-            src={mediaFileNames[currentIndex]}
-            alt={`Media ${currentIndex + 1}`}
-            className="main-image"
-          />
-        )}
-      </div>
+                {mediaFileNames[currentIndex].endsWith(".mp4") ? (
+                  <video
+                    controls
+                    src={mediaFileNames[currentIndex]}
+                    className="media-video"
+                  />
+                ) : (
+                  <img
+                    src={mediaFileNames[currentIndex]}
+                    alt={`Media ${currentIndex + 1}`}
+                    className="main-image"
+                  />
+                )}
+              </div>
 
               {mediaFileNames.length > 1 && (
                 <>
@@ -329,11 +341,31 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
               {liked ? <FcLike /> : <FaRegHeart />}
               <span className="count">{likeCount}</span>
             </button>
-            <button className="comment-btn">
+            <button className="comment-btn" onClick={handleCommentClick}>
               <FaRegComment />
               <span className="count">{commentCount}</span>
             </button>
-            <button className="save-btn" onClick={handleSaveToggle}
+            {isModalOpen && (
+        <div className="comment-modal">
+          <div className="modal-content">
+            <button className="close-btn2" onClick={handleCloseModal}>
+              <IoMdClose />
+            </button>
+            <h3>Write a Comment</h3>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Type your comment..."
+            />
+            <button className="send-btn" onClick={handleSendComment}>
+              <FaPaperPlane />
+            </button>
+          </div>
+        </div>
+      )}
+            <button
+              className="save-btn"
+              onClick={handleSaveToggle}
               //style={{ color: saved ? "blue" : "black" }}
             >
               {saved ? <FaBookmark /> : <FaRegBookmark />}
@@ -346,19 +378,27 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
           <span className="post-date">{formattedDate}</span>
         </div>
       </div>
-       {/* Share Popup */}
-{showSharePopup && (
-  <div className="share-popup">
-    <p>Share this link:</p>
-    <input type="text" value={shareLink} readOnly className="share-input" />
-    <button onClick={copyToClipboard} className="copy-btn">
-      Copy Link
-    </button>
-    <button onClick={() => setShowSharePopup(false)} className="close-btn">
-      Close
-    </button>
-  </div>
-)}
+      {/* Share Popup */}
+      {showSharePopup && (
+        <div className="share-popup">
+          <p>Share this link:</p>
+          <input
+            type="text"
+            value={shareLink}
+            readOnly
+            className="share-input"
+          />
+          <button onClick={copyToClipboard} className="copy-btn">
+            Copy Link
+          </button>
+          <button
+            onClick={() => setShowSharePopup(false)}
+            className="close-btn"
+          >
+            Close
+          </button>
+        </div>
+      )}
     </div>
   );
 };

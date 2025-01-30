@@ -15,7 +15,7 @@ body {
   margin: 24px 0; /* More space between posts */
   background-color: var(--single-post-bg);
   /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); Slightly larger shadow for emphasis */
-  max-width: 1200px; /* Ensure the post doesn't grow too wide */
+  max-width: 700px; /* Ensure the post doesn't grow too wide */
   margin-left: auto;
   margin-right: auto; /* Center the post */
   transition: background-color 0.3s, border-color 0.3s;
@@ -27,7 +27,7 @@ body {
   margin: 24px 0; /* More space between posts */
   background-color: var(--single-post-bg);
   box-shadow: 0 4px 6px var(--single-post-shadow); /* Slightly larger shadow for emphasis */
-  max-width: 1200px; /* Ensure the post doesn't grow too wide */
+  max-width: 700px; /* Ensure the post doesn't grow too wide */
   margin-left: auto;
   margin-right: auto; /* Center the post */
 }
@@ -362,6 +362,7 @@ body.dark-mode {
   --count-color: #bbbbbb; /* Softer color for dark mode */
 }
 
+/* shareable link css */
 .share-popup {
   position: fixed;
   top: 50%;
@@ -403,6 +404,74 @@ body.dark-mode {
   background-color: #0056b3;
 }
 
+/* css for comment popup */
+/* Modal background */
+.comment-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5); /* Dark overlay */
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* Modal box */
+.modal-content {
+  background: white;
+  width: 400px;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  position: relative;
+  text-align: center;
+}
+
+/* Close button */
+.close-btn2 {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Textarea for comment */
+textarea {
+  width: calc(100% - 20px);
+  height: 100px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: none;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* Send button */
+.send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+/* Hover effect */
+.send-btn:hover {
+  background-color: #0056b3;
+}
 
 
 /* Base layout for larger screens (default styling) */
