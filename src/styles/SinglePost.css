@@ -336,6 +336,15 @@ body.dark-mode .dropdown-item:hover {
   --button-bg: #007bff;
   --button-text: #ffffff;
   --count-color: #000000; /* Neutral color for light mode */
+  --popup-bg: #ffffff;
+  --popup-shadow: rgba(0, 0, 0, 0.2);
+  --input-bg: #f9f9f9;
+  --input-border: #ccc;
+  --primary-btn-bg: #007bff;
+  --primary-btn-text: #ffffff;
+  --primary-btn-hover-bg: #0056b3;
+  --icon-color: #333;
+  --icon-hover-color: #000;
 }
 
 
@@ -360,6 +369,15 @@ body.dark-mode {
   --button-bg: #444444;
   --button-text: #ffffff;
   --count-color: #bbbbbb; /* Softer color for dark mode */
+  --popup-bg: #1e1e1e;
+  --popup-shadow: rgba(255, 255, 255, 0.1);
+  --input-bg: #2a2a2a;
+  --input-border: #444;
+  --primary-btn-bg: #0a84ff;
+  --primary-btn-text: #ffffff;
+  --primary-btn-hover-bg: #0063cc;
+  --icon-color: #ddd;
+  --icon-hover-color: #fff;
 }
 
 /* shareable link css */
@@ -368,13 +386,15 @@ body.dark-mode {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: white;
+  background: var(--popup-bg);
+  color: var(--text-color);
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px var(--popup-shadow);
   z-index: 1000;
   text-align: center;
-  width: 300px;
+  max-width: 300px;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .share-popup p {
@@ -385,22 +405,26 @@ body.dark-mode {
   width: 100%;
   padding: 8px;
   margin-bottom: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 4px;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .copy-btn {
   padding: 8px 12px;
   margin-top: 10px;
   border: none;
-  background-color: #007bff;
-  color: white;
+  background-color: var(--primary-btn-bg);
+  color: var(--primary-btn-text);
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .copy-btn:hover {
-  background-color: #0056b3;
+  background-color: var(--primary-btn-hover-bg);
 }
 
 /* Close button positioned in top right */
@@ -412,11 +436,11 @@ body.dark-mode {
   border: none;
   cursor: pointer;
   font-size: 18px;
-  color: #333;
+  color: var(--icon-color);
 }
 
 .close-btn:hover {
-  color: #000;
+  color: var(--icon-hover-color);
 }
 
 /* css for comment popup */
