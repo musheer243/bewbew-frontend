@@ -1,0 +1,57 @@
+/* Centering the page */
+.notifications-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+  }
+  
+  /* Styling the notifications box */
+  .notifications-box {
+    width: 100%;
+    max-width: 700px;
+    height: 100vh;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow-y: auto;
+    padding: 20px;
+  }
+  
+  /* Title styling */
+  .notifications-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  /* Empty state message */
+  .no-notifications {
+    text-align: center;
+    color: #666;
+    font-size: 16px;
+  }
+  
+  /* Notifications list */
+  .notifications-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  /* Individual notification items */
+  .notification-item {
+    background: #e9ecef;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .notification-item:hover {
+    background: #d6d9df;
+  }
+  
