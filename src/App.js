@@ -27,6 +27,7 @@ function App() {
         <Route path="/login-success" element={<LoginSuccess />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/profile/:userId" element={<Profile />} />
         <Route path="/ai-chatting" element={<AIChatting />} />
         <Route path="/my-posts" element={<MyPosts />} />
         <Route path="/create-post" element={<CreatePostPage />} />

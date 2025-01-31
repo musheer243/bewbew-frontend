@@ -1,9 +1,52 @@
-import React from "react";
-import { useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { API_BASE_URL } from "../../config";
 
 const Profile = () => {
+  const { userId } = useParams(); // Extract userId from the URL
   const location = useLocation();
-  const user = location.state?.user;
+  const navigate = useNavigate();
+  const loggedInUserId = localStorage.getItem("userId"); // Assuming you store the logged-in user's ID in localStorage
+  const token = localStorage.getItem("jwtToken"); // Retrieve JWT token from localStorage
+  const [user, setUser] = useState(location.state?.user); // Use user from location.state if available
+  const [loading, setLoading] = useState(!location.state?.user); // If user is not in location.state, set loading to true
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // If no userId is provided (i.e., /profile), redirect to the logged-in user's profile
+    if (!userId && loggedInUserId) {
+      navigate(`/profile/${loggedInUserId}`);
+      return;
+    }
+
+    // If user is not available in location.state, fetch user data from the backend
+    if (!user) {
+      axios
+        .get(`${API_BASE_URL}/api/users/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include JWT token in the request headers
+          },
+        })
+        .then((response) => {
+          setUser(response.data);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+          setError("Failed to load user data");
+          setLoading(false);
+        });
+    }
+  }, [userId, user, loggedInUserId, navigate, token]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   if (!user) {
     return <div>User data is not available.</div>;
