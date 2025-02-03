@@ -27,6 +27,32 @@
     margin-bottom: 20px;
   }
   
+  /* Horizontal line under title */
+  .divider {
+    margin: 10px 0;
+    border: 0;
+    border-top: 1px solid #ddd;
+  }
+  
+  /* Mark all as read button */
+  .mark-all-btn {
+    text-align: right;
+    margin-bottom: 10px;
+  }
+  
+  .mark-all-btn-text {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .mark-all-btn-text:hover {
+    background-color: #0056b3;
+  }
+  
   /* Empty state message */
   .no-notifications {
     text-align: center;
@@ -43,6 +69,8 @@
   
   /* Individual notification items */
   .notification-item {
+    display: flex;
+    align-items: center;
     background: #e9ecef;
     padding: 12px;
     border-radius: 8px;
@@ -54,4 +82,31 @@
   .notification-item:hover {
     background: #d6d9df;
   }
+  
+  /* Left section for profile picture */
+  .notification-left {
+    margin-right: 15px;
+  }
+  
+  .notification-profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  /* Content section for notification text */
+  .notification-content {
+    flex: 1;
+    margin-right: 15px;
+    display: flex; /* Enables flexbox */
+    align-items: center; /* Centers content vertically */
+    padding-top: 1px; /* Moves text slightly downward */
+  }
+
+  .notification-content p{
+    margin: 0;
+    margin-bottom: 0rem;
+  }
+
   
