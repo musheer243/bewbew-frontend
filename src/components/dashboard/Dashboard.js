@@ -16,6 +16,8 @@ import { TfiGallery } from "react-icons/tfi";
 import SinglePost from "../shared/SinglePost";
 import { BiImageAdd } from "react-icons/bi";
 import { API_BASE_URL } from "../../config";
+import { IoIosNotificationsOutline } from "react-icons/io";
+import { LuMessageCircleHeart } from "react-icons/lu";
 
 const Dashboard = () => {
   const [profile, setProfile] = useState(null); // State to store profile data
@@ -28,7 +30,6 @@ const Dashboard = () => {
   const [totalPages, setTotalPages] = useState(1); // Total pages for pagination
   const postsContainerRef = useRef(null); // Reference for the posts container
   const navigate = useNavigate();
-
 
   // Handle infinite scrolling
   const handleScroll = useCallback(
@@ -243,7 +244,6 @@ const Dashboard = () => {
       document.body.classList.remove("dark-mode");
     }
   }, [darkMode]);
-  
 
   // if (loading && pageNumber === 0) return <div>Loading...</div>;
   // if (error) return <div className="error">{error}</div>;
@@ -257,6 +257,10 @@ const Dashboard = () => {
           <button onClick={toggleDarkMode} className="dark-mode-toggle">
             {darkMode ? <MdDarkMode /> : <MdOutlineLightMode />}
           </button>
+
+          <CiSearch size={27} style={{ cursor: "pointer" }} onClick={() => navigate("/search")} />
+<IoIosNotificationsOutline size={27} style={{ cursor: "pointer" }} onClick={() => navigate("/notifications")} />
+
           {profile && (
             <div className="profile" onClick={handleGoToProfile}>
               <img
@@ -264,14 +268,14 @@ const Dashboard = () => {
                 alt="Profile"
                 className="profile-pic"
               />
-              <span className="profile-name">{profile.name}</span>
+              {/* <span className="profile-name">{profile.name}</span> */}
             </div>
           )}
         </div>
       </nav>
 
       {/* Search Bar */}
-      <div className="search-bar">
+      {/* <div className="search-bar">
         <div className="search-input-container">
           <CiSearch className="search-icon" />
           <input
@@ -280,7 +284,7 @@ const Dashboard = () => {
             className="search-input"
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Posts Section */}
       <div className="posts-section" ref={postsContainerRef}>
@@ -294,7 +298,13 @@ const Dashboard = () => {
 
         {/* Display posts */}
         {posts.length > 0
-          ? posts.map((post) => <SinglePost key={post.postId} post={post} darkModeFromDashboard={darkMode}  />)
+          ? posts.map((post) => (
+              <SinglePost
+                key={post.postId}
+                post={post}
+                darkModeFromDashboard={darkMode}
+              />
+            ))
           : /* No posts message, only when not loading */
             !loading && <p className="no-posts-message">No posts available</p>}
 
@@ -302,6 +312,13 @@ const Dashboard = () => {
         {loading && posts.length > 0 && (
           <div className="loading-indicator">Loading more posts...</div>
         )}
+
+        {/* Floating Chat Button */}
+        <div className="add-post-container">
+          <button className="add-post-btn" onClick={() => navigate("/chat")}>
+          <LuMessageCircleHeart size={34} />
+          </button>
+        </div>
       </div>
 
       {/* Sidebar Toggle Button */}

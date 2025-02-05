@@ -51,6 +51,17 @@
     font-size: 20px;
     color: var(--icon-color);
   }
+
+  /* .search-btn {
+   
+    cursor: pointer;
+    
+  }
+  .notification-btn {
+   
+    cursor: pointer;
+    
+  } */
   
   /* Profile */
   .profile {
@@ -240,7 +251,7 @@
  /* Posts section styling for Dashboard */
 .posts-section {
   padding: 16px;
-  padding-top: 95px;
+  padding-top: 40px;
   max-width: 700px; /* Same width as in MyPost */
   margin: 0 auto; /* Center the container */
   /* background-color: #f9f9f9; Optional: Add a background for better visuals */
