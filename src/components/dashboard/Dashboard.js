@@ -321,9 +321,9 @@ const Dashboard = () => {
         <ul className="sidebar-menu">
           {[
             {
-              name: "Home",
+              name: "message",
               icon: <IoHomeOutline size={20} />,
-              onClick: () => navigate("/dashboard"),
+              onClick: () => navigate("/chat"),
             },
             {
               name: "Profile",
