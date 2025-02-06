@@ -1,0 +1,170 @@
+.page-container {
+  display: flex; /* Flexbox for layout */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  height: 100vh; /* Full height of viewport */
+  max-width: 700px; /* Full width of viewport */
+  background-color: #ffffff; /* Light background */
+  margin: auto;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* The child container (form content) */
+.container1 {
+  width: 80%;
+  height: auto;
+  padding: 40px 30px; /* Compact padding */
+  background-color: #ffffff;
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0.138);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center; /* Center-align text and elements */
+}
+
+/* Header */
+#otpVerifi h2 {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 75px; /* Reduced margin */
+}
+
+/* Form label */
+.form-label {
+  display: block;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 27px;
+  text-align: left; /* Left-align labels */
+}
+
+/* Form input fields */
+.form-control {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 20px; /* Add spacing between inputs */
+  transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #0056b3;
+  outline: none;
+}
+
+/* Parent wrapper for email and edit button */
+.email-wrapper {
+  display: flex; /* Use flexbox */
+  flex-direction: column; /* Stack items vertically */
+  align-items: flex-start; /* Align items to the left by default */
+  position: relative; /* Enable absolute positioning for the edit button */
+}
+
+/* Edit Email Button */
+.edit-email {
+  position: absolute; /* Position the button absolutely */
+  right: 0; /* Align it to the right of the container */
+  top: 100%; /* Position it below the email field */
+  margin-top: -2px; /* Add a small gap between email input and button */
+  color: #007bff;
+  text-decoration: none;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.edit-email:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* Buttons */
+.button-containerOTP {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Space between buttons */
+  width: 100%;
+}
+
+/* Verify OTP Button */
+.verify-button {
+  font-size: 16px;
+  margin-top: 8px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  background-color: #0056b3;
+  color: white;
+  width: 100%; /* Full width */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.verify-button:hover {
+  background-color: #0066d3;
+  transform: scale(0.98); /* Slight shrink effect */
+}
+
+/* Resend OTP Button */
+.resendOtp {
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #888;
+  background-color: #ffffff;
+  color: #555;
+  cursor: pointer;
+  width: 50%; /* Adjust width */
+  max-width: 200px; /* Prevent it from becoming too wide */
+  transition: background-color 0.3s ease, color 0.3s ease;
+margin: auto;
+}
+
+.resendOtp:hover {
+  background-color: #ececec;
+  color: #333;
+}
+
+.resendOtp:disabled {
+  background-color: #e0e0e0;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+/* OTP Input Styling */
+.otpInput {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  width: 100%; /* Full width */
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.otpInput:focus {
+  border-color: #0056b3;
+  outline: none;
+}
+
+/* Cancel Button */
+.cancel-button {
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: 1px solid #0056b3;
+  background-color: #ffffff;
+  color: #0056b3;
+  width: 35%; /* Adjust width */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.cancel-button:hover {
+  background-color: #0056b3;
+  color: #ffffff;
+}
+

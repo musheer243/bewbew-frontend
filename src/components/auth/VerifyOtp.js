@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate to handle redirection
+import { useLocation, useNavigate, Link } from 'react-router-dom'; // Import useNavigate to handle redirection
 import { API_BASE_URL } from "../../config";
-
+import "../../styles/dOtpVerification.css";
 function VerifyOtp() {
   const location = useLocation(); // Access the location object
   const navigate = useNavigate(); // Initialize navigate
@@ -73,68 +73,86 @@ function VerifyOtp() {
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Verify OTP</h2>
-      {!isEditingEmail ? (
-        <>
-          <form onSubmit={handleVerifyOtp}>
+    <div className="page-container">
+      <div className="container1">
+        
+        {!isEditingEmail ? (
+          <>
+            <form onSubmit={handleVerifyOtp}>
+            <h2 id='otpVerification'>OTP Verification</h2>
+                       <div className="mb-3 email-wrapper">
+                           <label className="form-label">Email</label>
+                           <input type="email" className="form-control" value={email} disabled />
+                           <Link className="edit-email" onClick={() => setIsEditingEmail(true)}>
+                               Edit Email
+                           </Link>
+                       </div>
+
+               <div className="mb-3">
+                 <label htmlFor="otp" className="form-label">
+                  OTP
+                 </label>
+                 <input
+                  type="text"
+                  id="otp"
+                  className="otpInput"
+                  placeholder="Enter OTP"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  required
+                 />
+               </div>
+
+                <div className="button-containerOTP">
+             
+                     <button type="submit" className="verify-button">
+                          Verify OTP
+                     </button>
+                     <button
+                      type="button"
+                      className="resendOtp"
+                      onClick={handleResendOtp}
+                      disabled={resendTimer > 0}
+                     >
+                      {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'}
+                   </button>
+        
+                </div>
+             </form>
+           </>
+        ) : (
+          <form onSubmit={handleEditEmail}>
+            <h2>Edit Email</h2>
             <div className="mb-3">
-              <label className="form-label">Email</label>
-              <input type="email" className="form-control" value={email} disabled />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">OTP</label>
+            
+              <label htmlFor="new-email" className="form-label">
+                New Email
+              </label>
               <input
-                type="text"
+                type="email"
+                id="new-email"
                 className="form-control"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
+                placeholder="Enter new email"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
                 required
               />
             </div>
-            <button type="submit" className="btn btn-primary">
-              Verify OTP
-            </button>
+            <div className="button-containerOTP">
+              <button type="submit" className="verify-button">
+                Update Email
+              </button>
+              <button
+                type="button"
+                className="cancel-button"
+                onClick={() => setIsEditingEmail(false)}
+              >
+                Cancel
+              </button>
+            </div>
           </form>
-          <div className="mt-3">
-            <button
-              className="btn btn-link"
-              onClick={() => setIsEditingEmail(true)}
-            >
-              Edit Email
-            </button>
-            <button
-              className="btn btn-secondary"
-              onClick={handleResendOtp}
-              disabled={resendTimer > 0}
-            >
-              {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'}
-            </button>
-          </div>
-        </>
-      ) : (
-        <form onSubmit={handleEditEmail}>
-          <div className="mb-3">
-            <label className="form-label">New Email</label>
-            <input
-              type="email"
-              className="form-control"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-              required
-            />
-          </div>
-          <button type="submit" className="btn btn-primary">
-            Update Email
-          </button>
-          <button
-            className="btn btn-link mt-3"
-            onClick={() => setIsEditingEmail(false)}
-          >
-            Cancel
-          </button>
-        </form>
-      )}
+        )}
+      </div>
     </div>
   );
 }
