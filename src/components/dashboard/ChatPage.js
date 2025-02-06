@@ -47,7 +47,7 @@ const ChatPage = () => {
           setMessages(prev => [...prev, {
             ...receivedMessage,
             sender: 'other',
-            timestamp: new Date().toLocaleTimeString()
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           }]);
         }
       );
@@ -123,11 +123,20 @@ useEffect(() => {
         }
       );
       const data = await response.json();
-      setMessages(data.map(msg => ({
-        ...msg,
-        sender: msg.senderId === parseInt(userId) ? 'me' : 'other',
-        timestamp: new Date(msg.sentAt).toLocaleTimeString()
-      })));
+      setMessages(data.map(msg => {
+        // Convert the sentAt array into a Date object.
+        // sentAt is expected as: [year, month, day, hour, minute, second, nanosecond]
+        const [year, month, day, hour, minute, second, nano] = msg.sentAt;
+        const millisecond = Math.floor(nano / 1e6); // convert nanoseconds to milliseconds
+        const dateObj = new Date(year, month - 1, day, hour, minute, second, millisecond);
+        
+        return {
+          ...msg,
+          // Compare using senderId from the DTO
+          sender: msg.senderId === parseInt(userId) ? 'me' : 'other',
+          timestamp: dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+      }));
     } catch (error) {
       console.error('Error loading messages:', error);
     }
@@ -151,7 +160,7 @@ useEffect(() => {
       setMessages(prev => [...prev, {
         ...message,
         sender: 'me',
-        timestamp: new Date().toLocaleTimeString()
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }]);
       setNewMessage('');
     }
