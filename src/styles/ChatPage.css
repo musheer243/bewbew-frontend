@@ -138,6 +138,22 @@
     color: white;
     }
   
+    .message-profile-pic {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 0.5rem;
+    }
+    
+    .message-profile-pic.left {
+      /* For messages from "other", picture is on the left (default order) */
+    }
+    
+    .message-profile-pic.right {
+      /* For messages from "me", picture is on the right (handled by row-reverse) */
+    }
+    
   .timestamp {
     display: block;
   font-size: 0.75rem;

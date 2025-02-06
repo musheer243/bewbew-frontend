@@ -238,10 +238,24 @@ useEffect(() => {
             <div className="chat-messages">
               {messages.map((msg, index) => (
                 <div key={index} className={`message ${msg.sender}`}>
+                  {msg.sender === 'other' && (
+                    <img
+                      src={msg.senderProfilePic || '/default-profile.png'}
+                      alt="Profile"
+                      className="message-profile-pic left"
+                    />
+                  )}
                   <div className="message-content">
                     <p>{msg.content}</p>
                     <span className="timestamp">{msg.timestamp}</span>
                   </div>
+                  {msg.sender === 'me' && (
+                    <img
+                      src={msg.senderProfilePic || '/default-profile.png'}
+                      alt="My Profile"
+                      className="message-profile-pic right"
+                    />
+                  )}
                 </div>
               ))}
               <div ref={messagesEndRef} />
