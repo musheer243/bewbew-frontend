@@ -176,7 +176,7 @@ useEffect(() => {
               <FaArrowLeft />
             </button>
             <img 
-              src={selectedUser.profilePic || '/default-profile.png'} 
+              src={selectedUser.profilepic || '/default-profile.png'} 
               alt="Profile" 
               className="profile-pic"
             />
@@ -216,7 +216,7 @@ useEffect(() => {
             {(searchTerm ? users : recentChats).map(user => (
               <div key={user.id} className="user-item" onClick={() => handleUserClick(user)}>
                 <img 
-                  src={user.profilePic || '/default-profile.png'} 
+                  src={user.profilepic || '/default-profile.png'} 
                   alt="Profile" 
                   className="profile-pic"
                 />
