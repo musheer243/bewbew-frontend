@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from "../../config";
+import "../../styles/ResetPassword.css";
+
 
 function ResetPassword() {
   const location = useLocation();
@@ -39,37 +41,37 @@ function ResetPassword() {
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Reset Password</h2>
-      <form onSubmit={handleResetPassword}>
-        <div className="mb-3">
-          <label className="form-label">Email</label>
-          <input type="email" className="form-control" value={email} disabled />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">New Password</label>
-          <input
-            type="password"
-            className="form-control"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Confirm Password</label>
-          <input
-            type="password"
-            className="form-control"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className="btn btn-primary">Reset Password</button>
-      </form>
-      {message && <div className="alert alert-info mt-3">{message}</div>}
-    </div>
+    <div className="reset-password-container">
+  <div className="reset-password-card">
+    <h2 style={{textAlign : 'center'}}>Reset Password </h2>
+    <form onSubmit={handleResetPassword}>
+      <div>
+        <label>Email</label>
+        <input type="email" value={email} disabled />
+      </div>
+      <div>
+        <label>New Password</label>
+        <input
+          type="password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          required
+        />
+      </div>
+      <div>
+        <label>Confirm Password</label>
+        <input
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+        />
+      </div>
+      <button type="submit" className="btn">Reset Password</button>
+    </form>
+    {message && <div className="alert">{message}</div>}
+  </div>
+</div>
   );
 }
 
