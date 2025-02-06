@@ -129,12 +129,14 @@
   
   .message.me {
     justify-content: flex-end;
+    margin-right: 0; /* Removes any unintended margin */
+    margin-left: auto; /* Pushes the message bubble to the right */
   }
   
   .message.me .message-content {
     background-color: #007bff;
     color: white;
-  }
+    }
   
   .timestamp {
     display: block;
