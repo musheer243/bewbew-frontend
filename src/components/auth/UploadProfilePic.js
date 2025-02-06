@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from "../../config";
+import { IoPersonOutline } from 'react-icons/io5';
+import "../../styles/dUploadProfilePic.css";
 
 function UploadProfilePic() {
   const location = useLocation(); // Get email from the previous step
   const navigate = useNavigate(); // Navigate after successful submission
   const email = location.state?.email; // Retrieve email from state
   const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImage(file);
+    setPreview(URL.createObjectURL(file)); // Create a temporary preview URL
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,34 +59,57 @@ function UploadProfilePic() {
     }
   };
 
+  useEffect(() => {
+    // Clean up the preview URL on component unmount
+    return () => {
+      if (preview) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
+
+  useEffect(() => {
+  document.title = "BewBew • Upload your Profile Photo";
+}, []);
+
   return (
-    <div className="container mt-5">
-      <h2>Upload Profile Picture</h2>
-      {email ? (
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label">Email</label>
+    <div id="dUploadProfilePic">
+      <div className="edit-profile-container">
+      <h2 className="upload-heading">Upload Profile Picture</h2>
+      <form onSubmit={handleSubmit}>
+          <div className="profile-card">
+            <div className="profile-pic-container">
+              {preview ? (
+                <img src={preview} alt="Profile Preview" className="profile-pic" />
+              ) : (
+              
+                <IoPersonOutline className='profile-pic'/>
+              )}
+            </div>
+            <label htmlFor="file-input" className="change-photo-btn-link">
+              Change photo
+            </label>
+            <div className="profile-info">
+           <label className="emailLable" >Email</label>
+              <input
+                type="email"
+                className="form-control email-input"
+                value={email}
+                disabled
+              />
+            </div>
+            
             <input
-              type="email"
-              className="form-control"
-              value={email}
-              disabled // Email is displayed but non-editable
-            />
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Profile Picture (optional)</label>
-            <input
+              id="file-input"
               type="file"
-              className="form-control"
               accept="image/*"
-              onChange={(e) => setImage(e.target.files[0])}
+              className="file-input"
+              onChange={handleImageChange}
             />
+            <button type="submit" className="btn btn-primary submit-btn">Upload</button>
+            <button className="btn btn-primary skip-btn">Skip</button>
+
           </div>
-          <button type="submit" className="btn btn-primary">Submit</button>
         </form>
-      ) : (
-        <p className="text-danger">Email is missing. Please complete the registration steps.</p>
-      )}
+      </div>
     </div>
   );
 }
