@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from "../../config";
+import styles from '../../styles/ForgetPassword.module.css'; // Import the updated CSS module
+
 
 function ForgetPassword() {
   const [email, setEmail] = useState('');
@@ -8,6 +10,10 @@ function ForgetPassword() {
   const [message, setMessage] = useState('');
   const [step, setStep] = useState('sendOtp'); // 'sendOtp' or 'verifyOtp'
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.title = "BewBew • Forget Password | Can't Login In";
+  }, []);
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
@@ -33,7 +39,7 @@ function ForgetPassword() {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://API_BASE_URL:9090/api/password/verify-otp', {
+      const response = await fetch(`${API_BASE_URL}/api/password/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ email, otp }),
@@ -52,47 +58,49 @@ function ForgetPassword() {
   };
 
   return (
-    <div className="container mt-5">
-      {step === 'sendOtp' ? (
-        <>
-          <h2>Forget Password</h2>
-          <form onSubmit={handleSendOtp}>
-            <div className="mb-3">
-              <label className="form-label">Email</label>
-              <input
-                type="email"
-                className="form-control"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <button type="submit" className="btn btn-primary">Send OTP</button>
-          </form>
-        </>
-      ) : (
-        <>
-          <h2>Verify OTP</h2>
-          <form onSubmit={handleVerifyOtp}>
-            <div className="mb-3">
-              <label className="form-label">Email</label>
-              <input type="email" className="form-control" value={email} disabled />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">OTP</label>
-              <input
-                type="text"
-                className="form-control"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                required
-              />
-            </div>
-            <button type="submit" className="btn btn-primary">Verify OTP</button>
-          </form>
-        </>
-      )}
-      {message && <div className="alert alert-info mt-3">{message}</div>}
+    <div className={`${styles.container} mt-5`}>
+      <div className={styles.card}> {/* Add card class here */}
+        {step === 'sendOtp' ? (
+          <>
+            <h2 id='forgetPassword'>Forget Password</h2>
+            <form onSubmit={handleSendOtp}>
+              <div className="mb-3">
+                <label className={styles['form-label']}>Email</label>
+                <input
+                  type="email"
+                  className={styles['form-control']}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <button type="submit" className={`${styles.btn} btn-primary`}>Send OTP</button>
+            </form>
+          </>
+        ) : (
+          <>
+            <h2>Verify OTP</h2>
+            <form onSubmit={handleVerifyOtp}>
+              <div className="mb-3">
+                <label className={styles['form-label']}>Email</label>
+                <input type="email" className={styles['form-control']} value={email} disabled />
+              </div>
+              <div className="mb-3">
+                <label className={styles['form-label']}>OTP</label>
+                <input
+                  type="text"
+                  className={styles['form-control']}
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  required
+                />
+              </div>
+              <button type="submit" className={`${styles.btn} btn-primary`}>Verify OTP</button>
+            </form>
+          </>
+        )}
+        {message && <div className={`alert alert-info mt-3 ${styles.alert}`}>{message}</div>}
+      </div>
     </div>
   );
 }
