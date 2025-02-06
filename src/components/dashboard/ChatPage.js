@@ -125,7 +125,7 @@ useEffect(() => {
       const data = await response.json();
       setMessages(data.map(msg => ({
         ...msg,
-        sender: msg.sender.id === parseInt(userId) ? 'me' : 'other',
+        sender: msg.senderId === parseInt(userId) ? 'me' : 'other',
         timestamp: new Date(msg.sentAt).toLocaleTimeString()
       })));
     } catch (error) {
