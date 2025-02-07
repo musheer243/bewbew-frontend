@@ -20,11 +20,23 @@ const ChatPage = () => {
   // Get user ID from localStorage
   const userId = localStorage.getItem('userId');
   const jwtToken = localStorage.getItem('jwtToken');
+  const cachedProfile = localStorage.getItem('cachedProfile');
+
+  // Parse cachedProfile if available
+  let profilePic = '/default-profile.png';
+  if (cachedProfile) {
+    try {
+      const parsedProfile = JSON.parse(cachedProfile);
+      profilePic = parsedProfile.profilepic || profilePic;
+    } catch (error) {
+      console.error('Error parsing cachedProfile:', error);
+    }
+  }
 
   // Redirect if not authenticated
   useEffect(() => {
     if (!userId || !jwtToken) {
-      navigate('/login');
+      navigate('/');
     }
   }, [userId, jwtToken, navigate]);
 
@@ -161,7 +173,9 @@ useEffect(() => {
         ...message,
         sender: 'me',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      }]);
+        // senderProfilePic: profilePic,
+      }
+    ]);
       setNewMessage('');
     }
   };
@@ -251,7 +265,8 @@ useEffect(() => {
                   </div>
                   {msg.sender === 'me' && (
                     <img
-                      src={msg.senderProfilePic || '/default-profile.png'}
+                    // just added src of sender user from the cacheprofile 
+                      src={profilePic || '/default-profile.png'}
                       alt="My Profile"
                       className="message-profile-pic right"
                     />
