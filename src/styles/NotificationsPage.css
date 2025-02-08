@@ -19,6 +19,26 @@
   padding: 20px;
 }
 
+.back-button-noti {
+  position: relative;
+  top: 28px;
+  left: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: #333;
+  font-size: 20px;
+  transition: color 0.2s ease-in-out;
+}
+
+.back-button:hover {
+  color: #007bff;
+}
+
+.back-icon {
+  font-size: 24px;
+}
+
 /* Title styling */
 .notifications-title {
   text-align: center;

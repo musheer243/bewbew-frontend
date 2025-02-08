@@ -4,6 +4,7 @@ import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { WEBSOCKET_URL, API_BASE_URL } from "../../config"; // Ensure these are defined in your config file
 import "../../styles/NotificationsPage.css";
+import { FaArrowLeft } from "react-icons/fa"; // Import the back arrow icon
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
@@ -143,6 +144,10 @@ const NotificationsPage = () => {
   return (
     <div className="notifications-container">
       <div className="notifications-box">
+      {/* Back Button */}
+      <div className="back-button-noti" onClick={() => navigate("/dashboard")}>
+          <FaArrowLeft className="back-icon" />
+        </div>
         <h2 className="notifications-title">Notifications</h2>
         <hr className="divider" />
         <div className="mark-all-btn">
