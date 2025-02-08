@@ -53,9 +53,11 @@ const ChatPage = () => {
 
     stompClient.current.connect(headers, () => {
       stompClient.current.subscribe(
-        `/user/${userId}/queue/messages`,
+        `/user/queue/messages`,
         (message) => {
+          console.log(message.body);
           const receivedMessage = JSON.parse(message.body);
+          console.log(receivedMessage);
           setMessages(prev => [...prev, {
             ...receivedMessage,
             sender: 'other',
