@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef, useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
@@ -18,6 +18,7 @@ import { BiImageAdd } from "react-icons/bi";
 import { API_BASE_URL } from "../../config";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { LuMessageCircleHeart } from "react-icons/lu";
+import { WebSocketContext } from "../../context/WebSocketContext"; // Import the context
 
 const Dashboard = () => {
   const [profile, setProfile] = useState(null); // State to store profile data
@@ -30,6 +31,8 @@ const Dashboard = () => {
   const [totalPages, setTotalPages] = useState(1); // Total pages for pagination
   const postsContainerRef = useRef(null); // Reference for the posts container
   const navigate = useNavigate();
+  const { notificationCount, setNotificationCount } =
+    useContext(WebSocketContext);
 
   // Handle infinite scrolling
   const handleScroll = useCallback(
@@ -258,9 +261,29 @@ const Dashboard = () => {
             {darkMode ? <MdDarkMode /> : <MdOutlineLightMode />}
           </button>
 
-          <CiSearch size={27} style={{ cursor: "pointer" }} onClick={() => navigate("/search")} />
-<IoIosNotificationsOutline size={27} style={{ cursor: "pointer" }} onClick={() => navigate("/notifications")} />
-
+          <CiSearch
+            size={27}
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/search")}
+          />
+           {/* Notification Icon with Badge */}
+          <div
+            style={{
+              position: "relative",
+              display: "inline-block",
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              // Simply navigate to notifications without clearing the count
+              navigate("/notifications");
+            }}
+          >
+            <IoIosNotificationsOutline size={27} />
+            {notificationCount > 0 && (
+              <span className="badge">{notificationCount}</span>
+            )}
+          </div>
+          
           {profile && (
             <div className="profile" onClick={handleGoToProfile}>
               <img
@@ -316,7 +339,7 @@ const Dashboard = () => {
         {/* Floating Chat Button */}
         <div className="add-post-container">
           <button className="add-post-btn" onClick={() => navigate("/chat")}>
-          <LuMessageCircleHeart size={34} />
+            <LuMessageCircleHeart size={34} />
           </button>
         </div>
       </div>

@@ -1,16 +1,23 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { WEBSOCKET_URL, API_BASE_URL } from "../../config"; // Ensure these are defined in your config file
 import "../../styles/NotificationsPage.css";
 import { FaArrowLeft } from "react-icons/fa"; // Import the back arrow icon
+import { WebSocketContext } from "../../context/WebSocketContext"; // Import the context
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");      // e.g., "2" or your user id string
   const token = localStorage.getItem("jwtToken");       // e.g., your JWT token
+
+  // Use the context to clear the notification count when the page loads.
+  const { setNotificationCount } = useContext(WebSocketContext);
+  // useEffect(() => {
+  //   setNotificationCount(0);
+  // }, [setNotificationCount]);
 
   // Fetch notifications from REST API on page load
   const fetchNotifications = useCallback(async () => {
@@ -72,6 +79,7 @@ const NotificationsPage = () => {
         setNotifications((prev) =>
           prev.map((n) => ({ ...n, read: true }))
         );
+        setNotificationCount(0); // Clear the global count.
       } else {
         console.error("Failed to mark all notifications as read");
       }
@@ -85,6 +93,7 @@ const NotificationsPage = () => {
   const handleNotificationClick = async (notification) => {
     if (!notification.read) {
       await markNotificationAsRead(notification.id);
+      setNotificationCount((prev) => Math.max(0, prev - 1));
     }
     navigate(notification.redirectUrl);
   };

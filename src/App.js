@@ -16,8 +16,11 @@ import SharedPostViewer from './components/shared/SharedPostViewer';
 import NotificationsPage from './components/dashboard/NotificationsPage';
 import ChatPage from './components/dashboard/ChatPage';
 import Search from './components/dashboard/Search';
+import { WebSocketProvider } from './context/WebSocketContext'; // Import your provider
+
 function App() {
   return (
+    <WebSocketProvider>
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
@@ -39,6 +42,7 @@ function App() {
         <Route path="/search" element={<Search />} />
       </Routes>
     </Router>
+    </WebSocketProvider>
   );
 }
 
