@@ -1,0 +1,158 @@
+/* New wrapper to center the main search container */
+.search-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+/* Container for the entire search page */
+.search-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    background-color: #f4f4f499;
+    min-height: 100vh;
+    max-width: 700px;
+    margin: 0 auto; /* Added to center the main div horizontally */
+  }
+  
+  /* Header with back arrow and search input */
+  .search-header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 650px;
+    margin-bottom: 20px;
+  }
+  
+  .back-button {
+    cursor: pointer;
+    margin-right: 15px;
+    color: #333;
+    transition: color 0.2s ease;
+  }
+  
+  .back-button:hover {
+    color: #007bff;
+  }
+  
+  .back-icon {
+    font-size: 24px;
+  }
+  
+  .search-input {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    font-size: 16px;
+  }
+  
+  /* Tabs to choose search type */
+  .search-tabs {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 600px;
+    background: #fff;
+    border-radius: 25px;
+    padding: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .search-tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 10px 0;
+    font-size: 16px;
+    color: #555;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  
+  .search-tab.active {
+    background: #007bff;
+    color: #fff;
+    border-radius: 20px;
+  }
+  
+  /* Results container */
+  .search-results {
+    width: 100%;
+    max-width: 700px;
+    /* background: #fff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
+  }
+  
+  .no-search,
+  .no-results {
+    text-align: center;
+    color: #888;
+    padding: 20px;
+  }
+  
+  /* List of results */
+  .results-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .result-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .result-item:last-child {
+    border-bottom: none;
+  }
+  
+  .result-item:hover {
+    background: #f9f9f9;
+  }
+  
+  /* Styling for user search result */
+  .result-user {
+    display: flex;
+    align-items: center;
+  }
+  
+  .result-user-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  
+  .result-username {
+    font-size: 16px;
+    color: #333;
+  }
+  
+  /* Styling for post search result */
+  .result-post-title {
+    font-size: 18px;
+    margin: 0 0 5px 0;
+    color: #333;
+  }
+  
+  .result-post-snippet {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  /* Styling for category search result */
+  .result-category-name {
+    font-size: 16px;
+    color: #333;
+  }
+  

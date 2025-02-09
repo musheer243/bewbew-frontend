@@ -15,6 +15,7 @@ import CreatePostPage from './components/dashboard/CreatePostPage';
 import SharedPostViewer from './components/shared/SharedPostViewer';
 import NotificationsPage from './components/dashboard/NotificationsPage';
 import ChatPage from './components/dashboard/ChatPage';
+import Search from './components/dashboard/Search';
 function App() {
   return (
     <Router>
@@ -35,6 +36,7 @@ function App() {
         <Route path="/api/post/view/:postId" element={<SharedPostViewer />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/chat" element={<ChatPage />} />
+        <Route path="/search" element={<Search />} />
       </Routes>
     </Router>
   );
