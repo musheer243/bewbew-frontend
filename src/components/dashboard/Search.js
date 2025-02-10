@@ -114,7 +114,7 @@ const Search = () => {
                   <div className="result-user">
                     <img
                       src={
-                        item.profilePicUrl ||
+                        item.profilepic ||
                         "https://via.placeholder.com/40"
                       }
                       alt={item.username || "User"}

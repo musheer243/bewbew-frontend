@@ -1,0 +1,505 @@
+.page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Full viewport height */
+  background-color: #f8f9fa; /* Light background */
+}
+
+/* Profile Container */
+.profile-container {
+  width: 100vw; /* Adjust width to fit container */
+    /* max-width: 1200px; Maximum width for large screens */
+    margin: 20px auto; /* Center the profile container */
+    padding: 20px;
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+    border-radius: 10px;
+    background-color: #f8f9fa;
+    position: relative; /* Enables absolute positioning for children */
+  }
+  
+  /* Main Profile View */
+  .main-profile {
+    display: flex;
+    justify-content: space-between; /* Space between elements */
+    align-items: center;
+    flex-wrap: nowrap; /* Ensure all elements stay on the same row */
+    padding-top: 10px;
+  }
+  
+  /* Profile Picture and Username */
+  .profile-left {
+    display: flex;
+    align-items: center;
+  }
+  
+  .profile-picture {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+  }
+  
+  .profile-details {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .profile-name {
+    font-size: 33px; /* Larger for better visibility */
+    font-weight: bold;
+    margin: 0;
+    color: #333;
+    text-align: center; /* Center aligns the text */
+  }
+  
+  .profile-username {
+    font-size: 17px;
+    color: #555;
+    margin-top: 5px;
+    font-style: italic;
+  }
+  
+  /* Profile Stats Section */
+  .profile-stats {
+    display: flex; /* Display stats in a row */
+    gap: 60px; /* Space between stats */
+    justify-content: center; /* Centered alignment */
+    text-align: center;
+  }
+  
+  .profile-stats div {
+    font-size: 18px; /* Bigger text for visibility */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .profile-stats strong {
+    font-size: 24px; /* Make the numbers larger */
+    color: #333;
+  }
+  
+  /* "More" Button */
+  .profile-more {
+    position: absolute;
+    bottom: 10px; /* Adjust button position */
+    right: 20px; /* Spacing from the right */
+    background-color: #fefefe;
+    color: #030303;
+    padding: 10px 15px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .profile-more:hover {
+    background-color: #ffffff;
+    color: #555;
+  }
+  
+  .profile-more-icon {
+    margin-left: 5px;
+    font-size: 16px;
+  }
+  
+  /* Detailed Card View */
+  .detailed-profile {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  .profile-section {
+    margin-bottom: 20px;
+  }
+  
+  .profile-section h4 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .profile-section p {
+    font-size: 14px;
+    color: #555;
+  }
+  
+  /* Back Button */
+  .profile-back {
+    background-color: #007BFF;
+    color: #fff;
+    padding: 8px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .profile-back:hover {
+    background-color: #0056b3;
+  }
+
+  /* ------------------------ */
+/* Buttons Container        */
+/* ------------------------ */
+.buttons-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.add-friend-btn,
+.message-btn {
+  flex: 1 1 calc(50% - 5px);
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
+  background-color: #f7f7f7;
+  border: 1px solid rgba(233, 233, 233, 0.78);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: center;
+}
+
+.add-friend-btn:hover,
+.message-btn:hover {
+  background-color: #f0f0f0;
+}
+
+/* ------------------------
+/* See Post Button          
+/* ------------------------ 
+.see-post-container {
+/* justify-content: end; 
+  margin-top: 10px;  /* Adjust spacing if needed */
+/* }
+
+.see-post-btn {
+  background: none;
+  border: none;
+  color: #007BFF;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+ /* /* Remove absolute positioning */
+  /* position: absolute; *
+} */
+
+/* .see-post-btn:hover {
+  text-decoration: underline;
+} */ 
+.see-post-container {
+  display: flex;
+  justify-content: flex-end; /* Align the button to the right */
+  margin-top: 10px;
+}
+
+.see-post-btn {
+  display: inline-block;
+  margin-left: auto; /* Pushes the link to the right */
+  text-decoration: none; /* Optional: Removes underline from the link */
+  color: inherit; /* Optional: Inherits text color */
+}
+
+
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .main-profile {
+      flex-wrap: wrap; /* Stack elements on smaller screens */
+      justify-content: center; /* Center all elements */
+      text-align: center;
+    }
+  
+    .profile-left {
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+  
+    .profile-picture {
+      width: 100px;
+      height: 100px;
+    }
+  
+    .profile-name {
+      font-size: 24px;
+    }
+  
+    .profile-username {
+      font-size: 14px;
+    }
+  
+    .profile-stats {
+      gap: 30px; /* Adjust spacing between stats */
+    }
+  
+    .profile-stats div {
+      font-size: 16px;
+    }
+  
+    .profile-stats strong {
+      font-size: 20px;
+    }
+  
+    .profile-more {
+      bottom: 15px; /* Adjust button position for smaller screens */
+      right: 15px;
+    }
+
+    .add-friend-btn,
+    .message-btn {
+    flex: 1 1 100%;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .profile-container {
+      padding: 15px;
+    }
+  
+    .profile-picture {
+      width: 80px;
+      height: 80px;
+    }
+  
+    .profile-name {
+      font-size: 18px;
+    }
+  
+    .profile-username {
+      font-size: 12px;
+    }
+  
+    .profile-stats {
+      gap: 20px; /* Reduce spacing for small screens */
+    }
+  
+    .profile-stats div {
+      font-size: 14px;
+    }
+  
+    .profile-stats strong {
+      font-size: 18px;
+    }
+  
+    .profile-more {
+      padding: 8px 12px;
+      font-size: 12px;
+      margin-top: 20px; /* Move button further down for smaller screens */
+    }
+  }
+  
+  /* Back Button (Top-Left Corner) */
+  .back-button {
+    position: absolute;
+    top: 20px; /* Adjust spacing from the top */
+    left: 20px; /* Adjust spacing from the left */
+    background-color: transparent; /* No background */
+    border: none; /* Remove border */
+    font-size: 24px; /* Adjust icon size */
+    color: #000000bb; /* Icon color */
+    cursor: pointer;
+  }
+  
+  .back-button:hover {
+    color: #0056b3; /* Change color on hover */
+  }
+
+  .buttons-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+    width: 100%;
+  }
+
+  .add-friend-btn {
+    margin-top: 10px;
+    width: 50%;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #000000;
+    background-color: #f7f7f7;
+    border:1px solid #e9e9e9c7;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .add-friend-btn:hover {
+    background-color: #f7f7f7;
+  }
+  
+  .message-btn {
+    margin-top: 10px;
+    width: 50%;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #000000;
+    background-color: #f7f7f7;
+    border:1px solid #e9e9e9c7;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .message-btn:hover {
+    background-color: #f7f7f7;
+  }
+/* See Post Button */
+.see-post-btn {
+  background: none;
+  border: none;
+  color: #007BFF;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.see-post-btn:hover {
+  text-decoration: underline;
+}
+
+/* Position the "See Post" button to the right */
+.see-post-container {
+  align-self: flex-end;
+}
+
+
+  .add-friend-btn,
+.message-btn {
+  flex: 1 1 calc(50% - 5px);
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #000000;
+  background-color: #f7f7f7;
+  border: 1px solid #e9e9e9c7;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: center;
+}
+
+.add-friend-btn:hover,
+.message-btn:hover {
+  background-color: #f0f0f0;
+}
+
+@media (max-width: 768px) {
+  .add-friend-btn,
+  .message-btn {
+    flex: 1 1 100%;
+  }
+}
+  
+
+/* Main container for the profile */
+.main-container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background-color: #fff;
+  position: relative;
+}
+
+
+
+/* Container for the More Options Button */
+.options-container {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+/* More Options Button styles */
+.options-button {
+  all: unset;
+  padding: 15px;
+  cursor: pointer;
+}
+
+/* Dropdown Menu styles */
+.dropdown-menu {
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  background: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 10px;
+  z-index: 10;
+  width: 200px;
+}
+
+/* Each Dropdown Item */
+.dropdown-item {
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* Dropdown Icon styles */
+.dropdown-icon {
+  margin-right: 10px;
+  color: #007BFF;
+}
+
+/* Profile Picture Container */
+.profile-picture-container {
+  text-align: center;
+  margin-bottom: 50px;
+  position: relative;
+}
+
+/* Profile Picture */
+.profile-picture {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Statistics Container */
+.stats-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 10px;
+}
+
+/* Individual Stat Item */
+.stat-item {
+  text-align: center;
+}
+
+/* Stat Number (bold) */
+.stat-number {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* Stat Label */
+.stat-label {
+  color: #555;
+  font-size: 20px;
+}
+
+  
