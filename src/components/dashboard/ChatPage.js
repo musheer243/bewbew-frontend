@@ -192,29 +192,27 @@ useEffect(() => {
   }
 
   return (
-    <div className="chat-container">
-      <div className="chat-header">
-        {/* Header when in chat view */}
+    <div className="chat-page">
+      <div className="chat-page-header">
         {selectedUser ? (
-          <div className="chat-header">
-            <button className="back-button" onClick={() => setSelectedUser(null)}>
+          <div className="chat-page-header-content">
+            <button className="chat-page-back-button" onClick={() => setSelectedUser(null)}>
               <FaArrowLeft />
             </button>
             <img 
               src={selectedUser.profilepic || '/default-profile.png'} 
               alt="Profile" 
-              className="profile-pic"
+              className="chat-page-profile-pic"
             />
             <span>{selectedUser.username}</span>
           </div>
         ) : (
-          /* Header when in list view */
-          <div className="chat-header">
-            <button className="back-button" onClick={() => navigate('/dashboard')}>
+          <div className="chat-page-header-content">
+            <button className="chat-page-back-button" onClick={() => navigate('/dashboard')}>
               <FaArrowLeft />
             </button>
-            <div className="search-container">
-              <FaSearch className="search-icon" />
+            <div className="chat-page-search-container">
+              <FaSearch className="chat-page-search-icon" />
               <input
                 type="text"
                 placeholder="Search users..."
@@ -223,7 +221,7 @@ useEffect(() => {
               />
               {searchTerm && (
                 <FaTimes 
-                  className="clear-icon" 
+                  className="chat-page-clear-icon" 
                   onClick={() => {
                     setSearchTerm('');
                     setUsers([]);
@@ -235,49 +233,48 @@ useEffect(() => {
         )}
       </div>
 
-      <div className="chat-content">
+      <div className="chat-page-content">
         {!selectedUser ? (
-          <div className="users-list">
+          <div className="chat-page-users-list">
             {(searchTerm ? users : recentChats).map(user => (
-              <div key={user.id} className="user-item" onClick={() => handleUserClick(user)}>
+              <div key={user.id} className="chat-page-user-item" onClick={() => handleUserClick(user)}>
                 <img 
                   src={user.profilepic || '/default-profile.png'} 
                   alt="Profile" 
-                  className="profile-pic"
+                  className="chat-page-profile-pic"
                 />
                 <span>{user.username}</span>
               </div>
             ))}
           </div>
         ) : (
-          <div className="active-chat">
-            <div className="chat-messages">
+          <div className="chat-page-active-chat">
+            <div className="chat-page-messages">
               {messages.map((msg, index) => (
-                <div key={index} className={`message ${msg.sender}`}>
+                <div key={index} className={`chat-page-message ${msg.sender}`}>
                   {msg.sender === 'other' && (
                     <img
                       src={msg.senderProfilePic || '/default-profile.png'}
                       alt="Profile"
-                      className="message-profile-pic left"
+                      className="chat-page-message-profile-pic left"
                     />
                   )}
-                  <div className="message-content">
+                  <div className="chat-page-message-content">
                     <p>{msg.content}</p>
-                    <span className="timestamp">{msg.timestamp}</span>
+                    <span className="chat-page-timestamp">{msg.timestamp}</span>
                   </div>
                   {msg.sender === 'me' && (
                     <img
-                    // just added src of sender user from the cacheprofile 
                       src={profilePic || '/default-profile.png'}
                       alt="My Profile"
-                      className="message-profile-pic right"
+                      className="chat-page-message-profile-pic right"
                     />
                   )}
                 </div>
               ))}
               <div ref={messagesEndRef} />
             </div>
-            <div className="message-input">
+            <div className="chat-page-message-input">
               <input
                 type="text"
                 value={newMessage}
