@@ -104,8 +104,9 @@
 }
 
 .chat-page-message.me {
-  flex-direction: row-reverse;
-}
+  justify-content: flex-end;
+  margin-right: 0; /* Removes any unintended margin */
+  margin-left: auto; /* Pushes the message bubble to the right */}
 
 .chat-page-message-content {
   max-width: 70%;
@@ -133,6 +134,14 @@
   border-radius: 50%;
   margin: 0 0.5rem;
   object-fit: cover;
+}
+
+.chat-page-message-profile-pic.left {
+  /* For messages from "other", picture is on the left (default order) */
+}
+
+.chat-page-message-profile-pic.right {
+  /* For messages from "me", picture is on the right (handled by row-reverse) */
 }
 
 .chat-page-timestamp {
