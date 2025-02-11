@@ -16,6 +16,12 @@ const ChatPage = () => {
   const [newMessage, setNewMessage] = useState('');
   const stompClient = useRef(null);
   const messagesEndRef = useRef(null);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesContainerRef = useRef(null);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+
 
   // Get user ID from localStorage
   const userId = localStorage.getItem('userId');
@@ -128,31 +134,26 @@ useEffect(() => {
   // Select user and load messages
   const handleUserClick = async (selectedUser) => {
     setSelectedUser(selectedUser);
+    setPage(0);
+    setHasMore(true);
+    setIsLoading(true);
+    setInitialLoadComplete(false); // reset the flag on new chat selection
+
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/v1/messages/${userId}/${selectedUser.id}`, {
-          headers: {
-            Authorization: `Bearer ${jwtToken}`
-          }
+        `${API_BASE_URL}/api/v1/messages/page/${userId}/${selectedUser.id}?page=0&size=20`, {
+          headers: { Authorization: `Bearer ${jwtToken}` }
         }
       );
       const data = await response.json();
-      setMessages(data.map(msg => {
-        // Convert the sentAt array into a Date object.
-        // sentAt is expected as: [year, month, day, hour, minute, second, nanosecond]
-        const [year, month, day, hour, minute, second, nano] = msg.sentAt;
-        const millisecond = Math.floor(nano / 1e6); // convert nanoseconds to milliseconds
-        const dateObj = new Date(year, month - 1, day, hour, minute, second, millisecond);
-        
-        return {
-          ...msg,
-          // Compare using senderId from the DTO
-          sender: msg.senderId === parseInt(userId) ? 'me' : 'other',
-          timestamp: dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        };
-      }));
-    } catch (error) {
+      const orderedMessages = processMessages(data.content).reverse();
+      setMessages(orderedMessages);
+      setHasMore(!data.last);
+      setInitialLoadComplete(true);
+   } catch (error) {
       console.error('Error loading messages:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -182,14 +183,66 @@ useEffect(() => {
     }
   };
 
-  // Scroll to bottom
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  const processMessages = (messages) => {
+    return messages.map(msg => {
+      const [year, month, day, hour, minute, second, nano] = msg.sentAt;
+      const millisecond = Math.floor(nano / 1e6);
+      const dateObj = new Date(year, month - 1, day, hour, minute, second, millisecond);
+      
+      return {
+        ...msg,
+        sender: msg.senderId === parseInt(userId) ? 'me' : 'other',
+        timestamp: dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+    });
+  };
 
-  if (!userId || !jwtToken) {
-    return null;
-  }
+  const loadMoreMessages = async () => {
+    if (!hasMore || isLoading) return;
+    
+    setIsLoading(true);
+
+    // Capture the current scroll height before loading more messages
+  const container = messagesContainerRef.current;
+  const prevScrollHeight = container ? container.scrollHeight : 0;
+
+    try {
+      const nextPage = page + 1;
+      const response = await fetch(
+        `${API_BASE_URL}/api/v1/messages/page/${userId}/${selectedUser.id}?page=${nextPage}&size=20`, {
+          headers: { Authorization: `Bearer ${jwtToken}` }
+        }
+      );
+      const data = await response.json();
+      const orderedNewMessages = processMessages(data.content).reverse();
+      setMessages(prev => [...orderedNewMessages, ...prev]);
+      setPage(nextPage);
+      setHasMore(!data.last);
+
+      // After new messages are added, adjust the scroll position
+    setTimeout(() => {
+      if (container) {
+        const newScrollHeight = container.scrollHeight;
+        // This adjustment keeps the scroll position consistent
+        container.scrollTop = newScrollHeight - prevScrollHeight;
+      }
+    }, 0);
+    } catch (error) {
+      console.error('Error loading more messages:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleScroll = () => {
+    if (!initialLoadComplete) return; // Ignore scroll events until initial load is complete
+    if (messagesContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+      if (scrollHeight - clientHeight - scrollTop < 100) {
+        loadMoreMessages();
+      }
+    }
+  };
 
   return (
     <div className="chat-page">
@@ -249,7 +302,13 @@ useEffect(() => {
           </div>
         ) : (
           <div className="chat-page-active-chat">
-            <div className="chat-page-messages">
+            <div className="chat-page-messages" ref={messagesContainerRef}
+      onScroll={handleScroll}>
+        {isLoading && (
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+        </div>
+      )}
               {messages.map((msg, index) => (
                 <div key={index} className={`chat-page-message ${msg.sender}`}>
                   {msg.sender === 'other' && (
