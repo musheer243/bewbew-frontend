@@ -5,6 +5,8 @@ import { CiCamera } from 'react-icons/ci';
 import { FaCircleDot } from "react-icons/fa6";
 import { MdAddPhotoAlternate } from 'react-icons/md';
 import { API_BASE_URL } from '../../config';
+import { useNavigate } from 'react-router-dom';
+
 
 function CreatePostPage() {
   const [title, setTitle] = useState('');
@@ -23,6 +25,7 @@ function CreatePostPage() {
   const streamRef = useRef(null);
   const titleInputRef = useRef(null);
   const jwtToken = localStorage.getItem('jwtToken');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -99,6 +102,8 @@ function CreatePostPage() {
       );
 
       if (response.ok) {
+        const newPost = await response.json();
+
         alert('Post created successfully!');
         setTitle('');
         setContent('');
@@ -106,6 +111,9 @@ function CreatePostPage() {
         setSelectedCategoryId(null);
         setCloseFriendsOnly(false);
         setScheduledDate('');
+
+        navigate('/dashboard', { state: { newPost } });
+
       } else {
         alert('Failed to create post. Please try again.');
       }

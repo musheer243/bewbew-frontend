@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
 import { MdDarkMode, MdOutlineLightMode } from "react-icons/md";
@@ -31,8 +31,27 @@ const Dashboard = () => {
   const [totalPages, setTotalPages] = useState(1); // Total pages for pagination
   const postsContainerRef = useRef(null); // Reference for the posts container
   const navigate = useNavigate();
+  const location = useLocation();
   const { notificationCount, setNotificationCount } =
     useContext(WebSocketContext);
+
+    // ********** New Post Integration **********
+  // If a new post is passed via navigation state, add it to the posts list.
+  useEffect(() => {
+    if (location.state?.newPost) {
+      setPosts((prevPosts) => {
+        const newPost = location.state.newPost;
+        // Only add if it does not already exist
+        if (prevPosts.some((post) => post.postId === newPost.postId)) {
+          return prevPosts;
+        }
+        return [newPost, ...prevPosts];
+      });
+      // Clear the location state so the new post isn't added again on reload.
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, navigate, location.pathname]);
+  // ******************************************
 
   // Handle infinite scrolling
   const handleScroll = useCallback(
