@@ -265,32 +265,32 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
   };
 
   return (
-    <div className="single-post-container">
-      <div className="single-post">
+    <div className="SinglePost-single-post-container">
+      <div className="SinglePost-single-post">
         {/* Post Header */}
-        <div className="post-header">
-          <div className="user-info">
-            <img src={profilepic} alt="Profile" className="profile-pic" />
-            <span className="username">{username}</span>
+        <div className="SinglePost-post-header">
+          <div className="SinglePost-user-info">
+            <img src={profilepic} alt="Profile" className="SinglePost-profile-pic" />
+            <span className="SinglePost-username">{username}</span>
           </div>
-          <div className="menu-container">
-            <button className="menu-btn" onClick={toggleOptions}>
+          <div className="SinglePost-menu-container">
+            <button className="SinglePost-menu-btn" onClick={toggleOptions}>
               <BsThreeDotsVertical />
             </button>
-            <div className={`dropdown-menu ${showOptions ? "show" : ""}`}>
-              <button className="dropdown-item">
+            <div className={`SinglePost-dropdown-menu ${showOptions ? "SinglePost-show" : ""}`}>
+              <button className="SinglePost-dropdown-item">
                 <MdEdit style={{ marginRight: "8px" }} />
                 Edit
               </button>
-              <button className="dropdown-item">
+              <button className="SinglePost-dropdown-item">
                 <IoIosShareAlt style={{ marginRight: "8px" }} />
                 Share
               </button>
-              <button className="dropdown-item">
+              <button className="SinglePost-dropdown-item">
                 <HiTranslate style={{ marginRight: "8px" }} />
                 Translate
               </button>
-              <button className="dropdown-item">
+              <button className="SinglePost-dropdown-item">
                 <MdDelete style={{ marginRight: "8px" }} />
                 Delete
               </button>
@@ -299,38 +299,36 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
         </div>
 
         {/* Divider Line */}
-        <div className="post-header-divider"></div>
+        <div className="SinglePost-post-header-divider"></div>
 
-        <h2 className="post-title" style={{ fontSize: "20px" }}>
+        <h2 className="SinglePost-post-title" style={{ fontSize: "20px" }}>
           {title}
         </h2>
 
-        <div className="post-media">
+        <div className="SinglePost-post-media">
           {mediaFileNames.length > 0 && (
-            <div className="media-container">
-              <div className="aspect-ratio-box">
-                {/* Check if the current media is a video or an image */}
+            <div className="SinglePost-media-container">
+              <div className="SinglePost-aspect-ratio-box">
                 {mediaFileNames[currentIndex].endsWith(".mp4") ? (
                   <video
                     controls
                     src={mediaFileNames[currentIndex]}
-                    className="media-video"
+                    className="SinglePost-media-video"
                   />
                 ) : (
                   <img
                     src={mediaFileNames[currentIndex]}
                     alt={`Media ${currentIndex + 1}`}
-                    className="main-image"
+                    className="SinglePost-main-image"
                   />
                 )}
               </div>
-
               {mediaFileNames.length > 1 && (
                 <>
-                  <button className="prev-btn" onClick={prevImage}>
+                  <button className="SinglePost-prev-btn" onClick={prevImage}>
                     ←
                   </button>
-                  <button className="next-btn" onClick={nextImage}>
+                  <button className="SinglePost-next-btn" onClick={nextImage}>
                     →
                   </button>
                 </>
@@ -339,95 +337,78 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
           )}
         </div>
 
-        <p className="post-content">{content}</p>
+        <p className="SinglePost-post-content">{content}</p>
 
-        <div className="post-footer">
-          <div className="post-buttons">
-            <button
-              className="like-btn"
-              onClick={handleLikeToggle}
-              //style={{ color: liked ? "red" : "black" }}
-            >
+        <div className="SinglePost-post-footer">
+          <div className="SinglePost-post-buttons">
+            <button className="SinglePost-like-btn" onClick={handleLikeToggle}>
               {liked ? <FcLike /> : <FaRegHeart />}
-              <span className="count">{likeCount}</span>
+              <span className="SinglePost-count">{likeCount}</span>
             </button>
-            <button className="comment-btn" onClick={handleCommentClick}>
+            <button className="SinglePost-comment-btn" onClick={handleCommentClick}>
               <FaRegComment />
-              <span className="count">{commentCount}</span>
+              <span className="SinglePost-count">{commentCount}</span>
             </button>
             {isModalOpen && (
-  <div className="comment-modal">
-    {/* Header Section */}
-    <div className="modal-header">
-      <h3>Comments</h3>
-      <button className="close-btn2" onClick={handleCloseModal}>
-        <IoMdClose />
-      </button>
-    </div>
-
-
-
-    {/* Scrollable Comment List */}
-<div className="comment-list">
-  {comments && comments.length > 0 ? (
-    comments.map((c, index) => (
-      <div key={index} className="comment-item">
-        {c}
-      </div>
-    ))
-  ) : (
-    <p className="no-comments">No comments yet. Be the first to comment!</p>
-  )}
-</div>
-
-
-
-    {/* Input Section */}
-    <div className="comment-input">
-      <textarea
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
-        placeholder="Write a comment..."
-      />
-      <button className="send-btn" onClick={handleSendComment}>
-        <FaPaperPlane />
-      </button>
-    </div>
-  </div>
-)}
-
-            <button
-              className="save-btn"
-              onClick={handleSaveToggle}
-              //style={{ color: saved ? "blue" : "black" }}
-            >
+              <div className="SinglePost-comment-modal">
+                <div className="SinglePost-modal-header">
+                  <h3>Comments</h3>
+                  <button className="SinglePost-close-btn2" onClick={handleCloseModal}>
+                    <IoMdClose />
+                  </button>
+                </div>
+                <div className="SinglePost-comment-list">
+                  {comments && comments.length > 0 ? (
+                    comments.map((c, index) => (
+                      <div key={index} className="SinglePost-comment-item">
+                        {c}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="SinglePost-no-comments">
+                      No comments yet. Be the first to comment!
+                    </p>
+                  )}
+                </div>
+                <div className="SinglePost-comment-input">
+                  <textarea
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Write a comment..."
+                  />
+                  <button className="SinglePost-send-btn" onClick={handleSendComment}>
+                    <FaPaperPlane />
+                  </button>
+                </div>
+              </div>
+            )}
+            <button className="SinglePost-save-btn" onClick={handleSaveToggle}>
               {saved ? <FaBookmark /> : <FaRegBookmark />}
-              <span className="count">{saveCount}</span>
+              <span className="SinglePost-count">{saveCount}</span>
             </button>
-            <button className="share-btn" onClick={handleShareClick}>
+            <button className="SinglePost-share-btn" onClick={handleShareClick}>
               <PiShareFatBold />
             </button>
           </div>
-          <span className="post-date">{formattedDate}</span>
+          <span className="SinglePost-post-date">{formattedDate}</span>
         </div>
       </div>
-      {/* Share Popup */}
       {showSharePopup && (
-        <div className="share-popup">
+        <div className="SinglePost-share-popup">
           <button
             onClick={() => setShowSharePopup(false)}
-            className="close-btn"
+            className="SinglePost-close-btn"
           >
-      <IoClose size={20} />
-      </button>
+            <IoClose size={20} />
+          </button>
           <p>Share this link:</p>
           <input
             type="text"
             value={shareLink}
             readOnly
-            className="share-input"
+            className="SinglePost-share-input"
           />
-          <button onClick={copyToClipboard} className="copy-btn">
+          <button onClick={copyToClipboard} className="SinglePost-copy-btn">
             Copy Link
           </button>
         </div>

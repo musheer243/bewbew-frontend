@@ -8,66 +8,63 @@ body {
 }
 
 /* General Post Styling */
-.single-post {
-  /* border: 1px solid var(--single-post-border); */
-  /* border-radius: 12px; */
-  padding: 24px; /* Increased padding */
-  margin: 24px 0; /* More space between posts */
+.SinglePost-single-post {
+  padding: 24px;
+  margin: 24px 0;
   background-color: var(--single-post-bg);
-  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); Slightly larger shadow for emphasis */
-  max-width: 700px; /* Ensure the post doesn't grow too wide */
+  max-width: 700px;
   margin-left: auto;
-  margin-right: auto; /* Center the post */
+  margin-right: auto;
   transition: background-color 0.3s, border-color 0.3s;
 }
 
-.single-post-container {
+.SinglePost-single-post-container {
   border: 1px solid var(--single-post-border);
   border-radius: 12px;
-  margin: 24px 0; /* More space between posts */
+  margin: 24px 0;
   background-color: var(--single-post-bg);
-  box-shadow: 0 4px 6px var(--single-post-shadow); /* Slightly larger shadow for emphasis */
-  max-width: 700px; /* Ensure the post doesn't grow too wide */
+  box-shadow: 0 4px 6px var(--single-post-shadow);
+  max-width: 700px;
   margin-left: auto;
-  margin-right: auto; /* Center the post */
+  margin-right: auto;
 }
 
 /* Post Header Styling */
-.post-header {
+.SinglePost-post-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px; /* Space below the header */
+  margin-bottom: 8px;
 }
 
-.header-container {
-  background-color: var(--header-bg); /* Change this color as needed */
-  padding: 16px; /* Add some padding to give space around the content */
-  border-radius: 12px 12px 0 0; /* Round the top corners */
+.SinglePost-header-container {
+  background-color: var(--header-bg);
+  padding: 16px;
+  border-radius: 12px 12px 0 0;
 }
 
-.user-info {
+.SinglePost-user-info {
   display: flex;
   align-items: center;
-  gap: 8px; /* Space between profile pic and username */
+  gap: 8px;
 }
 
-.profile-pic {
+.SinglePost-profile-pic {
   width: 40px;
   height: 40px;
   border-radius: 50%;
 }
 
-.username {
+.SinglePost-username {
   font-weight: bold;
 }
 
-.post-header-divider {
-  border-top: 1px solid var(--header-border); /* Adjust the divider color to match the design */
-  margin: 8px 0; /* Add vertical spacing */
+.SinglePost-post-header-divider {
+  border-top: 1px solid var(--header-border);
+  margin: 8px 0;
 }
 
-.menu-btn {
+.SinglePost-menu-btn {
   background: none;
   border: none;
   cursor: pointer;
@@ -75,20 +72,19 @@ body {
   color: var(--menu-btn-color);
 }
 
-/* Post media container */
-.post-media {
+/* Post Media Container */
+.SinglePost-post-media {
   position: relative;
   width: 100%;
   max-width: 618px;
-  margin: 0 auto; /* Center the container */
-  background-color: var(--media-bg); /* White background */
+  margin: 0 auto;
+  background-color: var(--media-bg);
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* Media container */
-.media-container {
+.SinglePost-media-container {
   position: relative;
   width: 100%;
   max-width: 100%;
@@ -100,42 +96,42 @@ body {
 }
 
 /* Aspect Ratio Box */
-.aspect-ratio-box {
+.SinglePost-aspect-ratio-box {
   position: relative;
   width: 100%;
-  padding-top: 56.25%; /* 16:9 aspect ratio (9 / 16 * 100) */
-  background-color: var(--media-bg); /* White background for non-16:9 images */
+  padding-top: 56.25%;
+  background-color: var(--media-bg);
   overflow: hidden;
   border-radius: 8px;
   box-shadow: 0 4px 6px var(--media-shadow);
 }
 
-/* Main image */
-.media-video{
+/* Main media elements */
+.SinglePost-media-video {
   position: absolute;
   top: 50%;
   left: 50%;
   width: 100%;
   height: 100%;
   transform: translate(-50%, -50%);
-  object-fit: contain; /* Zoom out instead of zooming in for non-16:9 images */
-  object-position: center;
-}
-.main-image {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  transform: translate(-50%, -50%);
-  object-fit: contain; /* Zoom out instead of zooming in for non-16:9 images */
+  object-fit: contain;
   object-position: center;
 }
 
+.SinglePost-main-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  object-fit: contain;
+  object-position: center;
+}
 
 /* Navigation buttons */
-.prev-btn,
-.next-btn {
+.SinglePost-prev-btn,
+.SinglePost-next-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -148,23 +144,24 @@ body {
   z-index: 10;
 }
 
-.prev-btn {
+.SinglePost-prev-btn {
   left: 10px;
 }
 
-.next-btn {
+.SinglePost-next-btn {
   right: 10px;
 }
 
 /* Post Content */
-.post-content {
+.SinglePost-post-content {
   font-size: 13px;
   line-height: 1.6;
   margin-bottom: 16px;
   margin-top: inherit;
 }
 
-.post-footer {
+/* Post Footer */
+.SinglePost-post-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -172,15 +169,15 @@ body {
   padding-top: 8px;
 }
 
-/* Buttons */
-.post-buttons {
+/* Buttons container */
+.SinglePost-post-buttons {
   display: flex;
   gap: 8px;
-  justify-content: center; /* Center the buttons horizontally */
-  align-items: center; /* Ensure alignment */
+  justify-content: center;
+  align-items: center;
 }
 
-.post-buttons button {
+.SinglePost-post-buttons button {
   background: none;
   border: none;
   cursor: pointer;
@@ -188,56 +185,56 @@ body {
   transition: color 0.3s ease;
 }
 
-.post-buttons button:hover {
+.SinglePost-post-buttons button:hover {
   color: gray;
 }
 
 /* Like, Comment, Share, Save Buttons */
-.like-btn {
+.SinglePost-like-btn {
   background-color: var(--like-btn-bg);
-  font-size: 1.5rem; /* Slightly reduced size */
+  font-size: 1.5rem;
 }
 
-.comment-btn {
+.SinglePost-comment-btn {
   background-color: var(--comment-btn-bg);
-  font-size: 1.4rem; /* Slightly reduced size */
+  font-size: 1.4rem;
 }
 
-.share-btn {
+.SinglePost-share-btn {
   background-color: var(--share-btn-bg);
-  font-size: 1.5rem; /* Slightly reduced size */
+  font-size: 1.5rem;
 }
 
-.save-btn {
+.SinglePost-save-btn {
   background-color: var(--save-btn-bg);
   color: black;
-  font-size: 1.5rem; /* Slightly reduced size */
+  font-size: 1.5rem;
 }
 
 /* Post Date */
-.post-date {
+.SinglePost-post-date {
   font-size: 0.8rem;
   color: var(--post-date-color);
 }
 
-.menu-container {
-  position: relative; /* Ensures dropdown is positioned relative to this container */
+/* Menu container */
+.SinglePost-menu-container {
+  position: relative;
 }
 
-.menu-btn {
-  background: none; /* No background for the button */
-  border: none; /* Removes border */
-  cursor: pointer; /* Adds pointer cursor for interactivity */
-  font-size: 20px; /* Adjust icon size */
+.SinglePost-menu-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
 }
 
-/* Show dropdown when 'show' class is added */
-.dropdown-menu.show {
+/* Dropdown Menu */
+.SinglePost-dropdown-menu.SinglePost-show {
   display: flex;
 }
 
-/* Default hidden state */
-.dropdown-menu {
+.SinglePost-dropdown-menu {
   position: absolute;
   top: 30px;
   right: 0;
@@ -247,13 +244,12 @@ body {
   border-radius: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 9999;
-  display: none; /* Hidden by default */
-  flex-direction: column; /* Stack dropdown items vertically */
-  min-width: 150px; /* Consistent width */
+  display: none;
+  flex-direction: column;
+  min-width: 150px;
 }
 
-/* Styling for each item in the dropdown */
-.dropdown-item {
+.SinglePost-dropdown-item {
   padding: 10px;
   border: none;
   background-color: transparent;
@@ -262,52 +258,49 @@ body {
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
-    display: flex; /* Make buttons display inline with the icon */
+  display: flex;
   align-items: center;
   width: 100%;
 }
 
-/* Add a line below each button */
-.dropdown-item:not(:last-child) {
-  border-bottom: 1px solid var(--dropdown-border); /* Adds a line below every item except the last one */
+.SinglePost-dropdown-item:not(:last-child) {
+  border-bottom: 1px solid var(--dropdown-border);
 }
 
-.dropdown-item:hover {
-  background-color: var(--dropdown-item-hover-bg); /* Light gray background on hover */
-  color: var(--dropdown-item-hover-color); /* Change text color to blue on hover */
+.SinglePost-dropdown-item:hover {
+  background-color: var(--dropdown-item-hover-bg);
+  color: var(--dropdown-item-hover-color);
 }
 
-/* Optional: Customize icon size */
-.dropdown-item svg {
-  font-size: 16px; /* Icon size */
+.SinglePost-dropdown-item svg {
+  font-size: 16px;
 }
 
 /* Dropdown Menu in Dark Mode */
-body.dark-mode .dropdown-menu {
+body.dark-mode .SinglePost-dropdown-menu {
   background-color: var(--dropdown-bg);
   border-color: var(--dropdown-border);
   color: var(--text-color);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.7);
 }
 
-body.dark-mode .dropdown-item {
+body.dark-mode .SinglePost-dropdown-item {
   color: var(--text-color);
 }
 
-body.dark-mode .dropdown-item:hover {
+body.dark-mode .SinglePost-dropdown-item:hover {
   background-color: var(--dropdown-item-hover-bg);
   color: var(--dropdown-item-hover-color);
 }
 
-/* Counts Styling */
-.post-buttons .count {
-  font-size: 0.85rem; /* Slightly smaller font size for counts */
-  font-weight: bold; /* Make counts bold for better visibility */
-  font-weight: 500; /* Moderate emphasis */
+/* Count Styling */
+.SinglePost-post-buttons .SinglePost-count {
+  font-size: 0.85rem;
+  font-weight: 500;
   color: var(--count-color);
-  display: inline-block; /* Align with the icons */
-  transition: color 0.3s ease; /* Smooth color transition */
-  margin-top: 2px; /* Add slight spacing below the icon */
+  display: inline-block;
+  transition: color 0.3s ease;
+  margin-top: 2px;
   margin-left: 2px;
 }
 
@@ -335,7 +328,7 @@ body.dark-mode .dropdown-item:hover {
   --save-btn-bg: transparent;
   --button-bg: #007bff;
   --button-text: #ffffff;
-  --count-color: #000000; /* Neutral color for light mode */
+  --count-color: #000000;
   --popup-bg: #ffffff;
   --popup-shadow: rgba(0, 0, 0, 0.2);
   --input-bg: #f9f9f9;
@@ -346,7 +339,6 @@ body.dark-mode .dropdown-item:hover {
   --icon-color: #333;
   --icon-hover-color: #000;
 }
-
 
 /* Dark Mode Variables */
 body.dark-mode {
@@ -368,7 +360,7 @@ body.dark-mode {
   --dropdown-item-hover-color: #121212;
   --button-bg: #444444;
   --button-text: #ffffff;
-  --count-color: #bbbbbb; /* Softer color for dark mode */
+  --count-color: #bbbbbb;
   --popup-bg: #1e1e1e;
   --popup-shadow: rgba(255, 255, 255, 0.1);
   --input-bg: #2a2a2a;
@@ -380,8 +372,8 @@ body.dark-mode {
   --icon-hover-color: #fff;
 }
 
-/* shareable link css */
-.share-popup {
+/* Share Popup Styles */
+.SinglePost-share-popup {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -397,11 +389,11 @@ body.dark-mode {
   transition: background-color 0.3s, color 0.3s;
 }
 
-.share-popup p {
+.SinglePost-share-popup p {
   margin-bottom: 10px;
 }
 
-.share-input {
+.SinglePost-share-input {
   width: 100%;
   padding: 8px;
   margin-bottom: 10px;
@@ -412,7 +404,7 @@ body.dark-mode {
   transition: background-color 0.3s, border-color 0.3s;
 }
 
-.copy-btn {
+.SinglePost-copy-btn {
   padding: 8px 12px;
   margin-top: 10px;
   border: none;
@@ -423,12 +415,12 @@ body.dark-mode {
   transition: background-color 0.3s;
 }
 
-.copy-btn:hover {
+.SinglePost-copy-btn:hover {
   background-color: var(--primary-btn-hover-bg);
 }
 
-/* Close button positioned in top right */
-.close-btn {
+/* Close button in share popup */
+.SinglePost-close-btn {
   position: absolute;
   top: 8px;
   right: 8px;
@@ -439,20 +431,20 @@ body.dark-mode {
   color: var(--icon-color);
 }
 
-.close-btn:hover {
+.SinglePost-close-btn:hover {
   color: var(--icon-hover-color);
 }
 
-/* comment pop-up css */
-.comment-modal {
-  position: absolute; /* Positioned relative to the post */
-  bottom: 5%; /* Adjusted to be slightly above the bottom */
+/* Comment Modal Styles */
+.SinglePost-comment-modal {
+  position: absolute;
+  bottom: 5%;
   left: 50%;
   transform: translateX(-50%);
   width: 90%;
   max-width: 450px;
   height: auto;
-  max-height: 400px; /* Increased height */
+  max-height: 400px;
   background: white;
   border-radius: 12px 12px 0 0;
   box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.2);
@@ -462,8 +454,7 @@ body.dark-mode {
   overflow: hidden;
 }
 
-/* Modal header */
-.modal-header {
+.SinglePost-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -471,16 +462,14 @@ body.dark-mode {
   border-bottom: 1px solid #ddd;
 }
 
-/* Title styling */
-.modal-header h3 {
+.SinglePost-modal-header h3 {
   margin: 0;
   font-size: 16px;
   font-weight: bold;
   color: #333;
 }
 
-/* Close button */
-.close-btn2 {
+.SinglePost-close-btn2 {
   background: none;
   border: none;
   font-size: 20px;
@@ -488,24 +477,21 @@ body.dark-mode {
   color: #333;
 }
 
-/* Scrollable comment list */
-.comment-list {
+.SinglePost-comment-list {
   flex-grow: 1;
   padding: 10px;
-  overflow-y: auto; /* Allows scrolling for comments */
+  overflow-y: auto;
   max-height: 250px;
 }
 
-/* Individual comment */
-.comment-item {
+.SinglePost-comment-item {
   padding: 8px;
   border-bottom: 1px solid #ddd;
   font-size: 14px;
   color: #444;
 }
 
-/* Comment input area */
-.comment-input {
+.SinglePost-comment-input {
   display: flex;
   align-items: center;
   padding: 10px;
@@ -513,10 +499,9 @@ body.dark-mode {
   background: #fff;
 }
 
-/* Textarea for comment */
-.comment-input textarea {
+.SinglePost-comment-input textarea {
   flex: 1;
-  height: 50px; /* Good visibility */
+  height: 50px;
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -524,8 +509,7 @@ body.dark-mode {
   font-size: 14px;
 }
 
-/* Send button */
-.send-btn {
+.SinglePost-send-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -539,95 +523,93 @@ body.dark-mode {
   margin-left: 10px;
 }
 
-/* Hover effect */
-.send-btn:hover {
+.SinglePost-send-btn:hover {
   background-color: #0056b3;
 }
 
-.no-comments {
+.SinglePost-no-comments {
   text-align: center;
   color: #666;
   font-size: 14px;
   padding: 20px;
 }
 
+/* Media Queries */
 
-/* Base layout for larger screens (default styling) */
-
-/* Media Query for Mobile S (320px) */
+/* Mobile S (320px) */
 @media (max-width: 320px) {
-  .post-media {
-    max-width: 300px; /* Adjust width for narrow screens */
+  .SinglePost-post-media {
+    max-width: 300px;
   }
-  .aspect-ratio-box {
-    padding-top: 62.5%; /* Slightly taller ratio to better fill narrow viewports */
+  .SinglePost-aspect-ratio-box {
+    padding-top: 62.5%;
   }
-  .main-image {
-    width: 90%; /* Reduce image width slightly */
+  .SinglePost-main-image {
+    width: 90%;
   }
 }
 
-/* Media Query for Mobile M (375px) */
+/* Mobile M (375px) */
 @media (max-width: 375px) {
-  .post-media {
+  .SinglePost-post-media {
     max-width: 340px;
   }
-  .aspect-ratio-box {
-    padding-top: 60%; /* Still prioritize height for balance */
+  .SinglePost-aspect-ratio-box {
+    padding-top: 60%;
   }
-  .main-image {
-    width: 95%; /* Center the image nicely */
+  .SinglePost-main-image {
+    width: 95%;
   }
 }
 
-/* Media Query for Mobile L (425px) */
+/* Mobile L (425px) */
 @media (max-width: 425px) {
-  .post-media {
+  .SinglePost-post-media {
     max-width: 380px;
   }
-  .aspect-ratio-box {
-    padding-top: 56.25%; /* Return to standard 16:9 for slightly wider phones */
-  }
-  .main-image {
-    width: 100%; /* Fill the container */
-  }
-}
-
-/* Media Query for Tablet (768px) */
-@media (max-width: 768px) {
-  .post-media {
-    max-width: 720px;
-  }
-  .aspect-ratio-box {
-    padding-top: 56.25%; /* Maintain 16:9 ratio for tablets */
-  }
-  .main-image {
-    width: 100%; /* Fully utilize available width */
-  }
-}
-
-/* Media Query for Laptop (1024px) */
-@media (max-width: 1024px) {
-  .post-media {
-    max-width: 900px;
-  }
-  .aspect-ratio-box {
+  .SinglePost-aspect-ratio-box {
     padding-top: 56.25%;
   }
-  .main-image {
+  .SinglePost-main-image {
     width: 100%;
   }
 }
 
-/* Media Query for Laptop L (1440px) */
-@media (max-width: 1440px) {
-  .post-media {
-    max-width: 1200px;
+/* Tablet (768px) */
+@media (max-width: 768px) {
+  .SinglePost-post-media {
+    max-width: 720px;
   }
-  .aspect-ratio-box {
+  .SinglePost-aspect-ratio-box {
     padding-top: 56.25%;
   }
-  .main-image {
+  .SinglePost-main-image {
+    width: 100%;
+  }
+}
+
+/* Laptop (1024px) */
+@media (max-width: 1024px) {
+  .SinglePost-post-media {
+    max-width: 900px;
+  }
+  .SinglePost-aspect-ratio-box {
+    padding-top: 56.25%;
+  }
+  .SinglePost-main-image {
+    width: 100%;
+  }
+}
+
+/* Laptop L (1440px) */
+@media (max-width: 1440px) {
+  .SinglePost-post-media {
+    max-width: 1200px;
+  }
+  .SinglePost-aspect-ratio-box {
+    padding-top: 56.25%;
+  }
+  .SinglePost-main-image {
     width: 100%;
   }
 }
