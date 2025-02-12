@@ -35,6 +35,7 @@ function CreatePostPage() {
 
         if (response.ok) {
           const data = await response.json();
+          console.log('Fetched categories:', data); // Add this
           const sortedCategories = data.sort((a, b) =>
             (a?.categoryTitle || '').localeCompare(b?.categoryTitle || '', undefined, {
               sensitivity: 'base',
@@ -293,14 +294,17 @@ function CreatePostPage() {
         <div className="dropdown-container">
           <div
             className="dropdown-header"
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            onClick={() => {
+              setIsDropdownOpen((prev) => !prev);
+              console.log("Dropdown Open State:", !isDropdownOpen);
+            }}
           >
             {selectedCategoryId
               ? categories.find((cat) => cat.categoryId === selectedCategoryId)?.categoryTitle
               : 'Select a category'}
           </div>
           {isDropdownOpen && (
-            <div className="dropdown-menu">
+            <div className="dropdown-menu" onClick={(e) => e.stopPropagation()}>
               <input
                 type="text"
                 placeholder="Search categories"
