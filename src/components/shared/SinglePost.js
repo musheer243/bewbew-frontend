@@ -298,7 +298,10 @@ const popularLanguages = [
  const [selectedLanguage, setSelectedLanguage] = useState('hi'); // default to Hindi
  const [dropdownOpen, setDropdownOpen] = useState(false);
   const translateDropdownRef = useRef(null);
-
+  const [translatedTitle, setTranslatedTitle] = useState(null);
+  const [translatedContent, setTranslatedContent] = useState(null);
+  const [isTranslating, setIsTranslating] = useState(false);
+  
   // Compute the display name for the selected language
   const selectedLanguageName =
     popularLanguages.find((lang) => lang.code === selectedLanguage)?.name ||
@@ -307,6 +310,38 @@ const popularLanguages = [
   const toggleTranslatePopup = () => {
     setShowTranslatePopup(!showTranslatePopup);
   };
+
+  // Function to call the translate API.
+  const translatePost = async () => {
+    setIsTranslating(true);
+    try {
+      const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        console.error("JWT token is missing");
+        return;
+      }
+      const response = await fetch(
+        `${API_BASE_URL}/api/post/${post.postId}/translate?language=${selectedLanguage}`,
+        {
+          method: "POST", // Use POST instead of default GET
+          headers: {
+            "Content-Type": "application/json", // Optional if no body is sent, but good practice
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      setTranslatedTitle(data.title);
+      setTranslatedContent(data.content);
+      // Close the popup after translation (optional)
+      setShowTranslatePopup(false);
+    } catch (error) {
+      console.error("Error translating post:", error);
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+  
 
   return (
     <div className="SinglePost-single-post-container">
@@ -346,7 +381,7 @@ const popularLanguages = [
         <div className="SinglePost-post-header-divider"></div>
 
         <h2 className="SinglePost-post-title" style={{ fontSize: "20px" }}>
-          {title}
+          {translatedTitle || title}
         </h2>
 
         <div className="SinglePost-post-media">
@@ -381,12 +416,12 @@ const popularLanguages = [
           )}
         </div>
 
-        <p className="SinglePost-post-content">{content}</p>
+        <p className="SinglePost-post-content">{translatedContent || content}</p>
 
         <div className="SinglePost-translate-container">
         <button className="SinglePost-translate-button" onClick={toggleTranslatePopup}>
-        <HiTranslate/> Translate
-</button>
+        <HiTranslate /> Translate
+        </button>
 
 {/* Translate Popup */}
 {showTranslatePopup && (
@@ -417,7 +452,16 @@ const popularLanguages = [
             </div>
           )}
         </div>
+        {/* Button to trigger the translation API call */}
+      <button
+                className="SinglePost-apply-translation-btn"
+                onClick={translatePost}
+                disabled={isTranslating}
+              >
+                {isTranslating ? "..." : <HiTranslate />}
+              </button>
       </div>
+      
     </div>
   )}
 </div>

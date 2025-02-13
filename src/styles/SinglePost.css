@@ -194,8 +194,8 @@ body {
   transform: translateY(-50%); /* center vertically relative to the container */
   width: 180px;         /* small width */
   margin-left: 4px;     /* tiny gap from the button */
-  /* padding: 1rem; */
-  border: 1px solid #ddd;
+  padding: 0 2px;
+ border: 1px solid #ddd;
   background-color: #f9f9f9;
   border-radius: 6px;
   z-index: 999;         /* ensure popup is on top */
@@ -228,8 +228,8 @@ body {
 }
 
 .SinglePost-selected-option {
-  padding: 6px 10px;
-  font-size: 14px;
+  padding: 6px 0;
+  font-size: 12px;
   cursor: pointer;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -250,6 +250,28 @@ body {
   margin-top: 2px;
 }
 
+/* CSS for the Apply Translation Button */
+.SinglePost-apply-translation-btn {
+  background-color: #007bff;      /* matching blue */
+  color: #fff;
+  border: none;
+  padding: 6px 6px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.SinglePost-apply-translation-btn:hover {
+  background-color: #0056b3;
+}
+
+.SinglePost-apply-translation-btn:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+}
 
 
 /* Post Footer */
