@@ -264,6 +264,11 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
     }
   };
 
+  const handleTranslate = () => {
+    // Put your translation logic here (e.g., call an API, set state, etc.)
+    alert("Translation coming soon!");
+  };
+
   return (
     <div className="SinglePost-single-post-container">
       <div className="SinglePost-single-post">
@@ -282,14 +287,14 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
                 <MdEdit style={{ marginRight: "8px" }} />
                 Edit
               </button>
-              <button className="SinglePost-dropdown-item">
+              {/* <button className="SinglePost-dropdown-item">
                 <IoIosShareAlt style={{ marginRight: "8px" }} />
                 Share
               </button>
               <button className="SinglePost-dropdown-item">
                 <HiTranslate style={{ marginRight: "8px" }} />
                 Translate
-              </button>
+              </button> */}
               <button className="SinglePost-dropdown-item">
                 <MdDelete style={{ marginRight: "8px" }} />
                 Delete
@@ -338,7 +343,9 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
         </div>
 
         <p className="SinglePost-post-content">{content}</p>
-
+        <button className="SinglePost-translate-button" onClick={handleTranslate}>
+        <HiTranslate/> Translate
+</button>
         <div className="SinglePost-post-footer">
           <div className="SinglePost-post-buttons">
             <button className="SinglePost-like-btn" onClick={handleLikeToggle}>

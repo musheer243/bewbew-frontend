@@ -156,8 +156,25 @@ body {
 .SinglePost-post-content {
   font-size: 13px;
   line-height: 1.6;
-  margin-bottom: 16px;
+  margin-bottom: 0;
   margin-top: inherit;
+}
+
+.SinglePost-translate-button {
+  background: none;
+  color: #007bff;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+}
+
+.SinglePost-translate-button svg {
+  margin-right: -2px;           /* Space between icon and text */
+}
+
+.SinglePost-translate-button:hover {
+  color: #0056b3;
 }
 
 /* Post Footer */
