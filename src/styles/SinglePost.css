@@ -53,6 +53,7 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  object-fit: cover;
 }
 
 .SinglePost-username {
@@ -160,6 +161,12 @@ body {
   margin-top: inherit;
 }
 
+/* Container that holds the button and popup */
+.SinglePost-translate-container {
+  position: relative; /* anchor for absolute positioning */
+  display: inline-block; /* so the popup can align next to the button */
+}
+
 .SinglePost-translate-button {
   background: none;
   color: #007bff;
@@ -167,6 +174,8 @@ body {
   cursor: pointer;
   font-size: 14px;
   padding: 0;
+  display: inline-flex;  /* align icon and text */
+  align-items: center;   /* vertical center */
 }
 
 .SinglePost-translate-button svg {
@@ -176,6 +185,72 @@ body {
 .SinglePost-translate-button:hover {
   color: #0056b3;
 }
+
+/* The rectangle popup for translation */
+.SinglePost-translate-popup {
+  position: absolute;
+  top: 20%;             /* position around the middle of the button container */
+  left: 110%;           /* place to the right of the button */
+  transform: translateY(-50%); /* center vertically relative to the container */
+  width: 180px;         /* small width */
+  margin-left: 4px;     /* tiny gap from the button */
+  /* padding: 1rem; */
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  z-index: 999;         /* ensure popup is on top */
+}
+
+/* The row containing the label and dropdown */
+.SinglePost-translate-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.SinglePost-translate-label {
+  font-weight: 500;
+  color: #333;
+  font-size: 12px;
+}
+
+.SinglePost-language-dropdown {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  /* padding: 0.5rem; */
+  font-size: 14px;
+  background-color: #fff;
+  outline: none;
+  cursor: pointer;
+  /* Added to limit visible items and enable scrolling */
+  max-height: 90px;   /* Enough for ~4-5 items */
+  overflow-y: auto;   /* Scroll when exceeding max-height */
+}
+
+.SinglePost-selected-option {
+  padding: 6px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.SinglePost-dropdown-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 90px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  border-radius: 4px;
+  z-index: 999;
+  margin-top: 2px;
+}
+
+
 
 /* Post Footer */
 .SinglePost-post-footer {

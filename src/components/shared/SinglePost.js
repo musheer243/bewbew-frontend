@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../../styles/SinglePost.css";
 import {
   // FaHeart,
@@ -8,7 +8,8 @@ import {
   FaRegBookmark,
 } from "react-icons/fa";
 import { MdEdit, MdDelete } from "react-icons/md";
-import { IoIosShareAlt } from "react-icons/io";
+// import { IoIosShareAlt } from "react-icons/io";
+import { IoIosArrowDown } from "react-icons/io";
 import { HiTranslate } from "react-icons/hi";
 import { PiShareFatBold } from "react-icons/pi";
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -227,8 +228,12 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
   useEffect(() => {
     const handleOutsideClick = (event) => {
       // Close dropdown if click is outside the menu-container
-      if (!event.target.closest(".menu-container")) {
+      if (
+        !event.target.closest(".SinglePost-menu-container") && 
+        !event.target.closest(".SinglePost-translate-popup") 
+      ) {
         setShowOptions(false);
+        setShowTranslatePopup(false);
       }
     };
 
@@ -264,9 +269,43 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
     }
   };
 
-  const handleTranslate = () => {
-    // Put your translation logic here (e.g., call an API, set state, etc.)
-    alert("Translation coming soon!");
+  // 20 popular languages, including Marathi (mr) & Hindi (hi) as priority
+const popularLanguages = [
+  { code: 'hi', name: 'Hindi' },
+  { code: 'mr', name: 'Marathi' },
+  { code: 'en', name: 'English' },
+  { code: 'es', name: 'Spanish' },
+  { code: 'fr', name: 'French' },
+  { code: 'de', name: 'German' },
+  { code: 'it', name: 'Italian' },
+  { code: 'ru', name: 'Russian' },
+  { code: 'zh', name: 'Chinese' },
+  { code: 'ja', name: 'Japanese' },
+  { code: 'ko', name: 'Korean' },
+  { code: 'ar', name: 'Arabic' },
+  { code: 'pt', name: 'Portuguese' },
+  { code: 'bn', name: 'Bengali' },
+  { code: 'pa', name: 'Punjabi' },
+  { code: 'id', name: 'Indonesian' },
+  { code: 'vi', name: 'Vietnamese' },
+  { code: 'th', name: 'Thai' },
+  { code: 'tr', name: 'Turkish' },
+  { code: 'ur', name: 'Urdu' },
+];
+
+ // Translate popup states
+ const [showTranslatePopup, setShowTranslatePopup] = useState(false);
+ const [selectedLanguage, setSelectedLanguage] = useState('hi'); // default to Hindi
+ const [dropdownOpen, setDropdownOpen] = useState(false);
+  const translateDropdownRef = useRef(null);
+
+  // Compute the display name for the selected language
+  const selectedLanguageName =
+    popularLanguages.find((lang) => lang.code === selectedLanguage)?.name ||
+    "Select Language";
+
+  const toggleTranslatePopup = () => {
+    setShowTranslatePopup(!showTranslatePopup);
   };
 
   return (
@@ -343,9 +382,47 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
         </div>
 
         <p className="SinglePost-post-content">{content}</p>
-        <button className="SinglePost-translate-button" onClick={handleTranslate}>
+
+        <div className="SinglePost-translate-container">
+        <button className="SinglePost-translate-button" onClick={toggleTranslatePopup}>
         <HiTranslate/> Translate
 </button>
+
+{/* Translate Popup */}
+{showTranslatePopup && (
+    <div className="SinglePost-translate-popup">
+      <div className="SinglePost-translate-row">
+        <span className="SinglePost-translate-label">Translate to</span>
+        <div className="SinglePost-language-dropdown" ref={translateDropdownRef} >
+          <div
+            className="SinglePost-selected-option"
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+          >
+            {selectedLanguageName } <IoIosArrowDown style={{size:20 }}/>
+          </div>
+          {dropdownOpen && (
+            <div className="SinglePost-dropdown-options">
+              {popularLanguages.map((lang) => (
+                <div
+                  key={lang.code}
+                  className="SinglePost-language-option"
+                  onClick={() => {
+                    setSelectedLanguage(lang.code);
+                    setDropdownOpen(false);
+                  }}
+                >
+                  {lang.name}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+        {/* FOOTER */}
+
         <div className="SinglePost-post-footer">
           <div className="SinglePost-post-buttons">
             <button className="SinglePost-like-btn" onClick={handleLikeToggle}>
