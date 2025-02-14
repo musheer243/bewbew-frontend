@@ -105,6 +105,10 @@ const MyPosts = () => {
   // if (loading && pageNumber === 0) return <div>Loading...</div>;
   // if (error) return <div className="error">{error}</div>;
 
+  const handlePostDelete = (deletedPostId) => {
+    setPosts((prevPosts) => prevPosts.filter((p) => p.postId !== deletedPostId));
+  };
+
   return (
     <div className={`my-posts-container ${darkMode ? "dark" : "light"}`}>
     <div className={`my-posts ${darkMode ? "dark" : "light"}`} ref={postsContainerRef}>
@@ -120,7 +124,7 @@ const MyPosts = () => {
 
     {/* Posts Display */}
     {posts.length > 0 ? (
-      posts.map((post) => <SinglePost key={post.postId} post={post} darkModeFromDashboard={darkMode} />)
+      posts.map((post) => <SinglePost key={post.postId} post={post} darkModeFromDashboard={darkMode} onDelete={handlePostDelete} />)
     ) : (
       /* No Posts Message */
       !loading && <div className="no-posts">You have not created any posts yet.</div>

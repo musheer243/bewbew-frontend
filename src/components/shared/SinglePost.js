@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import { toast } from "react-toastify"; // <-- Make sure you install and import react-toastify
+import "react-toastify/dist/ReactToastify.css";
 import "../../styles/SinglePost.css";
 import {
   // FaHeart,
@@ -43,6 +45,11 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
   const [showSharePopup, setShowSharePopup] = useState(false); // Share popup state
   const [shareLink, setShareLink] = useState(""); // Shareable link
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // State to show/hide the final delete confirmation popup
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  // State for the text the user types in the confirmation field
+  const [deleteConfirmationText, setDeleteConfirmationText] = useState("");
 
   useEffect(() => {
     document.title = "BewBew • My Posts";
@@ -342,6 +349,54 @@ const popularLanguages = [
     }
   };
   
+   // Toggle the final delete popup
+   const handleDeleteClick = () => {
+    setShowOptions(false);      // close the 3-dot menu
+    setShowDeletePopup(true);   // show the confirmation popup
+  };
+
+  // Close the final delete popup
+  const closeDeletePopup = () => {
+    setShowDeletePopup(false);
+    setDeleteConfirmationText("");
+  };
+
+  // Call the API to delete the post if the typed text is "DELETE"
+  const handleConfirmDelete = async () => {
+    if (deleteConfirmationText.trim().toUpperCase() === "DELETE") {
+      try {
+        const token = localStorage.getItem("jwtToken");
+        if (!token) {
+          console.error("JWT token is missing");
+          return;
+        }
+        const response = await fetch(`${API_BASE_URL}/api/posts/${post.postId}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+         // Show a toast notification instead of console.log
+        toast.success("Post deleted successfully!");
+        console.log("Post deleted successfully!");
+          if (onDelete) {
+            onDelete(post.postId); // Tell parent to remove this post
+          }
+        } else {
+          console.error("Failed to delete the post.");
+        }
+      } catch (error) {
+        console.error("Error deleting post:", error);
+      } finally {
+        // Close popup after attempting delete
+        setShowDeletePopup(false);
+        setDeleteConfirmationText("");
+      }
+    } else {
+      alert('Please type "DELETE" exactly to confirm.');
+    }
+  };
 
   return (
     <div className="SinglePost-single-post-container">
@@ -369,7 +424,7 @@ const popularLanguages = [
                 <HiTranslate style={{ marginRight: "8px" }} />
                 Translate
               </button> */}
-              <button className="SinglePost-dropdown-item">
+              <button className="SinglePost-dropdown-item" onClick={handleDeleteClick}>
                 <MdDelete style={{ marginRight: "8px" }} />
                 Delete
               </button>
@@ -539,6 +594,39 @@ const popularLanguages = [
           <button onClick={copyToClipboard} className="SinglePost-copy-btn">
             Copy Link
           </button>
+        </div>
+      )}
+       {/* The final "Are you sure?" popup */}
+       {showDeletePopup && (
+        <div className="SinglePost-delete-popup-overlay">
+          <div className="SinglePost-delete-popup">
+            <button
+              className="SinglePost-delete-popup-close-btn"
+              onClick={closeDeletePopup}
+            >
+              <IoClose size={20} />
+            </button>
+
+            <h3 className="SinglePost-delete-popup-title">
+              Are you sure you want to delete this post?
+            </h3>
+            <p className="SinglePost-delete-popup-instruction">
+              Type <strong>DELETE</strong> in the box below to confirm.
+            </p>
+            <input
+              type="text"
+              value={deleteConfirmationText}
+              onChange={(e) => setDeleteConfirmationText(e.target.value)}
+              className="SinglePost-delete-input"
+              placeholder='Type "DELETE" here'
+            />
+            <button
+              className="SinglePost-delete-confirm-btn"
+              onClick={handleConfirmDelete}
+            >
+              Delete
+            </button>
+          </div>
         </div>
       )}
     </div>
