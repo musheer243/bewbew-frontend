@@ -20,6 +20,8 @@ import { FcLike } from "react-icons/fc";
 import { IoMdClose } from "react-icons/io";
 import { FaPaperPlane } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
+
 
 
 const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
@@ -398,6 +400,20 @@ const popularLanguages = [
     }
   };
 
+  const navigate = useNavigate();
+  const handleEditClick = () => {
+    // Close the 3-dot menu if open
+    setShowOptions(false);
+
+    // Navigate to CreatePostPage, passing a flag & the post data
+    navigate("/create-post", {
+      state: {
+        isEdit: true,        // So we know it's edit mode
+        postToEdit: post,    // The post data to edit
+      },
+    });
+  };
+
   return (
     <div className="SinglePost-single-post-container">
       <div className="SinglePost-single-post">
@@ -412,7 +428,7 @@ const popularLanguages = [
               <BsThreeDotsVertical />
             </button>
             <div className={`SinglePost-dropdown-menu ${showOptions ? "SinglePost-show" : ""}`}>
-              <button className="SinglePost-dropdown-item">
+              <button className="SinglePost-dropdown-item" onClick={handleEditClick}>
                 <MdEdit style={{ marginRight: "8px" }} />
                 Edit
               </button>
