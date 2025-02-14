@@ -6,6 +6,9 @@ import { FaCircleDot } from "react-icons/fa6";
 import { MdAddPhotoAlternate } from 'react-icons/md';
 import { API_BASE_URL } from '../../config';
 import { useNavigate } from 'react-router-dom';
+import {ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 
 function CreatePostPage() {
@@ -79,6 +82,13 @@ function CreatePostPage() {
       alert('Title and content are required.');
       return;
     }
+
+    if (mediaFiles.length === 0) {
+      // If no media is selected, show a toast error
+      toast.error("Cannot create a post without any media!");
+      return;
+    }
+
 
     const formData = new FormData();
     formData.append('postDto', JSON.stringify({ 
@@ -368,6 +378,7 @@ function CreatePostPage() {
         </button>
       </div>
     </div>
+    <ToastContainer/>
     </div>
   );
 }

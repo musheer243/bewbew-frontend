@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { toast } from "react-toastify"; // <-- Make sure you install and import react-toastify
+import {ToastContainer, toast } from "react-toastify"; // <-- Make sure you install and import react-toastify
 import "react-toastify/dist/ReactToastify.css";
 import "../../styles/SinglePost.css";
 import {
@@ -629,6 +629,8 @@ const popularLanguages = [
           </div>
         </div>
       )}
+
+      <ToastContainer/>
     </div>
   );
 };
