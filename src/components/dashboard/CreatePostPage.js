@@ -24,6 +24,7 @@ function CreatePostPage() {
   const [closeFriendsOnly, setCloseFriendsOnly] = useState(false);
 
   // For category & schedule (only used in create mode)
+
   const [categories, setCategories] = useState([]);
   const [filteredCategories, setFilteredCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
@@ -190,8 +191,9 @@ function CreatePostPage() {
     mediaFiles.forEach((file) => formData.append("mediaFiles", file));
 
     try {
+      const userId = localStorage.getItem(`userId`);
       const response = await fetch(
-        `${API_BASE_URL}/api/user/1/category/${selectedCategoryId}/posts/with-media`,
+        `${API_BASE_URL}/api/user/${userId}/category/${selectedCategoryId}/posts/with-media`,
         {
           method: "POST",
           headers: {

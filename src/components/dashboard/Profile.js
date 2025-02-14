@@ -13,6 +13,7 @@ import { SlUserFollow } from "react-icons/sl";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 
 const Profile = () => {
+
   const { userId } = useParams(); // Extract userId from the URL
   const location = useLocation();
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ const Profile = () => {
 
     // If user is not available in location.state, fetch user data from the backend
     if (!user) {
+      setLoading(true);
       axios
         .get(`${API_BASE_URL}/api/users/${userId}`, {
           headers: {
@@ -53,7 +55,11 @@ const Profile = () => {
   }, [userId, user, loggedInUserId, navigate, token]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className={styles["loading-container"]}>
+        <div className={styles["spinner"]}></div> {/* Add your CSS spinner here */}
+      </div>
+    );
   }
 
   if (error) {
@@ -109,20 +115,31 @@ const Profile = () => {
   return (
     <div className={styles["page-container"]}>
     <div className={styles["profile-container"]}>
-
     <div className={styles["main-container"]}>
+
     {/* Back Button */}
     <button className={styles["back-button"]} onClick={handleBackToDashboard}>
       <BsArrowLeft />
     </button>
 
-      {/* More Options Button */}
-      <div className={styles["options-container"]}>
+      {/* More Options Button - 
+      Only visible if the logged-in 
+      user is viewing their own profile */}
+
+      {/* <div className={styles["options-container"]}>
         <button className={styles["options-button"]} onClick={toggleOptions}>
           <IoMdSettings size={34} />
         </button>
-      </div>
+      </div> */}
 
+{loggedInUserId === userId && (
+            <div className={styles["options-container"]}>
+              <button className={styles["options-button"]} onClick={toggleOptions}>
+                <IoMdSettings size={34} />
+              </button>
+            </div>
+          )}
+          
 {/* Dropdown Menu */}
 {showOptions && (
         <div className={styles["dropdown-menu"]}>
