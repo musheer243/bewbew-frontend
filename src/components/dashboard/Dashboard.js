@@ -412,8 +412,12 @@ const Dashboard = () => {
             {
               name: "My Posts",
               icon: <TfiGallery size={20} />,
-              onClick: () => navigate("/my-posts", { state: { darkMode } }),
+              onClick: () => {
+                const loggedInUserId = localStorage.getItem("userId");
+                navigate(`/my-posts`, { state: { userId: loggedInUserId, darkMode } });
+              },
             },
+            
             {
               name: "Create Post",
               icon: <BiImageAdd size={20} />,
