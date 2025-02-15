@@ -42,6 +42,9 @@ function CreatePostPage() {
   const jwtToken = localStorage.getItem("jwtToken");
   const navigate = useNavigate();
 
+  const [oldMediaUrls, setOldMediaUrls] = useState([]);
+  const [oldMediaRemoved, setOldMediaRemoved] = useState(false);
+
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
   // 2) If Edit Mode, Pre-Fill
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -50,6 +53,7 @@ function CreatePostPage() {
       setTitle(postToEdit.title || "");
       setContent(postToEdit.content || "");
       setCloseFriendsOnly(postToEdit.closeFriendsOnly || false);
+      setOldMediaUrls(postToEdit.mediaFileNames || []);
     }
   }, [isEdit, postToEdit]);
 
@@ -302,22 +306,85 @@ function CreatePostPage() {
   };
 
   const handleRemoveMedia = () => {
-    setMediaFiles((prevFiles) => {
-      if (prevFiles.length === 0) return prevFiles;
+    // If there's any new media, remove from mediaFiles
+    if (mediaFiles.length > 0) {
+      setMediaFiles((prevFiles) => {
+        if (prevFiles.length === 0) return prevFiles;
+        const updated = [...prevFiles];
+        updated.splice(currentMediaIndex, 1); // remove the file at current index
 
-      const updated = [...prevFiles];
-      updated.splice(currentMediaIndex, 1); // remove the file at current index
+        // Adjust currentMediaIndex so we don't go out of bounds
+        let newIndex = currentMediaIndex;
+        if (newIndex >= updated.length) {
+          newIndex = updated.length - 1;
+        }
+        setCurrentMediaIndex(Math.max(newIndex, 0));
 
-      // Adjust currentMediaIndex so we don't go out of bounds
-      let newIndex = currentMediaIndex;
-      if (newIndex >= updated.length) {
-        newIndex = updated.length - 1;
-      }
-      setCurrentMediaIndex(Math.max(newIndex, 0));
-
-      return updated;
-    });
+        return updated;
+      });
+    } else {
+      // Otherwise, we're displaying old server media, so "remove" it
+      setOldMediaRemoved(true);
+    }
   };
+
+  // We'll show only the first old link if no new files
+  function renderPreview() {
+    // 1) If user has selected new files, display them
+    if (mediaFiles.length > 0) {
+      const file = mediaFiles[currentMediaIndex];
+      const src = URL.createObjectURL(file);
+
+      // Check if it's an image or video
+      if (file.type.startsWith("image/")) {
+        return (
+          <img
+            src={src}
+            alt={`Uploaded Media ${currentMediaIndex + 1}`}
+            className="media-preview-content"
+          />
+        );
+      } else {
+        return <video controls src={src} className="media-preview-content" />;
+      }
+    }
+
+    // 2) If no new media but in edit mode, show old media link from server
+    if (isEdit && oldMediaUrls.length > 0 && !oldMediaRemoved) {
+      const oldLink = oldMediaUrls[0]; // or handle multiple links
+      if (oldLink.toLowerCase().endsWith(".mp4")) {
+        return (
+          <video controls src={oldLink} className="media-preview-content" />
+        );
+      } else {
+        return (
+          <img src={oldLink} alt="OldImage" className="media-preview-content" />
+        );
+      }
+    }
+
+    // 3) Fallback: no media selected + not editing old media => show label
+    return (
+      <label
+        htmlFor="file-upload"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+          cursor: "pointer",
+        }}
+      >
+        <IoImagesOutline size={50} />
+        <p style={{ margin: 0 }}>
+          {isEdit
+            ? "Replace / Add Media (if you want)"
+            : "Upload Image & Videos."}
+        </p>
+      </label>
+    );
+  }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
   // RENDER
@@ -339,7 +406,8 @@ function CreatePostPage() {
 
           <div className="media-preview-container">
             {/* Show the "X" button wrapper only if there's a file to remove */}
-            {mediaFiles.length > 0 && mediaFiles[currentMediaIndex] && (
+            {(mediaFiles.length > 0 ||
+              (isEdit && oldMediaUrls.length > 0 && !oldMediaRemoved)) && (
               <div className="media-item-wrapper">
                 {/* The "X" button to remove this file */}
                 <button
@@ -352,42 +420,7 @@ function CreatePostPage() {
             )}
 
             <div className="media-preview">
-              {mediaFiles.length > 0 && mediaFiles[currentMediaIndex] ? (
-                mediaFiles[currentMediaIndex].type.startsWith("image/") ? (
-                  <img
-                    src={URL.createObjectURL(mediaFiles[currentMediaIndex])}
-                    alt={`Uploaded Media ${currentMediaIndex + 1}`}
-                    className="media-preview-content"
-                  />
-                ) : (
-                  <video
-                    controls
-                    src={URL.createObjectURL(mediaFiles[currentMediaIndex])}
-                    className="media-preview-content"
-                  />
-                )
-              ) : (
-                // If editing, we might show "existing" media placeholders
-                // But for simplicity, just show the same label as create
-                <label
-                  htmlFor="file-upload"
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    textAlign: "center",
-                    cursor: "pointer",
-                  }}
-                >
-                  <IoImagesOutline size={50} />
-                  <p style={{ margin: 0 }}>
-                    {isEdit
-                      ? "Replace / Add Media (if you want)"
-                      : "Upload Image & Videos."}
-                  </p>
-                </label>
-              )}
+              {renderPreview()}
 
               <input
                 id="file-upload"
@@ -404,7 +437,7 @@ function CreatePostPage() {
                 style={{ display: "none" }}
               />
 
-              {mediaFiles.length > 1 && (
+              {(mediaFiles.length > 0 || isEdit.length > 0) && (
                 <div className="media-navigation">
                   <button onClick={handlePreviousMedia}>{"<"}</button>
                   <button onClick={handleNextMedia}>{">"}</button>
@@ -419,7 +452,7 @@ function CreatePostPage() {
                   style={{ cursor: "pointer", marginRight: "10px" }}
                   onClick={handleCameraStart}
                 />
-                {mediaFiles.length > 0 && (
+                {(mediaFiles.length > 0 || isEdit) && (
                   <MdAddPhotoAlternate
                     size={30}
                     style={{ cursor: "pointer", marginLeft: "10px" }}
