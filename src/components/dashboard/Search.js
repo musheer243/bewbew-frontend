@@ -70,6 +70,13 @@ const Search = () => {
     navigate(`/profile/${user.id}`, { state: { user } });
   };
 
+  // Handler for clicking a post result.
+  const handlePostClick = (post) => {
+    // Navigate to a route that will render the detailed post view (SinglePost).
+    // We pass the post data in state so that the SinglePost component can display it.
+    navigate(`/api/post/view/${post.id || post.postId}`, { state: { post } });
+  };
+
   useEffect(() => {
     console.log("API Response for categories:", results); // Check the structure of each category object
   }, [results]);
@@ -121,9 +128,21 @@ const Search = () => {
         ) : (
           <ul className="results-list">
             {results.map((item, index) => (
+
               <li key={item.id || index} className="result-item"
-              onClick={() => searchType === "users" && handleUserClick(item)}
+              onClick={() => 
+                // searchType === "users" && handleUserClick(item)
+                {
+                  if (searchType === "users") {
+                  handleUserClick(item);
+                } else if (searchType === "posts") {
+                  handlePostClick(item);
+                }
+
+              }}
               >
+
+                {/* USER  */}
 
                 {searchType === "users" && (
                   <div className="result-user">
@@ -140,6 +159,8 @@ const Search = () => {
                     </span>
                   </div>
                 )}
+
+                {/* POSTS */}
                 {searchType === "posts" && (
                   <div className="result-post">
                     <h3 className="result-post-title">{item.title}</h3>
@@ -150,6 +171,8 @@ const Search = () => {
                     </p>
                   </div>
                 )}
+
+                {/* CATEGORIES */}
                 {searchType === "categories" && (
                   <div className="result-category">
                     <span className="result-category-name">{item.categoryTitle}</span>
