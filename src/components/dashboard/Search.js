@@ -28,6 +28,9 @@ const Search = () => {
       url = `${API_BASE_URL}/api/posts/search/${encodeURIComponent(searchTerm)}`;
     } else if (searchType === "categories") {
       url = `${API_BASE_URL}/api/categories/search/${encodeURIComponent(searchTerm)}`;
+
+      // url = `${API_BASE_URL}/api/categories`;
+
     }
 
     try {
@@ -62,6 +65,22 @@ const Search = () => {
     setSearchType(type);
   };
 
+  const handleUserClick = (user) => {
+    // Navigate to the profile page and pass the user data
+    navigate(`/profile/${user.id}`, { state: { user } });
+  };
+
+  // Handler for clicking a post result.
+  const handlePostClick = (post) => {
+    // Navigate to a route that will render the detailed post view (SinglePost).
+    // We pass the post data in state so that the SinglePost component can display it.
+    navigate(`/api/post/view/${post.id || post.postId}`, { state: { post } });
+  };
+
+  useEffect(() => {
+    console.log("API Response for categories:", results); // Check the structure of each category object
+  }, [results]);
+  
   return (
     <div className="search-container">
       {/* Header Section */}
@@ -108,8 +127,23 @@ const Search = () => {
           <p className="no-results">No results found.</p>
         ) : (
           <ul className="results-list">
-            {results.map((item) => (
-              <li key={item.id} className="result-item">
+            {results.map((item, index) => (
+
+              <li key={item.id || index} className="result-item"
+              onClick={() => 
+                // searchType === "users" && handleUserClick(item)
+                {
+                  if (searchType === "users") {
+                  handleUserClick(item);
+                } else if (searchType === "posts") {
+                  handlePostClick(item);
+                }
+
+              }}
+              >
+
+                {/* USER  */}
+
                 {searchType === "users" && (
                   <div className="result-user">
                     <img
@@ -125,6 +159,8 @@ const Search = () => {
                     </span>
                   </div>
                 )}
+
+                {/* POSTS */}
                 {searchType === "posts" && (
                   <div className="result-post">
                     <h3 className="result-post-title">{item.title}</h3>
@@ -135,9 +171,14 @@ const Search = () => {
                     </p>
                   </div>
                 )}
+
+                {/* CATEGORIES */}
                 {searchType === "categories" && (
                   <div className="result-category">
-                    <span className="result-category-name">{item.name}</span>
+                    <span className="result-category-name">{item.categoryTitle}</span>
+
+    {/* <span className="result-category-name">Category Placeholder</span> */}
+
                   </div>
                 )}
               </li>
