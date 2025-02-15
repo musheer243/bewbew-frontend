@@ -50,7 +50,6 @@ function CreatePostPage() {
       setTitle(postToEdit.title || "");
       setContent(postToEdit.content || "");
       setCloseFriendsOnly(postToEdit.closeFriendsOnly || false);
-      
     }
   }, [isEdit, postToEdit]);
 
@@ -69,9 +68,13 @@ function CreatePostPage() {
           if (response.ok) {
             const data = await response.json();
             const sorted = data.sort((a, b) =>
-              (a?.categoryTitle || "").localeCompare(b?.categoryTitle || "", undefined, {
-                sensitivity: "base",
-              })
+              (a?.categoryTitle || "").localeCompare(
+                b?.categoryTitle || "",
+                undefined,
+                {
+                  sensitivity: "base",
+                }
+              )
             );
             setCategories(sorted);
             setFilteredCategories(sorted);
@@ -92,13 +95,15 @@ function CreatePostPage() {
       searchKeyword.trim() === ""
         ? categories
         : categories.filter((cat) =>
-            cat?.categoryTitle?.toLowerCase().includes(searchKeyword.toLowerCase())
+            cat?.categoryTitle
+              ?.toLowerCase()
+              .includes(searchKeyword.toLowerCase())
           )
     );
   }, [searchKeyword, categories]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // 4) handlePostSubmit - 
+  // 4) handlePostSubmit -
   //    if isEdit => PUT update
   //    else => POST create
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -112,11 +117,13 @@ function CreatePostPage() {
         toast.error("Title or content is required to update.");
         return;
       }
-      // If your requirement is that media can't be empty, check if 
+      // If your requirement is that media can't be empty, check if
       // both new mediaFiles is empty and there's no old media in postToEdit
       const hasOldMedia = postToEdit.mediaFileNames?.length > 0;
       if (mediaFiles.length === 0 && !hasOldMedia) {
-        toast.error("You cannot remove all media. Please select at least one file.");
+        toast.error(
+          "You cannot remove all media. Please select at least one file."
+        );
         return;
       }
 
@@ -185,7 +192,9 @@ function CreatePostPage() {
         title,
         content,
         closeFriendsOnly,
-        scheduledDate: scheduledDate ? new Date(scheduledDate).toISOString() : null,
+        scheduledDate: scheduledDate
+          ? new Date(scheduledDate).toISOString()
+          : null,
       })
     );
     mediaFiles.forEach((file) => formData.append("mediaFiles", file));
@@ -276,7 +285,9 @@ function CreatePostPage() {
       context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
       canvas.toBlob((blob) => {
         if (blob) {
-          const file = new File([blob], "captured-image.jpg", { type: "image/jpeg" });
+          const file = new File([blob], "captured-image.jpg", {
+            type: "image/jpeg",
+          });
           setMediaFiles((prev) => [...prev, file]);
           handleCloseCamera();
         }
@@ -288,6 +299,24 @@ function CreatePostPage() {
       streamRef.current.getTracks().forEach((track) => track.stop());
     }
     setIsCameraActive(false);
+  };
+
+  const handleRemoveMedia = () => {
+    setMediaFiles((prevFiles) => {
+      if (prevFiles.length === 0) return prevFiles;
+
+      const updated = [...prevFiles];
+      updated.splice(currentMediaIndex, 1); // remove the file at current index
+
+      // Adjust currentMediaIndex so we don't go out of bounds
+      let newIndex = currentMediaIndex;
+      if (newIndex >= updated.length) {
+        newIndex = updated.length - 1;
+      }
+      setCurrentMediaIndex(Math.max(newIndex, 0));
+
+      return updated;
+    });
   };
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -309,6 +338,19 @@ function CreatePostPage() {
           />
 
           <div className="media-preview-container">
+            {/* Show the "X" button wrapper only if there's a file to remove */}
+            {mediaFiles.length > 0 && mediaFiles[currentMediaIndex] && (
+              <div className="media-item-wrapper">
+                {/* The "X" button to remove this file */}
+                <button
+                  className="remove-media-btn"
+                  onClick={handleRemoveMedia}
+                >
+                  X
+                </button>
+              </div>
+            )}
+
             <div className="media-preview">
               {mediaFiles.length > 0 && mediaFiles[currentMediaIndex] ? (
                 mediaFiles[currentMediaIndex].type.startsWith("image/") ? (
@@ -381,15 +423,26 @@ function CreatePostPage() {
                   <MdAddPhotoAlternate
                     size={30}
                     style={{ cursor: "pointer", marginLeft: "10px" }}
-                    onClick={() => document.getElementById("file-upload").click()}
+                    onClick={() =>
+                      document.getElementById("file-upload").click()
+                    }
                   />
                 )}
               </div>
 
               {isCameraActive && (
                 <div className="camera-fullscreen">
-                  <video ref={videoRef} className="camera-video" autoPlay playsInline />
-                  <FaCircleDot size={50} className="capture-btn" onClick={handleCaptureImage} />
+                  <video
+                    ref={videoRef}
+                    className="camera-video"
+                    autoPlay
+                    playsInline
+                  />
+                  <FaCircleDot
+                    size={50}
+                    className="capture-btn"
+                    onClick={handleCaptureImage}
+                  />
                   <button className="close-btn" onClick={handleCloseCamera}>
                     X
                   </button>
@@ -415,12 +468,16 @@ function CreatePostPage() {
                   onClick={() => setIsDropdownOpen((prev) => !prev)}
                 >
                   {selectedCategoryId
-                    ? categories.find((cat) => cat.categoryId === selectedCategoryId)
-                        ?.categoryTitle
+                    ? categories.find(
+                        (cat) => cat.categoryId === selectedCategoryId
+                      )?.categoryTitle
                     : "Select a category"}
                 </div>
                 {isDropdownOpen && (
-                  <div className="dropdown-menu" onClick={(e) => e.stopPropagation()}>
+                  <div
+                    className="dropdown-menu"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <input
                       type="text"
                       placeholder="Search categories"
