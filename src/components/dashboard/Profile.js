@@ -3,7 +3,7 @@ import { useParams, useLocation, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { API_BASE_URL } from "../../config";
 import styles from "../../styles/Profile.module.css"; // CSS Module
-import { BsArrowLeft } from "react-icons/bs";
+import { FaArrowLeft } from "react-icons/fa";
 import { IoMdSettings } from "react-icons/io";
 import { FaUserEdit } from "react-icons/fa";
 import { GrUserSettings } from "react-icons/gr";
@@ -124,10 +124,8 @@ const Profile = () => {
         console.log(`🔄 Navigating to /posts/${user.id}`);
         navigate(`/posts/${user.id}`, { state: { userId: user.id } });
       }
-      
-      
+
     };
-    
 
   return (
     <div className={styles["page-container"]}>
@@ -136,7 +134,7 @@ const Profile = () => {
 
     {/* Back Button */}
     <button className={styles["back-button"]} onClick={handleBackToDashboard}>
-      <BsArrowLeft />
+      <FaArrowLeft />
     </button>
 
       {/* More Options Button - 
