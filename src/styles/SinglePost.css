@@ -557,7 +557,7 @@ body.dark-mode {
   transform: translateX(-50%);
   width: 90%;
   max-width: 450px;
-  height: auto;
+  height: 80%;
   max-height: 400px;
   background: white;
   border-radius: 12px 12px 0 0;
