@@ -17,14 +17,12 @@ function CreatePostPage() {
   const isEdit = location.state?.isEdit || false;
   const postToEdit = location.state?.postToEdit || null;
 
-  // For the form fields
+  // Basic post fields
   const [title, setTitle] = useState("");
-  const [mediaFiles, setMediaFiles] = useState([]);
   const [content, setContent] = useState("");
   const [closeFriendsOnly, setCloseFriendsOnly] = useState(false);
 
-  // For category & schedule (only used in create mode)
-
+  // Category & schedule (only used if !isEdit)
   const [categories, setCategories] = useState([]);
   const [filteredCategories, setFilteredCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
@@ -32,8 +30,12 @@ function CreatePostPage() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [scheduledDate, setScheduledDate] = useState("");
 
-  // For media preview & camera
-  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  // Unifying old & new media
+  // allMedia: array of { type: "old" | "new", url?: string, file?: File }
+  const [allMedia, setAllMedia] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Camera
   const [isCameraActive, setIsCameraActive] = useState(false);
   const videoRef = useRef(null);
   const streamRef = useRef(null);
@@ -41,9 +43,6 @@ function CreatePostPage() {
   // Auth & navigation
   const jwtToken = localStorage.getItem("jwtToken");
   const navigate = useNavigate();
-
-  const [oldMediaUrls, setOldMediaUrls] = useState([]);
-  const [oldMediaRemoved, setOldMediaRemoved] = useState(false);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
   // 2) If Edit Mode, Pre-Fill
@@ -53,7 +52,13 @@ function CreatePostPage() {
       setTitle(postToEdit.title || "");
       setContent(postToEdit.content || "");
       setCloseFriendsOnly(postToEdit.closeFriendsOnly || false);
-      setOldMediaUrls(postToEdit.mediaFileNames || []);
+
+      // Convert existing mediaFileNames => array of { type: "old", url }
+      const oldArray = (postToEdit.mediaFileNames || []).map((url) => ({
+        type: "old",
+        url: url,
+      }));
+      setAllMedia(oldArray);
     }
   }, [isEdit, postToEdit]);
 
@@ -72,13 +77,9 @@ function CreatePostPage() {
           if (response.ok) {
             const data = await response.json();
             const sorted = data.sort((a, b) =>
-              (a?.categoryTitle || "").localeCompare(
-                b?.categoryTitle || "",
-                undefined,
-                {
-                  sensitivity: "base",
-                }
-              )
+              (a?.categoryTitle || "").localeCompare(b?.categoryTitle || "", undefined, {
+                sensitivity: "base",
+              })
             );
             setCategories(sorted);
             setFilteredCategories(sorted);
@@ -99,52 +100,52 @@ function CreatePostPage() {
       searchKeyword.trim() === ""
         ? categories
         : categories.filter((cat) =>
-            cat?.categoryTitle
-              ?.toLowerCase()
-              .includes(searchKeyword.toLowerCase())
+            cat?.categoryTitle?.toLowerCase().includes(searchKeyword.toLowerCase())
           )
     );
   }, [searchKeyword, categories]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // 4) handlePostSubmit -
-  //    if isEdit => PUT update
-  //    else => POST create
+  // 4) handlePostSubmit
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
   const handlePostSubmit = async (e) => {
     e.preventDefault();
 
+    // Basic validations
+    if (!title && !content) {
+      toast.error("Title or content is required.");
+      return;
+    }
+
     // EDIT MODE
     if (isEdit) {
-      // Validate fields (title or content must exist)
-      if (!title && !content) {
-        toast.error("Title or content is required to update.");
-        return;
-      }
-      // If your requirement is that media can't be empty, check if
-      // both new mediaFiles is empty and there's no old media in postToEdit
-      const hasOldMedia = postToEdit.mediaFileNames?.length > 0;
-      if (mediaFiles.length === 0 && !hasOldMedia) {
-        toast.error(
-          "You cannot remove all media. Please select at least one file."
-        );
+      // Separate old vs. new
+      const keptOldLinks = allMedia
+        .filter((item) => item.type === "old")
+        .map((item) => item.url);
+
+      const newFiles = allMedia
+        .filter((item) => item.type === "new")
+        .map((item) => item.file);
+
+      // If user ended up with no old & no new => no media at all
+      if (keptOldLinks.length === 0 && newFiles.length === 0) {
+        toast.error("You cannot remove all media. Please select at least one file.");
         return;
       }
 
+      // Build the PostDto with keptOldLinks
+      const dto = {
+        title,
+        content,
+        closeFriendsOnly,
+        keptOldLinks, // new field so server knows which old links remain
+      };
+
       // Build FormData
       const formData = new FormData();
-      formData.append(
-        "postDto",
-        JSON.stringify({
-          title,
-          content,
-          closeFriendsOnly,
-        })
-      );
-      // If the user selected new files, append them
-      if (mediaFiles.length > 0) {
-        mediaFiles.forEach((file) => formData.append("mediaFiles", file));
-      }
+      formData.append("postDto", JSON.stringify(dto));
+      newFiles.forEach((file) => formData.append("mediaFiles", file));
 
       try {
         const response = await fetch(
@@ -161,7 +162,6 @@ function CreatePostPage() {
         if (response.ok) {
           const updatedPost = await response.json();
           toast.success("Post updated successfully!");
-          // Optionally navigate back to dashboard
           navigate("/dashboard", { state: { updatedPost } });
         } else {
           toast.error("Failed to update the post.");
@@ -170,7 +170,6 @@ function CreatePostPage() {
         toast.error("An error occurred while updating the post.");
         console.error(error);
       }
-
       return;
     }
 
@@ -179,34 +178,30 @@ function CreatePostPage() {
       toast.error("Please select a category.");
       return;
     }
-    if (!title || !content) {
-      toast.error("Title and content are required.");
-      return;
-    }
-    if (mediaFiles.length === 0) {
+    if (allMedia.length === 0) {
       toast.error("Cannot create a post without any media!");
       return;
     }
 
-    // Build FormData for create
+    // Only new items in create mode
+    const newFiles = allMedia
+      .filter((item) => item.type === "new")
+      .map((item) => item.file);
+
+    const dto = {
+      title,
+      content,
+      closeFriendsOnly,
+      scheduledDate: scheduledDate ? new Date(scheduledDate).toISOString() : null,
+    };
+
     const formData = new FormData();
-    formData.append(
-      "postDto",
-      JSON.stringify({
-        title,
-        content,
-        closeFriendsOnly,
-        scheduledDate: scheduledDate
-          ? new Date(scheduledDate).toISOString()
-          : null,
-      })
-    );
-    mediaFiles.forEach((file) => formData.append("mediaFiles", file));
+    formData.append("postDto", JSON.stringify(dto));
+    newFiles.forEach((file) => formData.append("mediaFiles", file));
 
     try {
       const userId = localStorage.getItem("userId");
       const response = await fetch(
-        `${API_BASE_URL}/api/user/${userId}/category/${selectedCategoryId}/posts/with-media`,
         `${API_BASE_URL}/api/user/${userId}/category/${selectedCategoryId}/posts/with-media`,
         {
           method: "POST",
@@ -220,15 +215,9 @@ function CreatePostPage() {
       if (response.ok) {
         const newPost = await response.json();
         toast.success("Post created successfully!");
-        // Reset fields
-        setTitle("");
-        setContent("");
-        setMediaFiles([]);
-        setSelectedCategoryId(null);
-        setCloseFriendsOnly(false);
-        setScheduledDate("");
-        // Navigate back to dashboard
         navigate("/dashboard", { state: { newPost } });
+
+        // Optionally reset or navigate
       } else {
         toast.error("Failed to create post. Please try again.");
       }
@@ -241,16 +230,18 @@ function CreatePostPage() {
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Media & Camera Logic
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
-  const handleNextMedia = () => {
-    if (currentMediaIndex < mediaFiles.length - 1) {
-      setCurrentMediaIndex(currentMediaIndex + 1);
+  function handleNextMedia() {
+    if (currentIndex < allMedia.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
     }
-  };
-  const handlePreviousMedia = () => {
-    if (currentMediaIndex > 0) {
-      setCurrentMediaIndex(currentMediaIndex - 1);
+  }
+
+  function handlePreviousMedia() {
+    if (currentIndex > 0) {
+      setCurrentIndex((prev) => prev - 1);
     }
-  };
+  }
+
   const handleCameraStart = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -269,6 +260,7 @@ function CreatePostPage() {
       console.error("Camera error:", error);
     }
   };
+
   useEffect(() => {
     if (isCameraActive && videoRef.current) {
       videoRef.current.srcObject = streamRef.current;
@@ -277,27 +269,29 @@ function CreatePostPage() {
       };
     }
   }, [isCameraActive]);
+
   const handleCaptureImage = () => {
-    if (videoRef.current) {
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d");
-      canvas.width = videoRef.current.videoWidth;
-      canvas.height = videoRef.current.videoHeight;
-      // Flip horizontally
-      context.translate(canvas.width, 0);
-      context.scale(-1, 1);
-      context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const file = new File([blob], "captured-image.jpg", {
-            type: "image/jpeg",
-          });
-          setMediaFiles((prev) => [...prev, file]);
-          handleCloseCamera();
-        }
-      });
-    }
+    if (!videoRef.current) return;
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+
+    // Flip horizontally
+    context.translate(canvas.width, 0);
+    context.scale(-1, 1);
+
+    context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob((blob) => {
+      if (blob) {
+        const file = new File([blob], "captured-image.jpg", { type: "image/jpeg" });
+        // Add to allMedia as "new"
+        setAllMedia((prev) => [...prev, { type: "new", file }]);
+        handleCloseCamera();
+      }
+    });
   };
+
   const handleCloseCamera = () => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
@@ -305,95 +299,83 @@ function CreatePostPage() {
     setIsCameraActive(false);
   };
 
-  const handleRemoveMedia = () => {
-    // If there's any new media, remove from mediaFiles
-    if (mediaFiles.length > 0) {
-      setMediaFiles((prevFiles) => {
-        if (prevFiles.length === 0) return prevFiles;
-        const updated = [...prevFiles];
-        updated.splice(currentMediaIndex, 1); // remove the file at current index
+  function handleRemoveMedia() {
+    if (allMedia.length === 0) return;
+    setAllMedia((prev) => {
+      const updated = [...prev];
+      updated.splice(currentIndex, 1);
+      let newIndex = currentIndex;
+      if (newIndex >= updated.length) {
+        newIndex = updated.length - 1;
+      }
+      setCurrentIndex(Math.max(newIndex, 0));
+      return updated;
+    });
+  }
 
-        // Adjust currentMediaIndex so we don't go out of bounds
-        let newIndex = currentMediaIndex;
-        if (newIndex >= updated.length) {
-          newIndex = updated.length - 1;
-        }
-        setCurrentMediaIndex(Math.max(newIndex, 0));
-
-        return updated;
-      });
-    } else {
-      // Otherwise, we're displaying old server media, so "remove" it
-      setOldMediaRemoved(true);
+  function handleFileUpload(e) {
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      const newItems = files.map((file) => ({
+        type: "new",
+        file: file,
+      }));
+      setAllMedia((prev) => [...prev, ...newItems]);
+      // Move currentIndex to the newly added item if you want,
+      // or keep it as is. We'll do minimal approach:
+      setCurrentIndex((prev) => (prev < 0 ? 0 : prev));
     }
-  };
+  }
 
-  // We'll show only the first old link if no new files
   function renderPreview() {
-    // 1) If user has selected new files, display them
-    if (mediaFiles.length > 0) {
-      const file = mediaFiles[currentMediaIndex];
-      const src = URL.createObjectURL(file);
+    if (allMedia.length === 0) {
+      // Fallback label if no media
+      return (
+        <label
+          htmlFor="file-upload"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            textAlign: "center",
+            cursor: "pointer",
+          }}
+        >
+          <IoImagesOutline size={50} />
+          <p style={{ margin: 0 }}>
+            {isEdit ? "Replace / Add Media (if you want)" : "Upload Image & Videos."}
+          </p>
+        </label>
+      );
+    }
 
-      // Check if it's an image or video
-      if (file.type.startsWith("image/")) {
-        return (
-          <img
-            src={src}
-            alt={`Uploaded Media ${currentMediaIndex + 1}`}
-            className="media-preview-content"
-          />
-        );
+    const item = allMedia[currentIndex];
+    if (item.type === "old") {
+      // Old server link
+      if (item.url.toLowerCase().endsWith(".mp4")) {
+        return <video controls src={item.url} className="media-preview-content" />;
+      } else {
+        return <img src={item.url} alt="OldMedia" className="media-preview-content" />;
+      }
+    } else {
+      // It's a new file
+      const src = URL.createObjectURL(item.file);
+      if (item.file.type.startsWith("image/")) {
+        return <img src={src} alt="NewMedia" className="media-preview-content" />;
       } else {
         return <video controls src={src} className="media-preview-content" />;
       }
     }
-
-    // 2) If no new media but in edit mode, show old media link from server
-    if (isEdit && oldMediaUrls.length > 0 && !oldMediaRemoved) {
-      const oldLink = oldMediaUrls[0]; // or handle multiple links
-      if (oldLink.toLowerCase().endsWith(".mp4")) {
-        return (
-          <video controls src={oldLink} className="media-preview-content" />
-        );
-      } else {
-        return (
-          <img src={oldLink} alt="OldImage" className="media-preview-content" />
-        );
-      }
-    }
-
-    // 3) Fallback: no media selected + not editing old media => show label
-    return (
-      <label
-        htmlFor="file-upload"
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          textAlign: "center",
-          cursor: "pointer",
-        }}
-      >
-        <IoImagesOutline size={50} />
-        <p style={{ margin: 0 }}>
-          {isEdit
-            ? "Replace / Add Media (if you want)"
-            : "Upload Image & Videos."}
-        </p>
-      </label>
-    );
   }
 
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // RENDER
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // ─────────────────────────────────────────────────────────────
+  // Render
+  // ─────────────────────────────────────────────────────────────
   return (
     <div className="create-post-wrapper">
       <div className="create-post-container">
-        {/* Switch heading based on isEdit */}
-        <h2>{isEdit ? "Edit Post" : "Create a Post"}</h2>
+        <h2>{isEdit ? "Edit Post" : "Create Post"}</h2>
 
         <div className="title-input-container">
           <input
@@ -405,15 +387,10 @@ function CreatePostPage() {
           />
 
           <div className="media-preview-container">
-            {/* Show the "X" button wrapper only if there's a file to remove */}
-            {(mediaFiles.length > 0 ||
-              (isEdit && oldMediaUrls.length > 0 && !oldMediaRemoved)) && (
+            {/* Show the "X" button only if we have at least one item */}
+            {allMedia.length > 0 && (
               <div className="media-item-wrapper">
-                {/* The "X" button to remove this file */}
-                <button
-                  className="remove-media-btn"
-                  onClick={handleRemoveMedia}
-                >
+                <button className="remove-media-btn" onClick={handleRemoveMedia}>
                   X
                 </button>
               </div>
@@ -427,17 +404,11 @@ function CreatePostPage() {
                 type="file"
                 multiple
                 accept="image/,video/"
-                onChange={(e) => {
-                  const files = Array.from(e.target.files);
-                  if (files.length > 0) {
-                    setMediaFiles((prev) => [...prev, ...files]);
-                    setCurrentMediaIndex(0);
-                  }
-                }}
+                onChange={handleFileUpload}
                 style={{ display: "none" }}
               />
 
-              {(mediaFiles.length > 0 || isEdit.length > 0) && (
+              {allMedia.length > 1 && (
                 <div className="media-navigation">
                   <button onClick={handlePreviousMedia}>{"<"}</button>
                   <button onClick={handleNextMedia}>{">"}</button>
@@ -452,25 +423,19 @@ function CreatePostPage() {
                   style={{ cursor: "pointer", marginRight: "10px" }}
                   onClick={handleCameraStart}
                 />
-                {(mediaFiles.length > 0 || isEdit) && (
+                {/* Show AddPhoto icon if we have media or we are editing */}
+                {(allMedia.length > 0 || isEdit) && (
                   <MdAddPhotoAlternate
                     size={30}
                     style={{ cursor: "pointer", marginLeft: "10px" }}
-                    onClick={() =>
-                      document.getElementById("file-upload").click()
-                    }
+                    onClick={() => document.getElementById("file-upload").click()}
                   />
                 )}
               </div>
 
               {isCameraActive && (
                 <div className="camera-fullscreen">
-                  <video
-                    ref={videoRef}
-                    className="camera-video"
-                    autoPlay
-                    playsInline
-                  />
+                  <video ref={videoRef} className="camera-video" autoPlay playsInline />
                   <FaCircleDot
                     size={50}
                     className="capture-btn"
@@ -496,21 +461,14 @@ function CreatePostPage() {
           {!isEdit && !isCameraActive && (
             <>
               <div className="dropdown-container">
-                <div
-                  className="dropdown-header"
-                  onClick={() => setIsDropdownOpen((prev) => !prev)}
-                >
+                <div className="dropdown-header" onClick={() => setIsDropdownOpen((prev) => !prev)}>
                   {selectedCategoryId
-                    ? categories.find(
-                        (cat) => cat.categoryId === selectedCategoryId
-                      )?.categoryTitle
+                    ? categories.find((cat) => cat.categoryId === selectedCategoryId)
+                        ?.categoryTitle
                     : "Select a category"}
                 </div>
                 {isDropdownOpen && (
-                  <div
-                    className="dropdown-menu"
-                    onClick={(e) => e.stopPropagation()}
-                  >
+                  <div className="dropdown-menu" onClick={(e) => e.stopPropagation()}>
                     <input
                       type="text"
                       placeholder="Search categories"
@@ -568,7 +526,6 @@ function CreatePostPage() {
         </div>
       </div>
 
-      {/* Toast container if you haven't already placed it in App.js */}
       <ToastContainer />
     </div>
   );
