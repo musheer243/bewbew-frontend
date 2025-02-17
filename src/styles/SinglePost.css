@@ -19,6 +19,7 @@ body {
 }
 
 .SinglePost-single-post-container {
+  position: relative; /* <--- Add this line */
   border: 1px solid var(--single-post-border);
   border-radius: 12px;
   margin: 24px 0;
@@ -552,7 +553,7 @@ body.dark-mode {
 /* Comment Modal Styles */
 .SinglePost-comment-modal {
   position: absolute;
-  bottom: 5%;
+  bottom: 15%;
   left: 50%;
   transform: translateX(-50%);
   width: 90%;
