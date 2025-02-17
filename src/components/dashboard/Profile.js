@@ -3,7 +3,7 @@ import { useParams, useLocation, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { API_BASE_URL } from "../../config";
 import styles from "../../styles/Profile.module.css"; // CSS Module
-import { BsArrowLeft } from "react-icons/bs";
+import { FaArrowLeft } from "react-icons/fa";
 import { IoMdSettings } from "react-icons/io";
 import { FaUserEdit } from "react-icons/fa";
 import { GrUserSettings } from "react-icons/gr";
@@ -112,6 +112,21 @@ const Profile = () => {
       }
     };
 
+    const handleSeePosts = () => {
+
+      console.log("Type of loggedInUserId:", typeof loggedInUserId, "Value:", loggedInUserId);
+      console.log("Type of user.id:", typeof user.id, "Value:", user.id);
+      
+      if (Number(loggedInUserId) === Number(user.id)) {
+        console.log("✅ Navigating to /my-posts");
+        navigate("/my-posts", { state: { userId: loggedInUserId } }); // Pass userId explicitly
+      } else {
+        console.log(`🔄 Navigating to /posts/${user.id}`);
+        navigate(`/posts/${user.id}`, { state: { userId: user.id } });
+      }
+
+    };
+
   return (
     <div className={styles["page-container"]}>
     <div className={styles["profile-container"]}>
@@ -119,7 +134,7 @@ const Profile = () => {
 
     {/* Back Button */}
     <button className={styles["back-button"]} onClick={handleBackToDashboard}>
-      <BsArrowLeft />
+      <FaArrowLeft />
     </button>
 
       {/* More Options Button - 
@@ -229,13 +244,11 @@ const Profile = () => {
 
   {/* See Post Button */}
   <div className={styles["see-post-container"]}>
-    <Link
-     className={styles["see-post-btn"]}
-      onClick={() => navigate(`/user-posts/${user.id}`)}
-    >
-      See Post <MdKeyboardDoubleArrowRight />
-    </Link>
+  <button className={styles["see-post-btn"]} onClick={handleSeePosts}>
+    See Post <MdKeyboardDoubleArrowRight />
+  </button>
 </div>
+
 
     </div>
 

@@ -6,6 +6,7 @@
   background-color: #f8f9fa; /* Light background */
 }
 
+
 /* Profile Container */
 .profile-container {
   width: 100vw; /* Adjust width to fit container */
@@ -16,6 +17,7 @@
     border-radius: 10px;
     background-color: #f8f9fa;
     position: relative; /* Enables absolute positioning for children */
+    pointer-events: auto;
   }
   
   /* Main Profile View */
@@ -303,17 +305,19 @@
   /* Back Button (Top-Left Corner) */
   .back-button {
     position: absolute;
-    top: 20px; /* Adjust spacing from the top */
-    left: 20px; /* Adjust spacing from the left */
-    background-color: transparent; /* No background */
-    border: none; /* Remove border */
-    font-size: 24px; /* Adjust icon size */
-    color: #000000bb; /* Icon color */
+    top: 20px;
+    left: 20px;
+    background-color: transparent;
+    border: none;
+    font-size: 24px;
+    color: #000000bb;
     cursor: pointer;
+    z-index: 1000; /* Ensure it's above other elements */
   }
   
+  
   .back-button:hover {
-    color: #0056b3; /* Change color on hover */
+    color: #006ee4; /* Change color on hover */
   }
 
   .buttons-container {

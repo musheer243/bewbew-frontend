@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { useLocation } from "react-router-dom"; // Import useLocation
+import { useParams, useLocation } from "react-router-dom"; // Import useLocation
 import axios from "axios";
 import SinglePost from "../shared/SinglePost"; // Import the SinglePost component
 import "../../styles/MyPosts.css";
@@ -7,7 +7,12 @@ import { API_BASE_URL } from "../../config";
 
 const MyPosts = () => {
 
+
+
+  const { userId: paramsUserId  } = useParams(); // Get userId from URL if available
   const location = useLocation(); // Access location to retrieve state
+  const stateUserId = location.state?.userId; // Extract from navigation state
+ 
   const darkMode = location.state?.darkMode || false; // Default to light mode if not provided
 
   const [posts, setPosts] = useState([]);
@@ -18,6 +23,16 @@ const MyPosts = () => {
 
   const postsContainerRef = useRef(null); // Ref to the posts container
 
+  const viewedUserId = stateUserId || location.state?.userId; // Get the userId from navigation state
+  const loggedInUserId = localStorage.getItem("userId");
+
+  console.log("Params userId:", undefined);
+  console.log("Location state userId:", stateUserId);
+  console.log("Final viewedUserId:", viewedUserId);
+  console.log("Logged-in userId:", loggedInUserId);
+
+  // const pageTitle = viewedUserId === loggedInUserId ? "My Posts" : ` ${viewedUserId} Posts`;
+  const pageTitle = viewedUserId === loggedInUserId ? "My Posts" : "Posts";
 
    // Apply dark mode class to the body
    useEffect(() => {
@@ -45,15 +60,21 @@ const MyPosts = () => {
         const userId = localStorage.getItem("userId");
         const token = localStorage.getItem("jwtToken");
 
-        if (!userId || !token) {
-          setError("User ID or token is missing.");
+        // if (!userId || !token) {
+        //   setError("User ID or token is missing.");
+        //   return;
+        // }
+
+        if (!viewedUserId) {
+          setError("User ID is missing.");
           return;
         }
 
         setLoading(true); // Set loading to true before the API call
 
+
         const response = await axios.get(
-          `${API_BASE_URL}/api/user/${userId}/posts`,
+          `${API_BASE_URL}/api/user/${viewedUserId}/posts`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -86,7 +107,7 @@ const MyPosts = () => {
       };
 
     fetchUserPosts();
-  }, [pageNumber]); // Trigger effect when the page number changes
+  }, [viewedUserId,pageNumber]); // Trigger effect when the page number changes
 
   // Detect when the user reaches the bottom of the page
   useEffect(() => {
@@ -112,7 +133,8 @@ const MyPosts = () => {
   return (
     <div className={`my-posts-container ${darkMode ? "dark" : "light"}`}>
     <div className={`my-posts ${darkMode ? "dark" : "light"}`} ref={postsContainerRef}>
-    <h1>My Posts</h1>
+    <h1>{pageTitle}</h1>
+
 
     {/* Error Handling */}
     {error && <div className="error">{error}</div>}

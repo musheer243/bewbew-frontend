@@ -34,12 +34,17 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/:userId" element={<Profile />} />
         <Route path="/ai-chatting" element={<AIChatting />} />
-        <Route path="/my-posts" element={<MyPosts />} />
+        {/* <Route path="/my-posts" element={<MyPosts />} /> */}
         <Route path="/create-post" element={<CreatePostPage />} />
         <Route path="/api/post/view/:postId" element={<SharedPostViewer />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/search" element={<Search />} />
+
+
+        <Route path="/my-posts" element={<MyPosts />} />
+        <Route path="/posts/:userId" element={<MyPosts />} />
+
       </Routes>
     </Router>
     </WebSocketProvider>
