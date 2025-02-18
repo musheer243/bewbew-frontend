@@ -596,7 +596,7 @@ body.dark-mode {
   flex-grow: 1;
   padding: 10px;
   overflow-y: auto;
-  max-height: 250px;
+  max-height: 275px;
 }
 
 .SinglePost-comment-item {
