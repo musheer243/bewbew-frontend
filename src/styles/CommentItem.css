@@ -182,6 +182,7 @@
 .CommentItem-reply-body {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 /* "Replying to X" label + close (X) */
@@ -235,4 +236,27 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
+}
+
+/* Reply-specific header row: username on the left and 3-dot button on the right */
+.Reply-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+/* 3-dot button for replies */
+.CommentItem-reply-options-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #888;
+  padding: 0;
+}
+
+/* Footer row for replies: positions the "Reply" button at the bottom left */
+.Reply-bottom-row {
+  margin-top: 8px;
 }
