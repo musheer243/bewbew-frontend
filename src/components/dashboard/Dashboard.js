@@ -407,7 +407,7 @@ const Dashboard = () => {
             {
               name: "Settings",
               icon: <LiaToolsSolid size={20} />,
-              onClick: () => navigate("/settings"),
+              onClick: () => navigate("/setting"),
             },
             {
               name: "My Posts",
