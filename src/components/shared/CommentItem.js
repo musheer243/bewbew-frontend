@@ -22,6 +22,7 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
   const [showReplies, setShowReplies] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
   const [replyText, setReplyText] = useState("");
+  const [openReplyOptions, setOpenReplyOptions] = useState(null);
 
   const isLongComment = comment.content.length > 100;
   const formattedDate = formatDate(comment.date);
@@ -32,6 +33,11 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
   // Toggle the 3-dot menu for the comment
   const toggleOptions = () => {
     setShowOptions((prev) => !prev);
+  };
+
+  // Toggle the reply options menu for a given reply
+  const toggleReplyOptions = (replyId) => {
+    setOpenReplyOptions((prev) => (prev === replyId ? null : replyId));
   };
 
   // Start replying
@@ -139,7 +145,6 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
           <button className="CommentItem-reply-btn" onClick={handleReplyClick}>
             Reply
           </button>
-
           {replies.length > 0 && (
             <button
               className="CommentItem-view-replies-btn"
@@ -162,16 +167,29 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
                   className="CommentItem-profile-pic reply-pic"
                 />
                 <div className="CommentItem-reply-body">
-                  {/* Header Row: Username and 3-Dot Options Button */}
+                  {/* Top Row: Mimics comment structure */}
                   <div className="Reply-top-row">
-                    <span className="CommentItem-username">{r.user.username}</span>
-                    <button className="CommentItem-reply-options-btn">⋮</button>
+                    <div className="Reply-left-block">
+                      <span className="CommentItem-username">{r.user.username}</span>
+                      <p className="CommentItem-text">{r.content}</p>
+                    </div>
+                    <div className="Reply-right-block">
+                      <button
+                        className="CommentItem-reply-options-btn"
+                        onClick={() => toggleReplyOptions(r.id)}
+                      >
+                        ⋮
+                      </button>
+                      {openReplyOptions === r.id && (
+                        <div className="CommentItem-reply-options-menu">
+                          <button onClick={() => onEdit(r)}>Edit</button>
+                          <button onClick={() => onDelete(r)}>Delete</button>
+                        </div>
+                      )}
+                      <span className="CommentItem-date">{formatDate(r.date)}</span>
+                    </div>
                   </div>
-                  {/* Date */}
-                  <span className="CommentItem-date">{formatDate(r.date)}</span>
-                  {/* Reply Content */}
-                  <p className="CommentItem-text">{r.content}</p>
-                  {/* Footer Row: Reply Button */}
+                  {/* Bottom Row: Reply Button */}
                   <div className="Reply-bottom-row">
                     <button className="CommentItem-reply-btn">Reply</button>
                   </div>

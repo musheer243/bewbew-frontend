@@ -100,7 +100,7 @@
 /* The 3-dot menu itself */
 .CommentItem-options-menu {
   position: absolute; /* or relative, if you prefer */
-  top: 22px;          /* adjust to place under the 3-dot */
+  top: 30px;          /* adjust to place under the 3-dot */
   right: 0;
   background-color: #fff;
   border: 1px solid #ddd;
@@ -110,7 +110,8 @@
 }
 
 /* Menu items */
-.CommentItem-options-menu button {
+.CommentItem-options-menu button,
+.CommentItem-reply-options-menu button {
   display: block;
   width: 100%;
   padding: 5px 10px;
@@ -122,7 +123,8 @@
   color: #333;
 }
 
-.CommentItem-options-menu button:hover {
+.CommentItem-options-menu button:hover,
+.CommentItem-reply-options-menu button:hover {
   background-color: #f0f0f0;
 }
 
@@ -136,7 +138,7 @@
 .CommentItem-bottom-row {
   display: flex;
   align-items: center;
-  margin-top: 8px;
+  /* margin-top: 8px; */
   /* You can tweak the alignment below as needed */
   /* e.g. justify-content: flex-start; or space-around, etc. */
 }
@@ -243,8 +245,23 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px;
 }
+
+/* Left block in the reply (username and text) */
+.Reply-left-block {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+}
+
+/* Right block in the reply (3-dot options and date) */
+.Reply-right-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  position: relative;
+}
+
 
 /* 3-dot button for replies */
 .CommentItem-reply-options-btn {
@@ -254,6 +271,19 @@
   font-size: 16px;
   color: #888;
   padding: 0;
+  margin-bottom: 4px;  /* spacing before the date */
+}
+
+/* Reply options menu (mirroring the comment options menu) */
+.CommentItem-reply-options-menu {
+  position: absolute; /* Positioned relative to .Reply-right-block */
+  top: 22px;          /* Adjust to place under the 3-dot button */
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  min-width: 80px;
 }
 
 /* Footer row for replies: positions the "Reply" button at the bottom left */
