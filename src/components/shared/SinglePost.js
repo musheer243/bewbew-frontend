@@ -345,8 +345,14 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
     console.log("Modal Open:", isModalOpen);
   };
 
+  const MAX_COMMENT_LENGTH = 255;
+
   const handleSendComment = async () => {
     if (comment.trim()) {
+      if (comment.length > MAX_COMMENT_LENGTH) {
+        toast.error(`Comment should be less than ${MAX_COMMENT_LENGTH} characters.`);
+        return;
+      }
       try {
         const token = localStorage.getItem("jwtToken");
         const userId = localStorage.getItem("userId");

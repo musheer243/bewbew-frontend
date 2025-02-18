@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../../styles/CommentItem.css";
 import { API_BASE_URL } from "../../config";
+import { ToastContainer, toast } from "react-toastify"; // <-- Make sure you install and import react-toastify
 
 // Helper to format the date array [year, month, day, hour, min, sec, nanos] => "dd/mm/yyyy"
 function formatDate(dateArr) {
@@ -23,6 +24,7 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
   const [isReplying, setIsReplying] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [openReplyOptions, setOpenReplyOptions] = useState(null);
+  const [expandedReplies, setExpandedReplies] = useState({}); // State to track which replies are expanded
 
   const isLongComment = comment.content.length > 100;
   const formattedDate = formatDate(comment.date);
@@ -40,6 +42,14 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
     setOpenReplyOptions((prev) => (prev === replyId ? null : replyId));
   };
 
+  // Toggle expansion for a reply text
+  const toggleReplyExpansion = (replyId) => {
+    setExpandedReplies((prev) => ({
+      ...prev,
+      [replyId]: !prev[replyId],
+    }));
+  };
+
   // Start replying
   const handleReplyClick = () => {
     setIsReplying(true);
@@ -54,6 +64,12 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
   // Submit the new reply
   const handleSendReply = async () => {
     if (!replyText.trim()) return;
+
+    // Check if reply exceeds 255 characters
+    if (replyText.length > 255) {
+      toast.error("Reply cannot be more than 255 characters");
+      return;
+    }
 
     try {
       const token = localStorage.getItem("jwtToken");
@@ -104,7 +120,9 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
         <div className="CommentItem-top-row">
           <div className="CommentItem-left-block">
             {/* Username */}
-            <span className="CommentItem-username">{comment.user.username}</span>
+            <span className="CommentItem-username">
+              {comment.user.username}
+            </span>
             {/* Comment text */}
             <p
               className={`CommentItem-text ${
@@ -113,15 +131,18 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
             >
               {comment.content}
             </p>
-            {/* "See more" if needed */}
-            {isLongComment && (
-              <button
-                className="CommentItem-see-more"
-                onClick={() => setIsExpanded((prev) => !prev)}
-              >
-                {isExpanded ? "See less" : "See more"}
-              </button>
-            )}
+            {/* Container for date and "See more" button */}
+            <div className="CommentItem-date-see-more">
+              <span className="CommentItem-date">{formattedDate}</span>
+              {isLongComment && (
+                <button
+                  className="CommentItem-see-more"
+                  onClick={() => setIsExpanded((prev) => !prev)}
+                >
+                  {isExpanded ? "See less" : "See more"}
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="CommentItem-right-block">
@@ -135,8 +156,6 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
                 <button onClick={() => onDelete(comment)}>Delete</button>
               </div>
             )}
-            {/* Date below the 3-dot */}
-            <span className="CommentItem-date">{formattedDate}</span>
           </div>
         </div>
 
@@ -150,7 +169,9 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
               className="CommentItem-view-replies-btn"
               onClick={() => setShowReplies((prev) => !prev)}
             >
-              {showReplies ? `Hide replies` : `View replies (${replies.length})`}
+              {showReplies
+                ? `Hide replies`
+                : `View replies (${replies.length})`}
             </button>
           )}
         </div>
@@ -158,44 +179,72 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
         {/* Replies Section */}
         {showReplies && replies.length > 0 && (
           <div className="CommentItem-replies">
-            {replies.map((r) => (
-              <div key={r.id} className="CommentItem-reply">
-                {/* Reply User Profile Pic */}
-                <img
-                  src={r.user.profilepic}
-                  alt="Reply User"
-                  className="CommentItem-profile-pic reply-pic"
-                />
-                <div className="CommentItem-reply-body">
-                  {/* Top Row: Mimics comment structure */}
-                  <div className="Reply-top-row">
-                    <div className="Reply-left-block">
-                      <span className="CommentItem-username">{r.user.username}</span>
-                      <p className="CommentItem-text">{r.content}</p>
-                    </div>
-                    <div className="Reply-right-block">
-                      <button
-                        className="CommentItem-reply-options-btn"
-                        onClick={() => toggleReplyOptions(r.id)}
-                      >
-                        ⋮
-                      </button>
-                      {openReplyOptions === r.id && (
-                        <div className="CommentItem-reply-options-menu">
-                          <button onClick={() => onEdit(r)}>Edit</button>
-                          <button onClick={() => onDelete(r)}>Delete</button>
+            {replies.map((r) => {
+              // Determine if reply is long (threshold set to 100 characters)
+              const isLongReply = r.content.length > 100;
+              const isReplyExpanded = expandedReplies[r.id] || false;
+              return (
+                <div key={r.id} className="CommentItem-reply">
+                  {/* Reply User Profile Pic */}
+                  <img
+                    src={r.user.profilepic}
+                    alt="Reply User"
+                    className="CommentItem-profile-pic reply-pic"
+                  />
+                  <div className="CommentItem-reply-body">
+                    {/* Top Row: Mimics comment structure */}
+                    <div className="Reply-top-row">
+                      <div className="Reply-left-block">
+                        <span className="CommentItem-username">
+                          {r.user.username}
+                        </span>
+                        <p
+                          className={`CommentItem-text ${
+                            !isReplyExpanded && isLongReply
+                              ? "CommentItem-text-truncated"
+                              : ""
+                          }`}
+                        >
+                          {r.content}
+                        </p>
+                        {/* Container for date and "See more" button for reply */}
+                        <div className="CommentItem-date-see-more">
+                          <span className="CommentItem-date">
+                            {formatDate(r.date)}
+                          </span>
+                          {isLongReply && (
+                            <button
+                              className="CommentItem-see-more"
+                              onClick={() => toggleReplyExpansion(r.id)}
+                            >
+                              {isReplyExpanded ? "See less" : "See more"}
+                            </button>
+                          )}
                         </div>
-                      )}
-                      <span className="CommentItem-date">{formatDate(r.date)}</span>
+                      </div>
+                      <div className="Reply-right-block">
+                        <button
+                          className="CommentItem-reply-options-btn"
+                          onClick={() => toggleReplyOptions(r.id)}
+                        >
+                          ⋮
+                        </button>
+                        {openReplyOptions === r.id && (
+                          <div className="CommentItem-reply-options-menu">
+                            <button onClick={() => onEdit(r)}>Edit</button>
+                            <button onClick={() => onDelete(r)}>Delete</button>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  {/* Bottom Row: Reply Button */}
-                  <div className="Reply-bottom-row">
-                    <button className="CommentItem-reply-btn">Reply</button>
+                    {/* Bottom Row: Reply Button */}
+                    <div className="Reply-bottom-row">
+                      <button className="CommentItem-reply-btn">Reply</button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
@@ -204,7 +253,10 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
           <>
             <div className="CommentItem-replying-to">
               <span>Replying to {comment.user.username}</span>
-              <button className="CommentItem-cancel-reply-btn" onClick={handleCancelReply}>
+              <button
+                className="CommentItem-cancel-reply-btn"
+                onClick={handleCancelReply}
+              >
                 ×
               </button>
             </div>
@@ -214,13 +266,17 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
                 onChange={(e) => setReplyText(e.target.value)}
                 placeholder={`Write a reply to ${comment.user.username}...`}
               />
-              <button onClick={handleSendReply} className="CommentItem-send-reply-btn">
+              <button
+                onClick={handleSendReply}
+                className="CommentItem-send-reply-btn"
+              >
                 Send
               </button>
             </div>
           </>
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 };

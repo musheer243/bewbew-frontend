@@ -66,6 +66,12 @@
   line-height: 1.4;
 }
 
+.CommentItem-date-see-more {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Adjust gap between date and button as needed */
+}
+
 /* Truncation for very long text */
 .CommentItem-text-truncated {
   display: -webkit-box;
@@ -82,7 +88,6 @@
   cursor: pointer;
   padding: 0;
   font-size: 12px;
-  margin-bottom: 5px;
   text-align: left;
 }
 
