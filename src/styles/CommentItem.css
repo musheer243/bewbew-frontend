@@ -1,17 +1,18 @@
 .CommentItem-container {
-  display: flex;
+  display: flex;             /* Profile pic on the left, content on the right */
   align-items: flex-start;
   padding: 10px;
   border-bottom: 1px solid #e0e0e0;
   background-color: #fff;
   transition: background-color 0.2s;
-  position: relative; /* Ensure the 3-dot menu is placed relative here */
+  position: relative;         /* for the 3-dot menu absolute positioning if needed */
 }
 
 .CommentItem-container:hover {
   background-color: #f9f9f9;
 }
 
+/* Profile pic on the left */
 .CommentItem-profile-pic {
   width: 40px;
   height: 40px;
@@ -20,33 +21,43 @@
   margin-right: 10px;
 }
 
-/* The main body for text, date, replies, etc. */
-.CommentItem-body {
+/* The main content block on the right */
+.CommentItem-content {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-/* Top row: username (left), date (right) */
+/* The top row => left block (username & comment) + right block (3-dot & date) */
 .CommentItem-top-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
+  align-items: flex-start; /* align top edges */
 }
 
+/* The left block: username, text, see-more button */
+.CommentItem-left-block {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;  /* so it doesn't overlap the 3-dot area */
+}
+
+/* The right block: 3-dot menu, then date below it */
+.CommentItem-right-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;  /* date is below the 3-dot */
+}
+
+/* Username styling */
 .CommentItem-username {
   font-weight: bold;
   font-size: 14px;
   color: #333;
+  margin-bottom: 4px;
 }
 
-.CommentItem-date {
-  font-size: 12px;
-  color: #888;
-}
-
-/* The main text of the comment */
+/* The main comment text */
 .CommentItem-text {
   font-size: 14px;
   color: #333;
@@ -55,7 +66,7 @@
   line-height: 1.4;
 }
 
-/* Truncate the text to 2 lines */
+/* Truncation for very long text */
 .CommentItem-text-truncated {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -63,6 +74,7 @@
   overflow: hidden;
 }
 
+/* "See more" link */
 .CommentItem-see-more {
   background: none;
   border: none;
@@ -74,35 +86,87 @@
   text-align: left;
 }
 
-/* The "Reply" button */
+/* The 3-dot menu button */
+.CommentItem-options-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  color: #888;
+  margin-bottom: 8px; /* some spacing before the date */
+}
+
+/* The 3-dot menu itself */
+.CommentItem-options-menu {
+  position: absolute; /* or relative, if you prefer */
+  top: 22px;          /* adjust to place under the 3-dot */
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  min-width: 80px;
+}
+
+/* Menu items */
+.CommentItem-options-menu button {
+  display: block;
+  width: 100%;
+  padding: 5px 10px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+  color: #333;
+}
+
+.CommentItem-options-menu button:hover {
+  background-color: #f0f0f0;
+}
+
+/* The date below the 3-dot */
+.CommentItem-date {
+  font-size: 12px;
+  color: #888;
+}
+
+/* Bottom row => "Reply" on the left, "View replies" in center */
+.CommentItem-bottom-row {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  /* You can tweak the alignment below as needed */
+  /* e.g. justify-content: flex-start; or space-around, etc. */
+}
+
 .CommentItem-reply-btn {
   background: none;
   border: none;
   color: #007bff;
   cursor: pointer;
   font-size: 12px;
-  padding: 0;
-  margin-right: 10px;
+  margin-right: 20px; /* space from the next button */
 }
 
-/* The "View replies" button */
 .CommentItem-view-replies-btn {
   background: none;
   border: none;
   color: #007bff;
   cursor: pointer;
   font-size: 12px;
-  padding: 0;
-  margin-top: 4px;
+  /* to push it more center, you can do margin: 0 auto; if you like */
 }
 
-/* Container for the list of replies */
+/* Replies container (when user clicks "View replies") */
 .CommentItem-replies {
   margin-top: 8px;
   border-left: 2px solid #eee;
+  padding-left: 8px;
 }
 
-/* Each individual reply */
+/* Each individual reply item */
 .CommentItem-reply {
   display: flex;
   align-items: flex-start;
@@ -116,14 +180,13 @@
 }
 
 .CommentItem-reply-body {
-  flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-/* "Replying to X" label + X button */
+/* "Replying to X" label + close (X) */
 .CommentItem-replying-to {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   margin-top: 8px;
   background: #f0f8ff;
@@ -131,12 +194,10 @@
   border-radius: 4px;
   font-size: 12px;
   color: #333;
-  max-width: 300px;
-  position: relative;
   margin-bottom: 4px;
 }
 
-.CommentItem-replying-to button.CommentItem-cancel-reply-btn {
+.CommentItem-cancel-reply-btn {
   background: none;
   border: none;
   font-size: 14px;
@@ -145,7 +206,7 @@
   margin-left: 8px;
 }
 
-/* The reply input container */
+/* The reply input area */
 .CommentItem-reply-input {
   display: flex;
   flex-direction: column;
@@ -165,7 +226,6 @@
   font-family: inherit;
 }
 
-/* The "Send" button for replies */
 .CommentItem-send-reply-btn {
   align-self: flex-end;
   background-color: #007bff;
@@ -175,47 +235,4 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-}
-
-/* Options container (the 3-dot) */
-.CommentItem-options {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
-
-.CommentItem-options-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-  line-height: 1;
-  color: #888;
-}
-
-.CommentItem-options-menu {
-  position: absolute;
-  top: 22px;
-  right: 0;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 100;
-  min-width: 80px;
-}
-
-.CommentItem-options-menu button {
-  display: block;
-  width: 100%;
-  padding: 5px 10px;
-  background: none;
-  border: none;
-  text-align: left;
-  font-size: 14px;
-  cursor: pointer;
-  color: #333;
-}
-
-.CommentItem-options-menu button:hover {
-  background-color: #f0f0f0;
 }
