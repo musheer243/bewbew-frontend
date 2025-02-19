@@ -294,7 +294,6 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
     setLoading(false);
   };
 
-
   // When the comment modal opens, load the first page of comments
   useEffect(() => {
     if (isModalOpen) {
@@ -334,7 +333,6 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
     };
   }, [loading, hasMore]);
 
-
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setComment(""); // Clear the input when closing
@@ -350,7 +348,9 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
   const handleSendComment = async () => {
     if (comment.trim()) {
       if (comment.length > MAX_COMMENT_LENGTH) {
-        toast.error(`Comment should be less than ${MAX_COMMENT_LENGTH} characters.`);
+        toast.error(
+          `Comment should be less than ${MAX_COMMENT_LENGTH} characters.`
+        );
         return;
       }
       try {
@@ -706,14 +706,19 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
                       <CommentItem
                         key={c.id}
                         comment={c}
-                        onEdit={(comment) => console.log("Edit", comment)}
-                        // Update onDelete to remove the comment from SinglePost's state
-        onDelete={(deletedComment) =>
-          setComments((prevComments) =>
-            prevComments.filter((comment) => comment.id !== deletedComment.id)
-          )
-        }
-      />
+                        onEdit={(updatedComment) => {
+                          setComments((prevComments) =>
+                            prevComments.map((comm) =>
+                              comm.id === updatedComment.id ? updatedComment : comm
+                            )
+                          );
+                        }}
+                        onDelete={(deletedComment) => {
+                          setComments((prevComments) =>
+                            prevComments.filter((comm) => comm.id !== deletedComment.id)
+                          );
+                        }}
+                      />
                     ))
                   ) : (
                     <p className="SinglePost-no-comments">

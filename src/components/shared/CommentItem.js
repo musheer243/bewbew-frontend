@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../../styles/CommentItem.css";
 import { API_BASE_URL } from "../../config";
-import { ToastContainer, toast } from "react-toastify"; // <-- Make sure you install and import react-toastify
+import { ToastContainer, toast } from "react-toastify"; // Ensure react-toastify is installed
 
 // Helper to format the date array [year, month, day, hour, min, sec, nanos] => "dd/mm/yyyy"
 function formatDate(dateArr) {
@@ -18,8 +18,16 @@ function formatDate(dateArr) {
 }
 
 const CommentItem = ({ comment, onEdit, onDelete }) => {
-
   const loggedInUserId = localStorage.getItem("userId");
+
+  // ***** Comment Update States *****
+  const [isEditingComment, setIsEditingComment] = useState(false);
+  const [commentEditText, setCommentEditText] = useState(comment.content);
+
+  // ***** Reply Update States *****
+  // For reply editing, store the id of the reply being edited and its text
+  const [editingReplyId, setEditingReplyId] = useState(null);
+  const [editingReplyText, setEditingReplyText] = useState("");
 
   const [showOptions, setShowOptions] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -27,53 +35,35 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
   const [isReplying, setIsReplying] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [openReplyOptions, setOpenReplyOptions] = useState(null);
-  const [expandedReplies, setExpandedReplies] = useState({}); // State to track which replies are expanded
+  const [expandedReplies, setExpandedReplies] = useState({}); // For toggling "See more" in replies
 
   const isLongComment = comment.content.length > 100;
   const formattedDate = formatDate(comment.date);
 
-  // If the backend gave you an array of replies on `comment.replies`
+  // Local replies state (from backend)
   const [replies, setReplies] = useState(comment.replies || []);
 
-  // Toggle the 3-dot menu for the comment
-  const toggleOptions = () => {
-    setShowOptions((prev) => !prev);
-  };
-
-  // Toggle the reply options menu for a given reply
-  const toggleReplyOptions = (replyId) => {
+  // ----- Toggle functions -----
+  const toggleOptions = () => setShowOptions((prev) => !prev);
+  const toggleReplyOptions = (replyId) =>
     setOpenReplyOptions((prev) => (prev === replyId ? null : replyId));
-  };
-
-  // Toggle expansion for a reply text
   const toggleReplyExpansion = (replyId) => {
-    setExpandedReplies((prev) => ({
-      ...prev,
-      [replyId]: !prev[replyId],
-    }));
+    setExpandedReplies((prev) => ({ ...prev, [replyId]: !prev[replyId] }));
   };
 
-  // Start replying
-  const handleReplyClick = () => {
-    setIsReplying(true);
-  };
-
-  // Cancel replying
+  // ----- Reply Actions -----
+  const handleReplyClick = () => setIsReplying(true);
   const handleCancelReply = () => {
     setIsReplying(false);
     setReplyText("");
   };
 
-  // Submit the new reply
   const handleSendReply = async () => {
     if (!replyText.trim()) return;
-
-    // Check if reply exceeds 255 characters
     if (replyText.length > 255) {
       toast.error("Reply cannot be more than 255 characters");
       return;
     }
-
     try {
       const token = localStorage.getItem("jwtToken");
       const userId = localStorage.getItem("userId");
@@ -81,7 +71,6 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
         console.error("JWT token or userId is missing");
         return;
       }
-
       const endpoint = `${API_BASE_URL}/api/comment/${comment.id}/reply?userId=${userId}`;
       const payload = { content: replyText };
 
@@ -108,22 +97,16 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
     }
   };
 
-  // Delete comment using the DELETE API
+  // ----- Delete Comment -----
   const handleDeleteComment = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
-      const response = await fetch(
-        `${API_BASE_URL}/api/comment/${comment.id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/api/comment/${comment.id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (response.ok) {
-        toast.success("Comment deleted successfully");
-        onDelete(comment);
+        onDelete(comment); // Inform parent to remove this comment from the UI
       } else {
         toast.error("Failed to delete comment");
       }
@@ -133,15 +116,66 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
     }
   };
 
-  // Delete reply using the DELETE API
+  // ----- Update Comment -----
+  const handleStartEditComment = () => {
+    setIsEditingComment(true);
+    setCommentEditText(comment.content);
+    setShowOptions(false);
+  };
+
+  const handleCancelEditComment = () => {
+    setIsEditingComment(false);
+    setCommentEditText(comment.content);
+  };
+
+  const handleSaveEditComment = async () => {
+    if (!commentEditText.trim()) {
+      toast.error("Comment cannot be empty.");
+      return;
+    }
+    if (commentEditText.length > 255) {
+      toast.error("Comment cannot be more than 255 characters");
+      return;
+    }
+    try {
+      const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        console.error("JWT token is missing");
+        return;
+      }
+      const endpoint = `${API_BASE_URL}/api/comment/update/${comment.id}`;
+      const payload = { ...comment, content: commentEditText }; // Adjust payload as needed
+
+      const response = await fetch(endpoint, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        toast.error("Failed to update comment");
+        return;
+      }
+
+      const updatedComment = await response.json();
+      setIsEditingComment(false);
+      onEdit(updatedComment);
+    } catch (error) {
+      console.error("Error updating comment:", error);
+      toast.error("Error updating comment");
+    }
+  };
+
+  // ----- Delete Reply -----
   const handleDeleteReply = async (replyId) => {
     try {
       const token = localStorage.getItem("jwtToken");
       const response = await fetch(`${API_BASE_URL}/api/reply/${replyId}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (response.ok) {
         toast.success("Reply deleted successfully");
@@ -155,10 +189,67 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
     }
   };
 
+  // ----- Update Reply -----
+  const handleStartEditReply = (r) => {
+    setEditingReplyId(r.id);
+    setEditingReplyText(r.content);
+    setOpenReplyOptions(null);
+  };
+
+  const handleCancelEditReply = () => {
+    setEditingReplyId(null);
+    setEditingReplyText("");
+  };
+
+  const handleSaveEditReply = async () => {
+    if (!editingReplyText.trim()) {
+      toast.error("Reply cannot be empty.");
+      return;
+    }
+    if (editingReplyText.length > 255) {
+      toast.error("Reply cannot be more than 255 characters");
+      return;
+    }
+    try {
+      const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        console.error("JWT token is missing");
+        return;
+      }
+      const endpoint = `${API_BASE_URL}/api/update/${editingReplyId}`;
+      const payload = { content: editingReplyText }; // Adjust as needed
+
+      const response = await fetch(endpoint, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        toast.error("Failed to update reply");
+        return;
+      }
+
+      const updatedReply = await response.json();
+      toast.success("Reply updated successfully");
+      // Update replies state with updated reply:
+      setReplies((prevReplies) =>
+        prevReplies.map((r) => (r.id === updatedReply.id ? updatedReply : r))
+      );
+      setEditingReplyId(null);
+      setEditingReplyText("");
+    } catch (error) {
+      console.error("Error updating reply:", error);
+      toast.error("Error updating reply");
+    }
+  };
 
   return (
     <div className="CommentItem-container">
-      {/* Left: Profile Picture */}
+      {/* Profile Picture */}
       <img
         src={comment.user.profilepic}
         alt="User Profile"
@@ -171,40 +262,52 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
         <div className="CommentItem-top-row">
           <div className="CommentItem-left-block">
             {/* Username */}
-            <span className="CommentItem-username">
-              {comment.user.username}
-            </span>
-            {/* Comment text */}
-            <p
-              className={`CommentItem-text ${
-                !isExpanded && isLongComment ? "CommentItem-text-truncated" : ""
-              }`}
-            >
-              {comment.content}
-            </p>
-            {/* Container for date and "See more" button */}
-            <div className="CommentItem-date-see-more">
-              <span className="CommentItem-date">{formattedDate}</span>
-              {isLongComment && (
-                <button
-                  className="CommentItem-see-more"
-                  onClick={() => setIsExpanded((prev) => !prev)}
+            <span className="CommentItem-username">{comment.user.username}</span>
+            {/* Comment Text or Edit Field */}
+            {isEditingComment ? (
+              <div className="CommentItem-edit-container">
+                <textarea
+                  value={commentEditText}
+                  onChange={(e) => setCommentEditText(e.target.value)}
+                />
+                <div className="CommentItem-edit-buttons">
+                  <button onClick={handleSaveEditComment}>Save</button>
+                  <button onClick={handleCancelEditComment}>Cancel</button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <p
+                  className={`CommentItem-text ${
+                    !isExpanded && isLongComment ? "CommentItem-text-truncated" : ""
+                  }`}
                 >
-                  {isExpanded ? "See less" : "See more"}
-                </button>
-              )}
-            </div>
+                  {comment.content}
+                </p>
+                {/* Container for date and "See more" button */}
+                <div className="CommentItem-date-see-more">
+                  <span className="CommentItem-date">{formattedDate}</span>
+                  {isLongComment && (
+                    <button
+                      className="CommentItem-see-more"
+                      onClick={() => setIsExpanded((prev) => !prev)}
+                    >
+                      {isExpanded ? "See less" : "See more"}
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
           </div>
-
-         {/* Show three-dot options only if the logged-in user owns the comment */}
-         {comment.user.id.toString() === loggedInUserId && (
+          {/* Options Menu (only if the logged-in user owns the comment) */}
+          {comment.user.id.toString() === loggedInUserId && (
             <div className="CommentItem-right-block">
               <button onClick={toggleOptions} className="CommentItem-options-btn">
                 ⋮
               </button>
               {showOptions && (
                 <div className="CommentItem-options-menu">
-                  <button onClick={() => onEdit(comment)}>Edit</button>
+                  <button onClick={handleStartEditComment}>Edit</button>
                   <button onClick={handleDeleteComment}>Delete</button>
                 </div>
               )}
@@ -212,7 +315,7 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
           )}
         </div>
 
-        {/* Bottom Row (Reply on left, View replies in center) */}
+        {/* Bottom Row: Reply and View Replies */}
         <div className="CommentItem-bottom-row">
           <button className="CommentItem-reply-btn" onClick={handleReplyClick}>
             Reply
@@ -236,48 +339,60 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
               // Determine if reply is long (threshold set to 100 characters)
               const isLongReply = r.content.length > 100;
               const isReplyExpanded = expandedReplies[r.id] || false;
+              // Define isEditingThisReply for this reply:
+              const isEditingThisReply = editingReplyId === r.id;
               return (
                 <div key={r.id} className="CommentItem-reply">
-                  {/* Reply User Profile Pic */}
+                  {/* Reply Profile Picture */}
                   <img
                     src={r.user.profilepic}
                     alt="Reply User"
                     className="CommentItem-profile-pic reply-pic"
                   />
                   <div className="CommentItem-reply-body">
-                    {/* Top Row: Mimics comment structure */}
                     <div className="Reply-top-row">
                       <div className="Reply-left-block">
-                        <span className="CommentItem-username">
-                          {r.user.username}
-                        </span>
-                        <p
-                          className={`CommentItem-text ${
-                            !isReplyExpanded && isLongReply
-                              ? "CommentItem-text-truncated"
-                              : ""
-                          }`}
-                        >
-                          {r.content}
-                        </p>
-                        {/* Container for date and "See more" button for reply */}
-                        <div className="CommentItem-date-see-more">
-                          <span className="CommentItem-date">
-                            {formatDate(r.date)}
-                          </span>
-                          {isLongReply && (
-                            <button
-                              className="CommentItem-see-more"
-                              onClick={() => toggleReplyExpansion(r.id)}
+                        <span className="CommentItem-username">{r.user.username}</span>
+                        {/* If editing this reply, show edit input */}
+                        {isEditingThisReply ? (
+                          <div className="Reply-edit-container">
+                            <textarea
+                              value={editingReplyText}
+                              onChange={(e) => setEditingReplyText(e.target.value)}
+                            />
+                            <div className="Reply-edit-buttons">
+                              <button onClick={handleSaveEditReply}>Save</button>
+                              <button onClick={handleCancelEditReply}>Cancel</button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <p
+                              className={`CommentItem-text ${
+                                !isReplyExpanded && isLongReply
+                                  ? "CommentItem-text-truncated"
+                                  : ""
+                              }`}
                             >
-                              {isReplyExpanded ? "See less" : "See more"}
-                            </button>
-                          )}
-                        </div>
+                              {r.content}
+                            </p>
+                            {/* Container for date and "See more" button for reply */}
+                            <div className="CommentItem-date-see-more">
+                              <span className="CommentItem-date">{formatDate(r.date)}</span>
+                              {isLongReply && (
+                                <button
+                                  className="CommentItem-see-more"
+                                  onClick={() => toggleReplyExpansion(r.id)}
+                                >
+                                  {isReplyExpanded ? "See less" : "See more"}
+                                </button>
+                              )}
+                            </div>
+                          </>
+                        )}
                       </div>
-
-                       {/* Only show reply options if the logged-in user is the owner */}
-                       {r.user.id.toString() === loggedInUserId && (
+                      {/* Reply Options (if the reply belongs to the logged-in user) */}
+                      {r.user.id.toString() === loggedInUserId && (
                         <div className="Reply-right-block">
                           <button
                             className="CommentItem-reply-options-btn"
@@ -287,18 +402,13 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
                           </button>
                           {openReplyOptions === r.id && (
                             <div className="CommentItem-reply-options-menu">
-                              {/* Uncomment the edit option if needed */}
-                              <button onClick={() => onEdit(r)}>Edit</button>
-                              <button onClick={() => handleDeleteReply(r.id)}>
-                                Delete
-                              </button>
+                              <button onClick={() => handleStartEditReply(r)}>Edit</button>
+                              <button onClick={() => handleDeleteReply(r.id)}>Delete</button>
                             </div>
                           )}
                         </div>
                       )}
                     </div>
-
-                    {/* Bottom Row: Reply Button */}
                     <div className="Reply-bottom-row">
                       <button className="CommentItem-reply-btn">Reply</button>
                     </div>
@@ -337,6 +447,7 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
           </>
         )}
       </div>
+      {/* Remove ToastContainer from here if it's already added at your app's root */}
       <ToastContainer />
     </div>
   );
