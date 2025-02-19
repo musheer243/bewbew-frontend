@@ -293,7 +293,7 @@
 
 /* Footer row for replies: positions the "Reply" button at the bottom left */
 .Reply-bottom-row {
-  margin-top: 8px;
+  /* margin-top: 8px; */
 }
 
 /* ===== Modern Editing a Comment ===== */
@@ -400,4 +400,15 @@
 .Reply-edit-buttons button:hover {
   background-color: #1e7e34;
   transform: scale(1.02);
+}
+
+
+.mention {
+  color: #007bff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.mention:hover {
+  text-decoration: underline;
 }

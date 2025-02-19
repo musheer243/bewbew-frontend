@@ -17,6 +17,22 @@ function formatDate(dateArr) {
   });
 }
 
+// Add this helper function near the top of your CommentItem component
+const parseMentions = (text) => {
+  // Split text at occurrences of @ followed by one or more word characters
+  const parts = text.split(/(@\w+)/g);
+  return parts.map((part, index) =>
+    part.startsWith("@") ? (
+      <a key={index} href="#" className="mention">
+        {part}
+      </a>
+    ) : (
+      part
+    )
+  );
+};
+
+
 const CommentItem = ({ comment, onEdit, onDelete }) => {
   const loggedInUserId = localStorage.getItem("userId");
 
@@ -25,9 +41,11 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
   const [commentEditText, setCommentEditText] = useState(comment.content);
 
   // ***** Reply Update States *****
-  // For reply editing, store the id of the reply being edited and its text
   const [editingReplyId, setEditingReplyId] = useState(null);
   const [editingReplyText, setEditingReplyText] = useState("");
+
+  // New state: replyingTo - which username we're replying to
+  const [replyingTo, setReplyingTo] = useState(null);
 
   const [showOptions, setShowOptions] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -52,10 +70,22 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
   };
 
   // ----- Reply Actions -----
-  const handleReplyClick = () => setIsReplying(true);
+  // For replying to a comment, set replyingTo as the comment owner's username.
+  const handleReplyClick = () => {
+    setReplyingTo(comment.user.username);
+    setIsReplying(true);
+  };
+
+  // For replying to a reply, set replyingTo to that reply's username.
+  const handleReplyToReply = (username) => {
+    setReplyingTo(username);
+    setIsReplying(true);
+  };
+
   const handleCancelReply = () => {
     setIsReplying(false);
     setReplyText("");
+    setReplyingTo(null);
   };
 
   const handleSendReply = async () => {
@@ -71,8 +101,13 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
         console.error("JWT token or userId is missing");
         return;
       }
+      // Using the same endpoint for both comment replies and reply replies.
       const endpoint = `${API_BASE_URL}/api/comment/${comment.id}/reply?userId=${userId}`;
-      const payload = { content: replyText };
+      
+      // Prepend the reply text with the mention if replyingTo is set.
+      const finalPayload = replyingTo
+        ? { content: `@${replyingTo} ${replyText}` }
+        : { content: replyText };
 
       const response = await fetch(endpoint, {
         method: "POST",
@@ -80,7 +115,7 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(finalPayload),
       });
 
       if (!response.ok) {
@@ -92,6 +127,7 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
       setReplies((prev) => [...prev, newReply]);
       setReplyText("");
       setIsReplying(false);
+      setReplyingTo(null);
     } catch (error) {
       console.error("Error posting reply:", error);
     }
@@ -144,7 +180,7 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
         return;
       }
       const endpoint = `${API_BASE_URL}/api/comment/update/${comment.id}`;
-      const payload = { ...comment, content: commentEditText }; // Adjust payload as needed
+      const payload = { ...comment, content: commentEditText };
 
       const response = await fetch(endpoint, {
         method: "PUT",
@@ -217,7 +253,7 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
         return;
       }
       const endpoint = `${API_BASE_URL}/api/update/${editingReplyId}`;
-      const payload = { content: editingReplyText }; // Adjust as needed
+      const payload = { content: editingReplyText };
 
       const response = await fetch(endpoint, {
         method: "PUT",
@@ -235,7 +271,6 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
 
       const updatedReply = await response.json();
       toast.success("Reply updated successfully");
-      // Update replies state with updated reply:
       setReplies((prevReplies) =>
         prevReplies.map((r) => (r.id === updatedReply.id ? updatedReply : r))
       );
@@ -317,7 +352,10 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
 
         {/* Bottom Row: Reply and View Replies */}
         <div className="CommentItem-bottom-row">
-          <button className="CommentItem-reply-btn" onClick={handleReplyClick}>
+          <button
+            className="CommentItem-reply-btn"
+            onClick={handleReplyClick}
+          >
             Reply
           </button>
           {replies.length > 0 && (
@@ -336,10 +374,8 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
         {showReplies && replies.length > 0 && (
           <div className="CommentItem-replies">
             {replies.map((r) => {
-              // Determine if reply is long (threshold set to 100 characters)
               const isLongReply = r.content.length > 100;
               const isReplyExpanded = expandedReplies[r.id] || false;
-              // Define isEditingThisReply for this reply:
               const isEditingThisReply = editingReplyId === r.id;
               return (
                 <div key={r.id} className="CommentItem-reply">
@@ -374,9 +410,8 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
                                   : ""
                               }`}
                             >
-                              {r.content}
+                              {parseMentions(r.content)}
                             </p>
-                            {/* Container for date and "See more" button for reply */}
                             <div className="CommentItem-date-see-more">
                               <span className="CommentItem-date">{formatDate(r.date)}</span>
                               {isLongReply && (
@@ -410,7 +445,16 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
                       )}
                     </div>
                     <div className="Reply-bottom-row">
-                      <button className="CommentItem-reply-btn">Reply</button>
+                      {/* When replying to a reply, set replyingTo to that reply's username */}
+                      <button
+                        className="CommentItem-reply-btn"
+                        onClick={() => {
+                          setReplyingTo(r.user.username);
+                          setIsReplying(true);
+                        }}
+                      >
+                        Reply
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -423,7 +467,12 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
         {isReplying && (
           <>
             <div className="CommentItem-replying-to">
-              <span>Replying to {comment.user.username}</span>
+              <span>
+                Replying to{" "}
+                <a href="#" className="mention">
+                  @{replyingTo || comment.user.username}
+                </a>
+              </span>
               <button
                 className="CommentItem-cancel-reply-btn"
                 onClick={handleCancelReply}
@@ -435,7 +484,7 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
               <textarea
                 value={replyText}
                 onChange={(e) => setReplyText(e.target.value)}
-                placeholder={`Write a reply to ${comment.user.username}...`}
+                placeholder="Write your reply..."
               />
               <button
                 onClick={handleSendReply}
