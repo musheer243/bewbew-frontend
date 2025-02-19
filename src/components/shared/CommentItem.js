@@ -18,6 +18,9 @@ function formatDate(dateArr) {
 }
 
 const CommentItem = ({ comment, onEdit, onDelete }) => {
+
+  const loggedInUserId = localStorage.getItem("userId");
+
   const [showOptions, setShowOptions] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
@@ -105,6 +108,54 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
     }
   };
 
+  // Delete comment using the DELETE API
+  const handleDeleteComment = async () => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      const response = await fetch(
+        `${API_BASE_URL}/api/comment/${comment.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.ok) {
+        toast.success("Comment deleted successfully");
+        onDelete(comment);
+      } else {
+        toast.error("Failed to delete comment");
+      }
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      toast.error("Error deleting comment");
+    }
+  };
+
+  // Delete reply using the DELETE API
+  const handleDeleteReply = async (replyId) => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      const response = await fetch(`${API_BASE_URL}/api/reply/${replyId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        toast.success("Reply deleted successfully");
+        setReplies((prev) => prev.filter((r) => r.id !== replyId));
+      } else {
+        toast.error("Failed to delete reply");
+      }
+    } catch (error) {
+      console.error("Error deleting reply:", error);
+      toast.error("Error deleting reply");
+    }
+  };
+
+
   return (
     <div className="CommentItem-container">
       {/* Left: Profile Picture */}
@@ -145,18 +196,20 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
             </div>
           </div>
 
-          <div className="CommentItem-right-block">
-            {/* 3-dot menu */}
-            <button onClick={toggleOptions} className="CommentItem-options-btn">
-              ⋮
-            </button>
-            {showOptions && (
-              <div className="CommentItem-options-menu">
-                <button onClick={() => onEdit(comment)}>Edit</button>
-                <button onClick={() => onDelete(comment)}>Delete</button>
-              </div>
-            )}
-          </div>
+         {/* Show three-dot options only if the logged-in user owns the comment */}
+         {comment.user.id.toString() === loggedInUserId && (
+            <div className="CommentItem-right-block">
+              <button onClick={toggleOptions} className="CommentItem-options-btn">
+                ⋮
+              </button>
+              {showOptions && (
+                <div className="CommentItem-options-menu">
+                  <button onClick={() => onEdit(comment)}>Edit</button>
+                  <button onClick={handleDeleteComment}>Delete</button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Bottom Row (Reply on left, View replies in center) */}
@@ -222,21 +275,29 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
                           )}
                         </div>
                       </div>
-                      <div className="Reply-right-block">
-                        <button
-                          className="CommentItem-reply-options-btn"
-                          onClick={() => toggleReplyOptions(r.id)}
-                        >
-                          ⋮
-                        </button>
-                        {openReplyOptions === r.id && (
-                          <div className="CommentItem-reply-options-menu">
-                            <button onClick={() => onEdit(r)}>Edit</button>
-                            <button onClick={() => onDelete(r)}>Delete</button>
-                          </div>
-                        )}
-                      </div>
+
+                       {/* Only show reply options if the logged-in user is the owner */}
+                       {r.user.id.toString() === loggedInUserId && (
+                        <div className="Reply-right-block">
+                          <button
+                            className="CommentItem-reply-options-btn"
+                            onClick={() => toggleReplyOptions(r.id)}
+                          >
+                            ⋮
+                          </button>
+                          {openReplyOptions === r.id && (
+                            <div className="CommentItem-reply-options-menu">
+                              {/* Uncomment the edit option if needed */}
+                              <button onClick={() => onEdit(r)}>Edit</button>
+                              <button onClick={() => handleDeleteReply(r.id)}>
+                                Delete
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
+
                     {/* Bottom Row: Reply Button */}
                     <div className="Reply-bottom-row">
                       <button className="CommentItem-reply-btn">Reply</button>

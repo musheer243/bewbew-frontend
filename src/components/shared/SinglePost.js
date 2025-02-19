@@ -707,8 +707,13 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
                         key={c.id}
                         comment={c}
                         onEdit={(comment) => console.log("Edit", comment)}
-                        onDelete={(comment) => console.log("Delete", comment)}
-                      />
+                        // Update onDelete to remove the comment from SinglePost's state
+        onDelete={(deletedComment) =>
+          setComments((prevComments) =>
+            prevComments.filter((comment) => comment.id !== deletedComment.id)
+          )
+        }
+      />
                     ))
                   ) : (
                     <p className="SinglePost-no-comments">
