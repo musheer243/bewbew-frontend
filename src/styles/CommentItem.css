@@ -412,3 +412,8 @@
 .mention:hover {
   text-decoration: underline;
 }
+
+.highlight {
+  background-color: rgba(255, 255, 0, 0.3); /* light yellow highlight */
+  transition: background-color 1s ease;
+}

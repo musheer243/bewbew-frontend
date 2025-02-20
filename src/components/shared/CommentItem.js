@@ -33,7 +33,8 @@ const parseMentions = (text) => {
 };
 
 
-const CommentItem = ({ comment, onEdit, onDelete }) => {
+const CommentItem = ({ comment, onEdit, onDelete, isHighlighted = false,     // default false if not provided
+  highlightReplyId }) => {
   const loggedInUserId = localStorage.getItem("userId");
 
   // ***** Comment Update States *****
@@ -283,7 +284,8 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
   };
 
   return (
-    <div className="CommentItem-container">
+    <div id={`comment-${comment.id}`}   className={`CommentItem-container ${isHighlighted ? "highlight" : ""}`}
+>
       {/* Profile Picture */}
       <img
         src={comment.user.profilepic}
@@ -378,7 +380,11 @@ const CommentItem = ({ comment, onEdit, onDelete }) => {
               const isReplyExpanded = expandedReplies[r.id] || false;
               const isEditingThisReply = editingReplyId === r.id;
               return (
-                <div key={r.id} className="CommentItem-reply">
+                <div key={r.id} id={`reply-${r.id}`}
+                className={`CommentItem-reply ${
+                  highlightReplyId === r.id ? "highlight" : ""
+
+                }`}>
                   {/* Reply Profile Picture */}
                   <img
                     src={r.user.profilepic}

@@ -22,7 +22,9 @@ import { FaPaperPlane } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import CommentItem from "./CommentItem";
-const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
+const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard, 
+  highlightCommentId, 
+  highlightReplyId  }) => {
   const {
     title,
     mediaFileNames = [],
@@ -63,6 +65,48 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
     // Update the document body class whenever darkModeFromDashboard changes
     document.body.classList.toggle("dark-mode", darkModeFromDashboard);
   }, [darkModeFromDashboard]);
+
+  // Auto-open modal if highlightCommentId is present
+  useEffect(() => {
+    if (highlightCommentId) {
+      setIsModalOpen(true);
+    }
+  }, [highlightCommentId]);
+
+  // Once comments are loaded, find and highlight the specific comment
+  useEffect(() => {
+    if (!comments.length || !highlightCommentId) return;
+
+    const targetComment = comments.find((c) => c.id === highlightCommentId);
+    if (!targetComment) return;
+
+    // Scroll to the comment (assuming you have ref or class for each comment)
+    const commentElement = document.getElementById(`comment-${highlightCommentId}`);
+    if (commentElement) {
+      commentElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      commentElement.classList.add("highlight"); // Add a CSS class for highlighting
+    }
+
+    // Handle replies if highlightReplyId exists
+    if (highlightReplyId) {
+      const replyElement = document.getElementById(`reply-${highlightReplyId}`);
+      if (replyElement) {
+        replyElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        replyElement.classList.add("highlight"); // Add highlight class
+      }
+    }
+  }, [comments, highlightCommentId, highlightReplyId]);
+
+  // Fetch comments when the modal is opened
+  useEffect(() => {
+    if (isModalOpen) {
+      setPage(0);
+      setHasMore(true);
+      fetchComments(0);
+    } else {
+      setComments([]);
+    }
+  }, [isModalOpen]);
 
   useEffect(() => {
     const checkPostStatus = async () => {
@@ -700,12 +744,14 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard }) => {
                     <IoMdClose />
                   </button>
                 </div>
-                <div className="SinglePost-comment-list">
+                <div className="SinglePost-comment-list" ref={commentListRef}>
                   {comments && comments.length > 0 ? (
                     comments.map((c) => (
                       <CommentItem
                         key={c.id}
                         comment={c}
+                        isHighlighted={c.id === highlightCommentId}
+                        highlightReplyId={highlightReplyId}
                         onEdit={(updatedComment) => {
                           setComments((prevComments) =>
                             prevComments.map((comm) =>
