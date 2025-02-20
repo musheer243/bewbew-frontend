@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
@@ -69,9 +69,17 @@ const ChatPage = () => {
             sender: 'other',
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           }]);
-        }
-      );
-    });
+
+          //ADD DIS TO SET THE SCROLLER AT THE BOTTOM
+        // Scroll to bottom on receiving a new message
+        setTimeout(() => {
+          if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+          }
+        }, 0);
+      }
+    );
+  });
 
     return () => {
       if (stompClient.current) stompClient.current.disconnect();
@@ -131,6 +139,8 @@ useEffect(() => {
   
   if (!searchTerm) fetchRecentChats();
 }, [searchTerm, userId, jwtToken]);
+
+
   // Select user and load messages
   const handleUserClick = async (selectedUser) => {
     setSelectedUser(selectedUser);
@@ -146,6 +156,9 @@ useEffect(() => {
         }
       );
       const data = await response.json();
+
+       // Reverse if the API returns messages in descending order 
+       // so that they display from oldest (top) to newest (bottom)
       const orderedMessages = processMessages(data.content).reverse();
       setMessages(orderedMessages);
       setHasMore(!data.last);
@@ -156,6 +169,15 @@ useEffect(() => {
       setIsLoading(false);
     }
   };
+
+  // Scroll to bottom when a new chat is loaded (only on the initial load of the chat)
+  useEffect(() => {
+    if (selectedUser && initialLoadComplete && page === 0 && messagesContainerRef.current) {
+      setTimeout(() => {
+        messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      }, 0);
+    }
+  }, [selectedUser, initialLoadComplete, page]);
 
   // Send message
   const handleSendMessage = () => {
@@ -180,9 +202,16 @@ useEffect(() => {
       }
     ]);
       setNewMessage('');
-    }
-  };
+    // Scroll to bottom after sending message
+    setTimeout(() => {
+      if (messagesContainerRef.current) {
+        messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      }
+    }, 0);
+  }
+};
 
+// Process messages (assumes API returns messages in descending order, so we reverse to get ascending order)
   const processMessages = (messages) => {
     return messages.map(msg => {
       const [year, month, day, hour, minute, second, nano] = msg.sentAt;
@@ -197,14 +226,31 @@ useEffect(() => {
     });
   };
 
+// We'll use these refs to store previous scroll values before adding new messages.
+const prevScrollHeightRef = useRef(0);
+const prevScrollTopRef = useRef(0);
+// A lock to prevent duplicate calls.
+const loadingMoreRef = useRef(false);
+
+
   const loadMoreMessages = async () => {
-    if (!hasMore || isLoading) return;
+    if (!hasMore || loadingMoreRef.current) return; // Prevent duplicate calls
+
+  // Lock further calls until this one finishes
+  loadingMoreRef.current = true;
     
     setIsLoading(true);
 
     // Capture the current scroll height before loading more messages
   const container = messagesContainerRef.current;
-  const prevScrollHeight = container ? container.scrollHeight : 0;
+  // const prevScrollHeight = container ? container.scrollHeight : 0;
+  // const prevScrollTop = container ? container.scrollTop : 0;
+
+  if (container) {
+    // Record the current scroll metrics
+    prevScrollHeightRef.current = container.scrollHeight;
+    prevScrollTopRef.current = container.scrollTop;
+  }
 
     try {
       const nextPage = page + 1;
@@ -215,18 +261,11 @@ useEffect(() => {
       );
       const data = await response.json();
       const orderedNewMessages = processMessages(data.content).reverse();
+
       setMessages(prev => [...orderedNewMessages, ...prev]);
       setPage(nextPage);
       setHasMore(!data.last);
 
-      // After new messages are added, adjust the scroll position
-    setTimeout(() => {
-      if (container) {
-        const newScrollHeight = container.scrollHeight;
-        // This adjustment keeps the scroll position consistent
-        container.scrollTop = newScrollHeight - prevScrollHeight;
-      }
-    }, 0);
     } catch (error) {
       console.error('Error loading more messages:', error);
     } finally {
@@ -234,15 +273,47 @@ useEffect(() => {
     }
   };
 
+    //   // Adjust scroll position so the view remains consistent
+    //   // After new messages are added, adjust the scroll position
+    // requestAnimationFrame(() => {
+    //   if (container) {
+    //     const newScrollHeight = container.scrollHeight;
+    //     // This adjustment keeps the scroll position consistent
+    //     // container.scrollTop = newScrollHeight - prevScrollHeight;
+    //     container.scrollTop = prevScrollTop + (newScrollHeight - prevScrollHeight);
+    //   }
+    // }, 0);
+    // } catch (error) {
+    //   console.error('Error loading more messages:', error);
+    // } finally {
+    //   setIsLoading(false);
+    //   // Unlock loading after fetch is complete
+    // loadingMoreRef.current = false;
+    // }
+// Adjust the scroll position after new messages are rendered
+useLayoutEffect(() => {
+  // Only adjust if we are in the middle of loading more messages.
+  if (loadingMoreRef.current) {
+    const container = messagesContainerRef.current;
+    if (container) {
+      // Calculate the new scroll height difference
+      const newScrollHeight = container.scrollHeight;
+      container.scrollTop = prevScrollTopRef.current + (newScrollHeight - prevScrollHeightRef.current);
+    }
+    loadingMoreRef.current = false;
+  }
+}, [messages]);
+
   const handleScroll = () => {
-    if (!initialLoadComplete) return; // Ignore scroll events until initial load is complete
+    if (!initialLoadComplete) return;
     if (messagesContainerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
-      if (scrollHeight - clientHeight - scrollTop < 100) {
+      const { scrollTop } = messagesContainerRef.current;
+      if (scrollTop < 100) {
         loadMoreMessages();
       }
     }
   };
+
 
   return (
     <div className="chat-page">

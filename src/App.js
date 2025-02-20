@@ -17,6 +17,7 @@ import NotificationsPage from './components/dashboard/NotificationsPage';
 import ChatPage from './components/dashboard/ChatPage';
 import Search from './components/dashboard/Search';
 import { WebSocketProvider } from './context/WebSocketContext'; // Import your provider
+import Settings from './components/dashboard/Setting';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/search" element={<Search />} />
+        <Route path="/setting" element = {<Settings/>}/>
 
 
         <Route path="/my-posts" element={<MyPosts />} />
