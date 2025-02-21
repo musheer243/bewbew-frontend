@@ -128,8 +128,8 @@ function Login() {
             {/* Google login button */}
             <div id="Google-button">
               <a
-                href="https://example.com/google-login"
-                id="google-login-link"
+  href={`${API_BASE_URL}/api/v1/oauth2/google/login`} 
+  id="google-login-link"
                 className="google-login-btn"
               >
                 <img src="/assets/web_neutral_sq_SI.svg" alt="Google Logo" />
