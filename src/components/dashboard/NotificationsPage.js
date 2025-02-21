@@ -19,25 +19,35 @@ const NotificationsPage = () => {
   //   setNotificationCount(0);
   // }, [setNotificationCount]);
 
-  // Fetch notifications from REST API on page load
-  const fetchNotifications = useCallback(async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/notifications/${userId}`, {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+ // Fetch notifications from REST API on page load
+const fetchNotifications = useCallback(async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/notifications/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.ok) {
+      const data = await response.json();
+
+      // 1) Sort by timestamp descending (newest first).
+      //    This ensures that the first item in the array is the most recent notification.
+      const sorted = data.sort((a, b) => {
+        // Convert each timestamp to a Date, then subtract
+        // so that the newest item (b) comes first.
+        return new Date(b.timestamp) - new Date(a.timestamp);
       });
-      if (response.ok) {
-        const data = await response.json();
-        setNotifications(data);
-      } else {
-        console.error("Failed to fetch notifications");
-      }
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
+
+      // 2) Now set your notifications with the sorted array
+      setNotifications(sorted);
+    } else {
+      console.error("Failed to fetch notifications");
     }
-  },[userId, token]);
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+  }
+}, [userId, token]);
 
   // Mark a single notification as read via REST API
   const markNotificationAsRead = async (notificationId) => {
