@@ -32,7 +32,7 @@ const Dashboard = () => {
   const postsContainerRef = useRef(null); // Reference for the posts container
   const navigate = useNavigate();
   const location = useLocation();
-  const { notificationCount, setNotificationCount } =
+  const { notificationCount } =
     useContext(WebSocketContext);
 
     // ********** New Post Integration **********
