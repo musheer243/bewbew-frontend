@@ -96,7 +96,7 @@ const AIChatting = () => {
       <div className="AIChatting-header">
         <div className="AIChatting-header-profile">
           <img
-            src="bewbew/public/ai image.webp"
+            src="/assets\ai-image.webp"
             alt="AI Profile"
             className="AIChatting-header-img"
           />
