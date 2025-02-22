@@ -11,7 +11,7 @@ const AIChatting = () => {
   const [cachedProfile, setCachedProfile] = useState(null);
   const chatBoxRef = useRef(null);
 
-  // Retrieve cached profile
+  // Retrieve cached profile from localStorage
   useEffect(() => {
     const profile = localStorage.getItem("cachedProfile");
     if (profile) {
@@ -24,7 +24,7 @@ const AIChatting = () => {
     }
   }, []);
 
-  // Always scroll to bottom when chat changes
+  // Always scroll to bottom whenever chat changes
   useEffect(() => {
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
@@ -36,6 +36,8 @@ const AIChatting = () => {
 
     setIsLoading(true);
     const currentMessage = message;
+
+    // Add the user's message to the chat
     setChat((prevChat) => [
       ...prevChat,
       { sender: 'user', text: currentMessage }
@@ -62,13 +64,14 @@ const AIChatting = () => {
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
+
         aiResponse += decoder.decode(value, { stream: true });
 
         // Update the AI's message chunk by chunk
         setChat((prevChat) => {
           const lastMsg = prevChat[prevChat.length - 1];
           if (lastMsg && lastMsg.sender === "ai") {
-            // If last message is already AI, update it
+            // If the last message is already from AI, update that text
             return [
               ...prevChat.slice(0, -1),
               { sender: "ai", text: aiResponse }
@@ -90,7 +93,7 @@ const AIChatting = () => {
     }
   };
 
-  // Send on Enter
+  // Send on Enter key
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -115,9 +118,9 @@ const AIChatting = () => {
         <div className="AIChatting-header-name">The Knowledgable</div>
       </div>
 
-      {/* Main chat area: scrollable box + input pinned at bottom */}
+      {/* Main chat area (scrollable) + input pinned at bottom */}
       <div className="AIChatting-chat-container">
-        {/* Scrollable messages */}
+        {/* The scrollable messages box */}
         <div className="AIChatting-chat-box" ref={chatBoxRef}>
           {chat.map((msg, index) => (
             <div
@@ -128,7 +131,7 @@ const AIChatting = () => {
                   : 'AIChatting-ai-message'
               }`}
             >
-              {/* If AI, show AI pic on left */}
+              {/* If AI, show AI pic on the left */}
               {msg.sender === 'ai' && (
                 <img
                   src="/assets/ai-image.webp"
@@ -140,7 +143,7 @@ const AIChatting = () => {
               {/* The bubble text */}
               <div className="AIChatting-message-text">{msg.text}</div>
 
-              {/* If user, show user pic on right */}
+              {/* If user, show user's pic on the right */}
               {msg.sender === 'user' && cachedProfile && (
                 <img
                   src={cachedProfile.profilepic}
@@ -150,18 +153,6 @@ const AIChatting = () => {
               )}
             </div>
           ))}
-
-          {/* “AI is typing...” */}
-          {isLoading && (
-            <div className="AIChatting-message AIChatting-ai-message">
-              <img
-                src="/assets/ai-image.webp"
-                alt="AI"
-                className="AIChatting-message-profile"
-              />
-              <div className="AIChatting-message-text">AI is typing...</div>
-            </div>
-          )}
         </div>
 
         {/* Input pinned at bottom */}
@@ -171,7 +162,7 @@ const AIChatting = () => {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Type a message"
+            placeholder="Type a message..."
             className="AIChatting-chat-input"
             disabled={isLoading}
           />

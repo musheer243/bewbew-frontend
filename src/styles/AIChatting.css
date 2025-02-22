@@ -13,12 +13,15 @@
 
 /* Header pinned at top */
 .AIChatting-header {
+  position: sticky;       /* Make it sticky */
+  top: 0;                 /* Stick to the top */
+  z-index: 10;            /* Ensure it's on top of scrollable content */
   display: flex;
   align-items: center;
   padding: 10px;
   background-color: #fff;
   border-bottom: 1px solid #ddd;
-  flex-shrink: 0; /* do not shrink, pinned at top */
+  flex-shrink: 0;         /* Do not shrink */
 }
 
 .AIChatting-back-arrow {
@@ -49,7 +52,8 @@
 .AIChatting-chat-container {
   display: flex;
   flex-direction: column;
-  flex: 1; /* fills leftover vertical space */
+  flex: 1; /* fill leftover vertical space */
+  overflow: hidden; /* so we can control scroll in the chat-box only */
 }
 
 /* Scrollable chat box */
@@ -105,11 +109,14 @@
 
 /* Input pinned at bottom */
 .AIChatting-input-container {
+  position: sticky;  /* Make input bar sticky */
+  bottom: 0;         /* Stick to the bottom */
+  z-index: 10;       /* Appear on top of chat area */
   display: flex;
   padding: 10px;
   background-color: #fff;
   border-top: 1px solid #ddd;
-  flex-shrink: 0; /* pinned at bottom */
+  flex-shrink: 0;
 }
 
 /* Input field */
