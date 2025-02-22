@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useLocation, useNavigate, Link } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_BASE_URL } from "../../config";
 import styles from "../../styles/Profile.module.css"; // CSS Module
@@ -19,10 +19,11 @@ const Profile = () => {
   const navigate = useNavigate();
   const loggedInUserId = localStorage.getItem("userId"); // Assuming you store the logged-in user's ID in localStorage
   const token = localStorage.getItem("jwtToken"); // Retrieve JWT token from localStorage
+
   const [user, setUser] = useState(location.state?.user); // Use user from location.state if available
   const [loading, setLoading] = useState(!location.state?.user); // If user is not in location.state, set loading to true
   const [error, setError] = useState(null);
-
+  const [isFollowed, setIsFollowed] = useState(false); // Local state to hold follow status
   const [showOptions, setShowOptions] = useState(false); // State for dropdown
 
 
@@ -54,6 +55,23 @@ const Profile = () => {
     }
   }, [userId, user, loggedInUserId, navigate, token]);
 
+  // If viewing someone else's profile, hit the API to check follow status
+  useEffect(() => {
+    if (user && Number(loggedInUserId) !== Number(user.id)) {
+      axios
+        .get(
+          `${API_BASE_URL}/api/users/${user.id}/is-followed?followerid=${loggedInUserId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        )
+        .then((response) => {
+          setIsFollowed(response.data.isFollowed);
+        })
+        .catch((error) => {
+          console.error("Error checking follow status:", error);
+        });
+    }
+  }, [loggedInUserId, user, token]);
+
   if (loading) {
     return (
       <div className={styles["loading-container"]}>
@@ -78,6 +96,44 @@ const Profile = () => {
     setShowOptions((prev) => !prev);
     console.log("Icon clicked!"); // Add this to check if the function gets called
   };
+
+  // Toggle follow status
+  const handleFollowToggle = () => {
+    // If not currently following, call the follow API
+    if (!isFollowed) {
+      axios
+        .post(
+          `${API_BASE_URL}/api/follow/send/${loggedInUserId}/${user.id}`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        )
+        .then((response) => {
+          // The API can return either "Followed successfully" (if the profile is public)
+          // or "Follow request sent" (if the profile is private)
+          console.log(response.data);
+          setIsFollowed(true);
+        })
+        .catch((error) => {
+          console.error("Error sending follow request:", error);
+        });
+    } else {
+      // If already following, call the unfollow API
+      axios
+        .post(
+          `${API_BASE_URL}/api/follow/${loggedInUserId}/unfollow/${user.id}`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        )
+        .then((response) => {
+          console.log(response.data);
+          setIsFollowed(false);
+        })
+        .catch((error) => {
+          console.error("Error unfollowing user:", error);
+        });
+    }
+  };
+
 
     //Logout
     const handleLogout = async () => {
@@ -216,22 +272,21 @@ const Profile = () => {
         </div>
       </div>
 
-
-
+          {/* Conditionally render Friend and Message buttons when viewing another user's profile */}
+      {Number(loggedInUserId) !== Number(user.id) && (
 <div className={styles["buttons-container"]}>
   {/* Add Friend Button */}
   <button
-    onClick={() => {
-      if (user.isPrivate) {
-        alert("Friend request sent!");
-      } else {
-        alert("Friend added!");
-      }
-    }}
-    className={styles["add-friend-btn"]}
-  >
-    Add Friend
-  </button>
+  onClick={handleFollowToggle}
+  className={`${styles["add-friend-btn"]} ${isFollowed ? styles["followed"] : ""}`}
+>
+  {isFollowed 
+    ? (user.isPrivate ? "Friend request sent" : "Friend added") 
+    : "Add Friend"}
+</button>
+
+
+
 
   {/* Message Button */}
   <button
@@ -241,6 +296,7 @@ const Profile = () => {
     Message
   </button>
 </div>
+)}
 
   {/* See Post Button */}
   <div className={styles["see-post-container"]}>

@@ -179,28 +179,14 @@
   background-color: #f0f0f0;
 }
 
-/* ------------------------
-/* See Post Button          
-/* ------------------------ 
-.see-post-container {
-/* justify-content: end; 
-  margin-top: 10px;  /* Adjust spacing if needed */
-/* }
+/* Existing styles for .add-friend-btn remain */
+.add-friend-btn.followed {
+  background-color: #d1e7dd; /* Example: a light green background */
+  border-color: #badbcc;
+  color: #0f5132;
+}
 
-.see-post-btn {
-  background: none;
-  border: none;
-  color: #007BFF;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
- /* /* Remove absolute positioning */
-  /* position: absolute; *
-} */
 
-/* .see-post-btn:hover {
-  text-decoration: underline;
-} */ 
 .see-post-container {
   display: flex;
   justify-content: flex-end; /* Align the button to the right */
@@ -213,6 +199,19 @@
   text-decoration: none; /* Optional: Removes underline from the link */
   color: inherit; /* Optional: Inherits text color */
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   
