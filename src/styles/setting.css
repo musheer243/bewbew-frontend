@@ -96,3 +96,42 @@
     --settings-hover-bg: #eee;
   }
   
+  /* Post Activity */
+
+  /* My Schedule Post  */
+
+  .scheduled-posts-section {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f9f9f9;
+}
+
+.scheduled-posts-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.scheduled-post {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.scheduled-post:last-child {
+    border-bottom: none;
+}
+
+.scheduled-post h4 {
+    margin: 5px 0;
+    color: #333;
+}
+
+.scheduled-post p {
+    font-size: 14px;
+    color: #555;
+}
+
+.scheduled-post small {
+    color: #777;
+}

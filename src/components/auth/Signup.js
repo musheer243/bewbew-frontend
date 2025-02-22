@@ -138,7 +138,7 @@ function Signup(){
 
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center',  textAlign: 'center', marginTop: '10px' }}>
                    <span style={{fontSize:'17px'}}>Have an account? </span>
-                   <Link to="/login" style={{margin:'10px'}}><b> Login</b></Link>
+                   <Link to="/" style={{margin:'10px'}}><b> Login</b></Link>
                 </div>
                 
                 <div className="or-divider">
