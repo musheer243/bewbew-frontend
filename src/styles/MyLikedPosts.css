@@ -15,9 +15,10 @@
 }
 
   
-.post-activity-container h2 {
+.post-activity-container h3 {
     font-size: 2rem;
     margin-bottom: 45px;
+    text-align: center;
     color: var(--settings-text, #000);
   }
 

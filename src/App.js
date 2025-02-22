@@ -19,6 +19,7 @@ import Search from './components/dashboard/Search';
 import { WebSocketProvider } from './context/WebSocketContext'; // Import your provider
 import Settings from './components/Setting/Setting';
 import MyLikedPosts from './components/Setting/MyLikedPosts';
+import MySavedPosts from './components/Setting/MySavedPost';
 
 
 function App() {
@@ -47,6 +48,7 @@ function App() {
         <Route path="/setting" element = {<Settings/>}/>
 
         <Route path="/post-activity/my-LikedPosts" element={<MyLikedPosts/>}  />
+        <Route path="/post-activity/my-SavedPosts" element={<MySavedPosts/>}/>
         <Route path="/my-posts" element={<MyPosts />} />
         <Route path="/posts/:userId" element={<MyPosts />} />
 

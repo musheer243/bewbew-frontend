@@ -4,6 +4,7 @@ import axios from "axios";
 import SinglePost from "../shared/SinglePost";
 import "../../styles/MyLikedPosts.css"; 
 import { API_BASE_URL } from "../../config";
+import { FaArrowLeft } from "react-icons/fa";
 
 
 const MyLikedPosts = () => {
@@ -11,7 +12,7 @@ const MyLikedPosts = () => {
   const [loading, setLoading] = useState(true);
   const [pageNumber, setPageNumber] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchLikedPosts = async () => {
       try {
@@ -80,7 +81,14 @@ const MyLikedPosts = () => {
 
   return (
     <div className="post-activity-container">
-      <h2>My Liked Posts</h2>
+      <div>
+      <h3>My Liked Posts</h3>
+      </div>
+
+      <div className="back-button" onClick={() => navigate("/setting")}>
+          <FaArrowLeft className="back-icon" />
+      </div>
+      
       {likedPosts.length > 0 ? (
         <div className="post-grid">
           {likedPosts.map((post) => (
