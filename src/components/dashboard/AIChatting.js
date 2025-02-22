@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IoIosSend } from 'react-icons/io';
 import '../../styles/AIChatting.css';
 import { API_BASE_URL } from "../../config";
@@ -7,16 +7,33 @@ const AIChatting = () => {
   const [message, setMessage] = useState('');
   const [chat, setChat] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [cachedProfile, setCachedProfile] = useState(null);
+
+  // Retrieve and parse the cached profile from localStorage
+  useEffect(() => {
+    const profile = localStorage.getItem("cachedProfile");
+    if (profile) {
+      try {
+        const parsedProfile = JSON.parse(profile);
+        setCachedProfile(parsedProfile);
+      } catch (error) {
+        console.error("Error parsing cached profile:", error);
+      }
+    }
+  }, []);
 
   const handleSendMessage = async () => {
     if (!message.trim()) return;
 
     setIsLoading(true);
+    // Add the user's message to the chat
     const userMessage = { sender: 'user', text: message };
     setChat((prevChat) => [...prevChat, userMessage]);
+    setMessage('');
+
 
     try {
-      const token = localStorage.getItem("jwtToken"); // Retrieve JWT token from local storage
+      const token = localStorage.getItem("jwtToken");
       const url = `${API_BASE_URL}/api/ai/generateStream?message=${encodeURIComponent(message)}`;
 
       const response = await fetch(url, {
@@ -24,7 +41,7 @@ const AIChatting = () => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        credentials: "include", // Ensure cookies/headers are sent
+        credentials: "include",
       });
 
       if (!response.ok || !response.body) {
@@ -41,7 +58,7 @@ const AIChatting = () => {
 
         aiResponse += decoder.decode(value, { stream: true });
 
-        // Use functional update to ensure the latest state is used
+        // Update the AI's message chunk by chunk
         setChat((prevChat) => {
           const lastMessage = prevChat[prevChat.length - 1];
           if (lastMessage && lastMessage.sender === "ai") {
@@ -51,7 +68,7 @@ const AIChatting = () => {
           }
         });
 
-        // Remove "AI is typing..." once the first chunk is received
+        // Once we start receiving data, remove the "AI is typing..." message
         setIsLoading(false);
       }
     } catch (error) {
@@ -62,35 +79,91 @@ const AIChatting = () => {
       ]);
     } finally {
       setIsLoading(false);
-      setMessage("");
+    }
+  };
+
+  // Send message on Enter key press
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSendMessage();
     }
   };
 
   return (
-    <div className="chat-container">
-      <div className="chat-box">
-        {chat.map((msg, index) => (
-          <div
-            key={index}
-            className={`message ${msg.sender === 'user' ? 'user-message' : 'ai-message'}`}
-          >
-            {msg.text}
-          </div>
-        ))}
-        {isLoading && <div className="message ai-message">AI is typing...</div>}
+    <div className="AIChatting-container">
+      {/* Chat Header */}
+      <div className="AIChatting-header">
+        <div className="AIChatting-header-profile">
+          <img
+            src="bewbew/public/ai image.webp"
+            alt="AI Profile"
+            className="AIChatting-header-img"
+          />
+        </div>
+        <div className="AIChatting-header-name">The Knowledgable</div>
       </div>
-      <div className="input-container">
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Type a message"
-          className="chat-input"
-          disabled={isLoading}
-        />
-        <button onClick={handleSendMessage} className="send-button" disabled={isLoading}>
-          <IoIosSend />
-        </button>
+
+      {/* Chat Box */}
+      <div className="AIChatting-chat-container">
+        <div className="AIChatting-chat-box">
+          {chat.map((msg, index) => (
+            <div
+              key={index}
+              className={`AIChatting-message ${
+                msg.sender === 'user'
+                  ? 'AIChatting-user-message'
+                  : 'AIChatting-ai-message'
+              }`}
+            >
+              {msg.sender === 'ai' && (
+                <img
+                  src="bewbew/public/ai image.webp"
+                  alt="AI"
+                  className="AIChatting-message-profile"
+                />
+              )}
+              <div className="AIChatting-message-text">{msg.text}</div>
+              {msg.sender === 'user' && cachedProfile && (
+                <img
+                  src={cachedProfile.profilepic}
+                  alt={cachedProfile.username}
+                  className="AIChatting-message-profile"
+                />
+              )}
+            </div>
+          ))}
+          {isLoading && (
+            <div className="AIChatting-message AIChatting-ai-message">
+              <img
+                src="bewbew/public/ai image.webp"
+                alt="AI"
+                className="AIChatting-message-profile"
+              />
+              <div className="AIChatting-message-text">AI is typing...</div>
+            </div>
+          )}
+        </div>
+
+        {/* Input Field */}
+        <div className="AIChatting-input-container">
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Type a message"
+            className="AIChatting-chat-input"
+            disabled={isLoading}
+          />
+          <button
+            onClick={handleSendMessage}
+            className="AIChatting-send-button"
+            disabled={isLoading}
+          >
+            <IoIosSend />
+          </button>
+        </div>
       </div>
     </div>
   );
