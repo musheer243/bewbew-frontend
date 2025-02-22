@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { IoIosSend } from 'react-icons/io';
+import React, { useState, useEffect, useRef } from 'react';
+import { IoIosSend, IoIosArrowBack } from 'react-icons/io';
+import { Link } from 'react-router-dom';
 import '../../styles/AIChatting.css';
 import { API_BASE_URL } from "../../config";
 
@@ -8,8 +9,9 @@ const AIChatting = () => {
   const [chat, setChat] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [cachedProfile, setCachedProfile] = useState(null);
+  const chatBoxRef = useRef(null);
 
-  // Retrieve and parse the cached profile from localStorage
+  // Retrieve cached profile
   useEffect(() => {
     const profile = localStorage.getItem("cachedProfile");
     if (profile) {
@@ -22,25 +24,30 @@ const AIChatting = () => {
     }
   }, []);
 
+  // Always scroll to bottom when chat changes
+  useEffect(() => {
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+    }
+  }, [chat]);
+
   const handleSendMessage = async () => {
     if (!message.trim()) return;
 
     setIsLoading(true);
-    // Add the user's message to the chat
-    const userMessage = { sender: 'user', text: message };
-    setChat((prevChat) => [...prevChat, userMessage]);
+    const currentMessage = message;
+    setChat((prevChat) => [
+      ...prevChat,
+      { sender: 'user', text: currentMessage }
+    ]);
     setMessage('');
-
 
     try {
       const token = localStorage.getItem("jwtToken");
-      const url = `${API_BASE_URL}/api/ai/generateStream?message=${encodeURIComponent(message)}`;
-
+      const url = `${API_BASE_URL}/api/ai/generateStream?message=${encodeURIComponent(currentMessage)}`;
       const response = await fetch(url, {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         credentials: "include",
       });
 
@@ -55,21 +62,22 @@ const AIChatting = () => {
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
-
         aiResponse += decoder.decode(value, { stream: true });
 
         // Update the AI's message chunk by chunk
         setChat((prevChat) => {
-          const lastMessage = prevChat[prevChat.length - 1];
-          if (lastMessage && lastMessage.sender === "ai") {
-            return [...prevChat.slice(0, -1), { sender: "ai", text: aiResponse }];
+          const lastMsg = prevChat[prevChat.length - 1];
+          if (lastMsg && lastMsg.sender === "ai") {
+            // If last message is already AI, update it
+            return [
+              ...prevChat.slice(0, -1),
+              { sender: "ai", text: aiResponse }
+            ];
           } else {
+            // Otherwise, add a new AI message
             return [...prevChat, { sender: "ai", text: aiResponse }];
           }
         });
-
-        // Once we start receiving data, remove the "AI is typing..." message
-        setIsLoading(false);
       }
     } catch (error) {
       console.error("Error communicating with AI:", error);
@@ -82,7 +90,7 @@ const AIChatting = () => {
     }
   };
 
-  // Send message on Enter key press
+  // Send on Enter
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -92,11 +100,14 @@ const AIChatting = () => {
 
   return (
     <div className="AIChatting-container">
-      {/* Chat Header */}
+      {/* Header pinned at top */}
       <div className="AIChatting-header">
+        <Link to="/dashboard" className="AIChatting-back-arrow">
+          <IoIosArrowBack />
+        </Link>
         <div className="AIChatting-header-profile">
           <img
-            src="/assets\ai-image.webp"
+            src="/assets/ai-image.webp"
             alt="AI Profile"
             className="AIChatting-header-img"
           />
@@ -104,9 +115,10 @@ const AIChatting = () => {
         <div className="AIChatting-header-name">The Knowledgable</div>
       </div>
 
-      {/* Chat Box */}
+      {/* Main chat area: scrollable box + input pinned at bottom */}
       <div className="AIChatting-chat-container">
-        <div className="AIChatting-chat-box">
+        {/* Scrollable messages */}
+        <div className="AIChatting-chat-box" ref={chatBoxRef}>
           {chat.map((msg, index) => (
             <div
               key={index}
@@ -116,14 +128,19 @@ const AIChatting = () => {
                   : 'AIChatting-ai-message'
               }`}
             >
+              {/* If AI, show AI pic on left */}
               {msg.sender === 'ai' && (
                 <img
-                  src="bewbew/public/ai image.webp"
+                  src="/assets/ai-image.webp"
                   alt="AI"
                   className="AIChatting-message-profile"
                 />
               )}
+
+              {/* The bubble text */}
               <div className="AIChatting-message-text">{msg.text}</div>
+
+              {/* If user, show user pic on right */}
               {msg.sender === 'user' && cachedProfile && (
                 <img
                   src={cachedProfile.profilepic}
@@ -133,10 +150,12 @@ const AIChatting = () => {
               )}
             </div>
           ))}
+
+          {/* “AI is typing...” */}
           {isLoading && (
             <div className="AIChatting-message AIChatting-ai-message">
               <img
-                src="bewbew/public/ai image.webp"
+                src="/assets/ai-image.webp"
                 alt="AI"
                 className="AIChatting-message-profile"
               />
@@ -145,7 +164,7 @@ const AIChatting = () => {
           )}
         </div>
 
-        {/* Input Field */}
+        {/* Input pinned at bottom */}
         <div className="AIChatting-input-container">
           <input
             type="text"
