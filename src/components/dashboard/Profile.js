@@ -13,7 +13,6 @@ import { SlUserFollow } from "react-icons/sl";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 
 const Profile = () => {
-
   const { userId } = useParams(); // Extract userId from the URL
   const location = useLocation();
   const navigate = useNavigate();
@@ -25,7 +24,6 @@ const Profile = () => {
   const [error, setError] = useState(null);
   const [isFollowed, setIsFollowed] = useState(false); // Local state to hold follow status
   const [showOptions, setShowOptions] = useState(false); // State for dropdown
-
 
   useEffect(() => {
     // If no userId is provided (i.e., /profile), redirect to the logged-in user's profile
@@ -75,7 +73,8 @@ const Profile = () => {
   if (loading) {
     return (
       <div className={styles["loading-container"]}>
-        <div className={styles["spinner"]}></div> {/* Add your CSS spinner here */}
+        <div className={styles["spinner"]}></div>{" "}
+        {/* Add your CSS spinner here */}
       </div>
     );
   }
@@ -134,182 +133,219 @@ const Profile = () => {
     }
   };
 
+  //Logout
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem("jwtToken");
 
-    //Logout
-    const handleLogout = async () => {
-      try {
-        const token = localStorage.getItem("jwtToken");
-  
-        if (!token) {
-          console.error("No token found, user may not be logged in.");
-          localStorage.clear();
-          navigate("/");
-          return;
+      if (!token) {
+        console.error("No token found, user may not be logged in.");
+        localStorage.clear();
+        navigate("/");
+        return;
+      }
+
+      // Send logout request to the backend
+      await axios.post(
+        `${API_BASE_URL}/api/v1/auth/logout`, // Replace with your logout endpoint
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-  
-        // Send logout request to the backend
-        await axios.post(
-          `${API_BASE_URL}/api/v1/auth/logout`, // Replace with your logout endpoint
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-  
-        // Clear client-side authentication
-        localStorage.clear();
-        navigate("/");
-      } catch (error) {
-        console.error("Error during logout:", error);
-        localStorage.clear();
-        navigate("/");
-      }
-    };
+      );
 
-    const handleSeePosts = () => {
+      // Clear client-side authentication
+      localStorage.clear();
+      navigate("/");
+    } catch (error) {
+      console.error("Error during logout:", error);
+      localStorage.clear();
+      navigate("/");
+    }
+  };
 
-      console.log("Type of loggedInUserId:", typeof loggedInUserId, "Value:", loggedInUserId);
-      console.log("Type of user.id:", typeof user.id, "Value:", user.id);
-      
-      if (Number(loggedInUserId) === Number(user.id)) {
-        console.log("✅ Navigating to /my-posts");
-        navigate("/my-posts", { state: { userId: loggedInUserId } }); // Pass userId explicitly
-      } else {
-        console.log(`🔄 Navigating to /posts/${user.id}`);
-        navigate(`/posts/${user.id}`, { state: { userId: user.id } });
-      }
+  const handleSeePosts = () => {
+    console.log(
+      "Type of loggedInUserId:",
+      typeof loggedInUserId,
+      "Value:",
+      loggedInUserId
+    );
+    console.log("Type of user.id:", typeof user.id, "Value:", user.id);
 
-    };
+    if (Number(loggedInUserId) === Number(user.id)) {
+      console.log("✅ Navigating to /my-posts");
+      navigate("/my-posts", { state: { userId: loggedInUserId } }); // Pass userId explicitly
+    } else {
+      console.log(`🔄 Navigating to /posts/${user.id}`);
+      navigate(`/posts/${user.id}`, { state: { userId: user.id } });
+    }
+  };
+
+  const handleMessageClick = () => {
+    // Pass user in location state
+    navigate("/chat", {
+      state: {
+        userToChat: user,
+      },
+    });
+  };
 
   return (
     <div className={styles["page-container"]}>
-    <div className={styles["profile-container"]}>
-    <div className={styles["main-container"]}>
+      <div className={styles["profile-container"]}>
+        <div className={styles["main-container"]}>
+          {/* Back Button */}
+          <button
+            className={styles["back-button"]}
+            onClick={handleBackToDashboard}
+          >
+            <FaArrowLeft />
+          </button>
 
-    {/* Back Button */}
-    <button className={styles["back-button"]} onClick={handleBackToDashboard}>
-      <FaArrowLeft />
-    </button>
-
-      {/* More Options Button - 
+          {/* More Options Button - 
       Only visible if the logged-in 
       user is viewing their own profile */}
 
-      {/* <div className={styles["options-container"]}>
+          {/* <div className={styles["options-container"]}>
         <button className={styles["options-button"]} onClick={toggleOptions}>
           <IoMdSettings size={34} />
         </button>
       </div> */}
 
-{loggedInUserId === userId && (
+          {loggedInUserId === userId && (
             <div className={styles["options-container"]}>
-              <button className={styles["options-button"]} onClick={toggleOptions}>
+              <button
+                className={styles["options-button"]}
+                onClick={toggleOptions}
+              >
                 <IoMdSettings size={34} />
               </button>
             </div>
           )}
-          
-{/* Dropdown Menu */}
-{showOptions && (
-        <div className={styles["dropdown-menu"]}>
-          <div className={styles["dropdown-item"]} onClick={() => alert("Edit Profile")}>
-            <FaUserEdit className={styles["dropdown-icon"]} /> Edit Profile
-          </div>
-          <div className={styles["dropdown-item"]} onClick={() => navigate("/account-setting")}>
-            <GrUserSettings className={styles["dropdown-icon"]} /> Account Settings
-          </div>
-          <div className={styles["dropdown-item"]} onClick={() => alert("Saved Items")}>
-            <TbTags className={styles["dropdown-icon"]} /> Saved
-          </div>
-          <div className={styles["dropdown-item"]} onClick={() => alert("Follow and Invite Friends")}>
-            <SlUserFollow className={styles["dropdown-icon"]} /> Follow & Invite Friends
-          </div>
-          <div className={styles["dropdown-item"]} onClick={handleLogout}>
-            <BiLogOut className={styles["dropdown-icon"]} /> Logout
-          </div>
-        </div>
-      )}
 
+          {/* Dropdown Menu */}
+          {showOptions && (
+            <div className={styles["dropdown-menu"]}>
+              <div
+                className={styles["dropdown-item"]}
+                onClick={() => alert("Edit Profile")}
+              >
+                <FaUserEdit className={styles["dropdown-icon"]} /> Edit Profile
+              </div>
+              <div
+                className={styles["dropdown-item"]}
+                onClick={() => navigate("/account-setting")}
+              >
+                <GrUserSettings className={styles["dropdown-icon"]} /> Account
+                Settings
+              </div>
+              <div
+                className={styles["dropdown-item"]}
+                onClick={() => alert("Saved Items")}
+              >
+                <TbTags className={styles["dropdown-icon"]} /> Saved
+              </div>
+              <div
+                className={styles["dropdown-item"]}
+                onClick={() => alert("Follow and Invite Friends")}
+              >
+                <SlUserFollow className={styles["dropdown-icon"]} /> Follow &
+                Invite Friends
+              </div>
+              <div className={styles["dropdown-item"]} onClick={handleLogout}>
+                <BiLogOut className={styles["dropdown-icon"]} /> Logout
+              </div>
+            </div>
+          )}
 
-      {/* Profile Picture */}
-      <div className={styles["profile-picture-container"]}>
-        <img src={user.profilepic} alt={`${user.name}'s Profile`} className={styles["profile-picture"]} />
-      </div>
+          {/* Profile Picture */}
+          <div className={styles["profile-picture-container"]}>
+            <img
+              src={user.profilepic}
+              alt={`${user.name}'s Profile`}
+              className={styles["profile-picture"]}
+            />
+          </div>
 
-      {/*name */}
-      <h2 className={styles["profile-name"]}>{user.name}</h2>
-      <p style={{ textAlign: "center", color: "#555", marginBottom: "5px" , fontSize: "20px"}}>
-        @{user.username}
-      </p>
-       {/*About */}
-       <div style={{ marginBottom: "20px",textAlign: "center" }}>
-        {/* <h4>About</h4> */}
-        <p style={{ color: "#555", lineHeight: "1.6", fontSize: "17px" }}>
-          {user.about || "No details provided."}
-        </p>
-      </div>
+          {/*name */}
+          <h2 className={styles["profile-name"]}>{user.name}</h2>
+          <p
+            style={{
+              textAlign: "center",
+              color: "#555",
+              marginBottom: "5px",
+              fontSize: "20px",
+            }}
+          >
+            @{user.username}
+          </p>
+          {/*About */}
+          <div style={{ marginBottom: "20px", textAlign: "center" }}>
+            {/* <h4>About</h4> */}
+            <p style={{ color: "#555", lineHeight: "1.6", fontSize: "17px" }}>
+              {user.about || "No details provided."}
+            </p>
+          </div>
 
-     
-        {/* Statistics Section */}
-      <div className={styles["stats-container"]}>
-        <div className={styles["stat-item"]}>
-          <p className={styles["stat-number"]}>{user.totalPosts}</p>
-          <p className={styles["stat-label"]}>Posts</p>
-        </div>
-        <div className={styles["stat-item"]}>
-          <p className={styles["stat-number"]}>{user.totalLikes}</p>
-          <p className={styles["stat-label"]}>Likes</p>
-        </div>
-        <div className={styles["stat-item"]}>
-          <p className={styles["stat-number"]}>{user.totalFollowers}</p>
-          <p className={styles["stat-label"]}>Followers</p>
-        </div>
-        <div className={styles["stat-item"]}>
-          <p className={styles["stat-number"]}>{user.totalFollowings}</p>
-          <p className={styles["stat-label"]}>Following</p>
-        </div>
-      </div>
+          {/* Statistics Section */}
+          <div className={styles["stats-container"]}>
+            <div className={styles["stat-item"]}>
+              <p className={styles["stat-number"]}>{user.totalPosts}</p>
+              <p className={styles["stat-label"]}>Posts</p>
+            </div>
+            <div className={styles["stat-item"]}>
+              <p className={styles["stat-number"]}>{user.totalLikes}</p>
+              <p className={styles["stat-label"]}>Likes</p>
+            </div>
+            <div className={styles["stat-item"]}>
+              <p className={styles["stat-number"]}>{user.totalFollowers}</p>
+              <p className={styles["stat-label"]}>Followers</p>
+            </div>
+            <div className={styles["stat-item"]}>
+              <p className={styles["stat-number"]}>{user.totalFollowings}</p>
+              <p className={styles["stat-label"]}>Following</p>
+            </div>
+          </div>
 
           {/* Conditionally render Friend and Message buttons when viewing another user's profile */}
-      {Number(loggedInUserId) !== Number(user.id) && (
-<div className={styles["buttons-container"]}>
-  {/* Add Friend Button */}
-  <button
-  onClick={handleFollowToggle}
-  className={`${styles["add-friend-btn"]} ${isFollowed ? styles["followed"] : ""}`}
->
-  {isFollowed 
-    ? (user.isPrivate ? "Friend request sent" : "Friend added") 
-    : "Add Friend"}
-</button>
+          {Number(loggedInUserId) !== Number(user.id) && (
+            <div className={styles["buttons-container"]}>
+              {/* Add Friend Button */}
+              <button
+                onClick={handleFollowToggle}
+                className={`${styles["add-friend-btn"]} ${
+                  isFollowed ? styles["followed"] : ""
+                }`}
+              >
+                {isFollowed
+                  ? user.isPrivate
+                    ? "Friend request sent"
+                    : "Friend added"
+                  : "Add Friend"}
+              </button>
 
+              {/* Message Button */}
+              <button
+                onClick={handleMessageClick}
+                className={styles["message-btn"]}
+              >
+                Message
+              </button>
+            </div>
+          )}
 
-
-
-  {/* Message Button */}
-  <button
-    onClick={() => navigate("/chat")}
-    className={styles["message-btn"]}
-  >
-    Message
-  </button>
-</div>
-)}
-
-  {/* See Post Button */}
-  <div className={styles["see-post-container"]}>
-  <button className={styles["see-post-btn"]} onClick={handleSeePosts}>
-    See Post <MdKeyboardDoubleArrowRight />
-  </button>
-</div>
-
-
+          {/* See Post Button */}
+          <div className={styles["see-post-container"]}>
+            <button className={styles["see-post-btn"]} onClick={handleSeePosts}>
+              See Post <MdKeyboardDoubleArrowRight />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-
-</div>
-</div>
   );
 };
 

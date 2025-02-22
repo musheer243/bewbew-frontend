@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import '../../styles/ChatPage.css';
@@ -8,6 +8,9 @@ import { FaArrowLeft, FaSearch, FaTimes } from 'react-icons/fa';
 
 const ChatPage = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // <-- new
+  const userToChat = location.state?.userToChat || null;
+
   const [searchTerm, setSearchTerm] = useState('');
   const [users, setUsers] = useState([]);
   const [recentChats, setRecentChats] = useState([]);
@@ -178,6 +181,13 @@ useEffect(() => {
       }, 0);
     }
   }, [selectedUser, initialLoadComplete, page]);
+
+  // If we arrive on ChatPage with a userToChat, auto-select them
+useEffect(() => {
+  if (userToChat) {
+    handleUserClick(userToChat);
+  }
+}, [userToChat]);
 
   // Send message
   const handleSendMessage = () => {
