@@ -41,6 +41,11 @@ export const WebSocketProvider = ({ children }) => {
     }
   }, [userId, token]);
 
+  // // "Expose" this method under a different name so it's clear it can be called
+  // const refetchNotifications = () => {
+  //   fetchNotifications();
+  // };
+
   // 2) Connect WebSocket
   useEffect(() => {
     if (!userId || !token) return;
@@ -139,6 +144,7 @@ export const WebSocketProvider = ({ children }) => {
         notificationCount,
         markNotificationAsRead,
         markAllAsRead,
+        // refetchNotifications,
       }}
     >
       {children}
