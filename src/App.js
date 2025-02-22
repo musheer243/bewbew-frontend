@@ -18,6 +18,7 @@ import ChatPage from './components/dashboard/ChatPage';
 import Search from './components/dashboard/Search';
 import { WebSocketProvider } from './context/WebSocketContext'; // Import your provider
 import Settings from './components/dashboard/Setting';
+import PostViewByCategory from './components/dashboard/PostViewByCategory';
 
 function App() {
   return (
@@ -46,6 +47,8 @@ function App() {
 
         <Route path="/my-posts" element={<MyPosts />} />
         <Route path="/posts/:userId" element={<MyPosts />} />
+
+        <Route path="/category/:categoryId" element={<PostViewByCategory />} />
 
       </Routes>
     </Router>
