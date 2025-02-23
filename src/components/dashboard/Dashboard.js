@@ -6,7 +6,6 @@ import { MdDarkMode, MdOutlineLightMode } from "react-icons/md";
 import { BiLogOut } from "react-icons/bi";
 import "../../styles/Dashboard.css"; // Import the CSS file
 import { CiSearch } from "react-icons/ci";
-import { IoHomeOutline } from "react-icons/io5"; // Import the icon
 import { FaRegUser } from "react-icons/fa";
 import { FaUsers } from "react-icons/fa6";
 import { MdOutlineNotificationsActive } from "react-icons/md";
@@ -19,6 +18,7 @@ import { API_BASE_URL } from "../../config";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { LuMessageCircleHeart } from "react-icons/lu";
 import { WebSocketContext } from "../../context/WebSocketContext"; // Import the context
+import { MdLeaderboard } from "react-icons/md";
 
 const Dashboard = () => {
   const [profile, setProfile] = useState(null); // State to store profile data
@@ -380,9 +380,9 @@ const Dashboard = () => {
         <ul className="sidebar-menu">
           {[
             {
-              name: "message",
-              icon: <IoHomeOutline size={20} />,
-              onClick: () => navigate("/chat"),
+              name: "Leaderboard",
+              icon: <MdLeaderboard size={20} />,
+              onClick: () => navigate("/leaderboard"),
             },
             {
               name: "Profile",
