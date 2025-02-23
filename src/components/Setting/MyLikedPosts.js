@@ -86,7 +86,7 @@ const MyLikedPosts = () => {
       </div>
 
       <div className="back-button" onClick={() => navigate("/setting")}>
-          <FaArrowLeft className="back-icon" />
+          <FaArrowLeft className="back-icon" size={27}/>
       </div>
       
       {likedPosts.length > 0 ? (

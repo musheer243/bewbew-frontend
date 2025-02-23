@@ -99,7 +99,7 @@ const MySavedPosts = () => {
       <h3>My Saved Posts</h3>
 </div>
       <div className="back-button" onClick={() => navigate("/setting")}>
-                <FaArrowLeft className="back-icon" />
+                <FaArrowLeft className="back-icon" size={27}/>
               </div>
       <div className="post-grid">
         {savedPosts.map((post) => (
