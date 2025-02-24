@@ -9,6 +9,24 @@ import "react-toastify/dist/ReactToastify.css";
 import "../../styles/CreatePostPage.css";
 import { API_BASE_URL } from "../../config";
 
+// Helper: get current local time in Asia/Kolkata as "YYYY-MM-DDTHH:MM"
+function getKolkataMinDateTime() {
+  // Convert the local time in Asia/Kolkata to a JS Date object
+  const kolkataTimeString = new Date().toLocaleString("en-US", {
+    timeZone: "Asia/Kolkata",
+  });
+  const dateObj = new Date(kolkataTimeString);
+
+  // Format the dateObj into "YYYY-MM-DDTHH:MM"
+  const year = dateObj.getFullYear();
+  const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const day = String(dateObj.getDate()).padStart(2, "0");
+  const hours = String(dateObj.getHours()).padStart(2, "0");
+  const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
 function CreatePostPage() {
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
   // 1) Check if this is Edit mode or Create mode
@@ -502,6 +520,8 @@ function CreatePostPage() {
                   value={scheduledDate}
                   onChange={(e) => setScheduledDate(e.target.value)}
                   className="input-field"
+                  min={getKolkataMinDateTime()}
+
                 />
               </div>
             </>

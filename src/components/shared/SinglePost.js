@@ -587,6 +587,7 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard,
             />
             <span className="SinglePost-username">{username}</span>
           </div>
+          {post.user?.id.toString() === localStorage.getItem("userId") && (
           <div className="SinglePost-menu-container">
             <button className="SinglePost-menu-btn" onClick={toggleOptions}>
               <BsThreeDotsVertical />
@@ -620,6 +621,7 @@ const SinglePost = ({ post, onDelete, onEdit, darkModeFromDashboard,
               </button>
             </div>
           </div>
+        )}
         </div>
 
         {/* Divider Line */}

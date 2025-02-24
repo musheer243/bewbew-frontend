@@ -77,6 +77,16 @@ const Search = () => {
     navigate(`/api/post/view/${post.id || post.postId}`, { state: { post } });
   };
 
+  const handleCategoryClick = (category) => {
+    // Navigate to the "PostViewByCategory" route. 
+    // e.g. "/category/:categoryId"
+    // Also pass the categoryTitle so we can display it in the new page
+    navigate(`/category/${category.categoryId}`, {
+      state: { categoryTitle: category.categoryTitle },
+    });
+  };
+  
+
   useEffect(() => {
     console.log("API Response for categories:", results); // Check the structure of each category object
   }, [results]);
@@ -137,6 +147,8 @@ const Search = () => {
                   handleUserClick(item);
                 } else if (searchType === "posts") {
                   handlePostClick(item);
+                } else if (searchType === "categories") {
+                  handleCategoryClick(item);
                 }
 
               }}

@@ -1,0 +1,69 @@
+.postViewCategoryContainer {
+    /* Center column of up to 700px */
+    max-width: 700px;
+    margin: 0 auto;
+    background: #fff; /* or your theme background */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    /* We do NOT fix the height or overflow here,
+       so the scrollbar will be on the entire window. */
+    min-height: 100vh; /* so it at least fills the screen */
+    box-sizing: border-box;
+  }
+  
+  /* Header at top, containing the back button & category name */
+  .postViewCategoryHeader {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #ddd;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+  
+  /* The back button styling */
+  .postViewCategoryBackButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    margin-right: 16px;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  
+  .postViewCategoryBackButton:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .postViewCategoryTitle {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+    color: #333;
+  }
+  
+  /* The main content area where posts are displayed */
+  .postViewCategoryContent {
+    width: 100%;
+    padding: 12px;
+    /* No special scroll handling here, we rely on window scrolling */
+  }
+  
+  .postViewCategoryNoPostsMessage {
+    text-align: center;
+    margin-top: 40px;
+    color: #666;
+    font-size: 14px;
+  }
+  
+  .postViewCategoryLoadingIndicator {
+    text-align: center;
+    margin: 16px 0;
+    font-size: 14px;
+    color: #666;
+  }
+  
