@@ -13,6 +13,8 @@ import AIChatting from './components/dashboard/AIChatting';
 import MyPosts from './components/dashboard/MyPosts';
 import CreatePostPage from './components/dashboard/CreatePostPage';
 import SharedPostViewer from './components/shared/SharedPostViewer';
+import PostViewByCategory from './components/dashboard/PostViewByCategory';
+import Leaderboard from './components/dashboard/Leaderboard'
 import NotificationsPage from './components/dashboard/NotificationsPage';
 import ChatPage from './components/dashboard/ChatPage';
 import Search from './components/dashboard/Search';
@@ -21,8 +23,6 @@ import Settings from './components/Setting/Setting';
 import MyLikedPosts from './components/Setting/MyLikedPosts';
 import MySavedPosts from './components/Setting/MySavedPost';
 import MySchedulePost from './components/Setting/MySchedulePost';
-
-
 function App() {
   return (
     <WebSocketProvider>
