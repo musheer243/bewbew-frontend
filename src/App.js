@@ -17,9 +17,11 @@ import NotificationsPage from './components/dashboard/NotificationsPage';
 import ChatPage from './components/dashboard/ChatPage';
 import Search from './components/dashboard/Search';
 import { WebSocketProvider } from './context/WebSocketContext'; // Import your provider
-import Settings from './components/dashboard/Setting';
-import PostViewByCategory from './components/dashboard/PostViewByCategory';
-import Leaderboard from './components/dashboard/Leaderboard';
+import Settings from './components/Setting/Setting';
+import MyLikedPosts from './components/Setting/MyLikedPosts';
+import MySavedPosts from './components/Setting/MySavedPost';
+import MySchedulePost from './components/Setting/MySchedulePost';
+
 
 function App() {
   return (
@@ -43,9 +45,12 @@ function App() {
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/search" element={<Search />} />
+
         <Route path="/setting" element = {<Settings/>}/>
 
-
+        <Route path="/post-activity/my-LikedPosts" element={<MyLikedPosts/>}  />
+        <Route path="/post-activity/my-SavedPosts" element={<MySavedPosts/>}/>
+        <Route path="/post-activity/my-ScheduledPosts" element={<MySchedulePost/>}  />
         <Route path="/my-posts" element={<MyPosts />} />
         <Route path="/posts/:userId" element={<MyPosts />} />
 
