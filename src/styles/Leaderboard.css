@@ -1,97 +1,99 @@
 /* Leaderboard Container */
 .leaderboard-container {
-    max-width: 700px;
-    height: 100vh;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    position: relative; /* Ensure the container is relative for absolute positioning */
-  }
-  
-  /* Header Section */
-  .leaderboard-header {
-    display: flex;  
-    align-items: center;
-    width: 100%;
-  }
-  
-  .back-button {
-    font-size: 24px;
-    cursor: pointer;
-    margin-right: 10px;
-  }
-  
-  /* Dropdown Menu */
-  .month-selector {
-    position: relative;
-    margin: 5px;
-    width: 200px;
-    margin-left: auto;
-    margin-right: 10px;
-  }
-  
-  .month-selector select {
-    width: 100%;
-    padding: 8px;
-    font-size: 16px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    appearance: none;
-    background-color: #fff;
-    cursor: pointer;
-  }
-  
-  .dropdown-icon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-  }
-  
-  /* Leaderboard List */
-  .leaderboard-list {
-    width: 100%;
-    max-height: 80vh;
-    overflow-y: auto;
-  }
-  
-  .leaderboard-item {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .profile-pic {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 15px;
-  }
-  
-  .user-info {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .username {
-    font-weight: bold;
-  }
-  
-  .post-count {
-    font-size: 14px;
-    color: #666;
-  }
-  
-  /* No Data Message */
-  .no-data {
-    text-align: center;
-    color: #888;
-    font-size: 16px;
-    margin-top: 20px;
-  }
-  
+  max-width: 700px;
+  height: 100vh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  position: relative;
+}
+
+/* Header Section */
+.leaderboard-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px; /* Some spacing below header */
+}
+
+.leaderboard-back-button {
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* Add space between arrow and "Leaderboard" text */
+.leaderboard-header h2 {
+  margin-left: 20px;
+  margin-right: auto; /* push the dropdown to the right */
+}
+
+/* Dropdown Menu */
+.month-selector {
+  position: relative;
+  width: 200px;
+}
+
+.month-selector select {
+  width: 100%;
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  appearance: none;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.dropdown-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* Table Container (scroll if needed) */
+.leaderboard-table-container {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Table Styles */
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.leaderboard-table th {
+  background-color: #f2f2f2;
+}
+
+.username-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Profile pic in table */
+.table-profile-pic {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* No Data Message */
+.no-data {
+  text-align: center;
+  color: #888;
+  font-size: 16px;
+  margin-top: 20px;
+}
