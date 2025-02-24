@@ -11,6 +11,8 @@ import { TbTags } from "react-icons/tb";
 import { BiLogOut } from "react-icons/bi";
 import { SlUserFollow } from "react-icons/sl";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
+import { ToastContainer, toast } from "react-toastify";  // <-- Make sure you have react-toastify installed
+
 
 const Profile = () => {
   const { userId } = useParams(); // Extract userId from the URL
@@ -148,7 +150,7 @@ const Profile = () => {
     // 4B) If currently 'Requested', you might want to do "cancel request" or do nothing
     else if (isRequested) {
       // You might want to implement a "cancel request" endpoint, or do nothing
-      console.log("Follow request already pending; no further action here.");
+      toast.info("Follow request is already pending.");
     }
     // 4C) If currently followed => do unfollow
     else if (isFollowed) {
@@ -203,26 +205,36 @@ const Profile = () => {
     }
   };
 
+  // Handler for "See Posts"
   const handleSeePosts = () => {
-    console.log(
-      "Type of loggedInUserId:",
-      typeof loggedInUserId,
-      "Value:",
-      loggedInUserId
-    );
-    console.log("Type of user.id:", typeof user.id, "Value:", user.id);
-
+    // 1) If I'm the user => always allowed
     if (Number(loggedInUserId) === Number(user.id)) {
-      console.log("✅ Navigating to /my-posts");
-      navigate("/my-posts", { state: { userId: loggedInUserId } }); // Pass userId explicitly
-    } else {
-      console.log(`🔄 Navigating to /posts/${user.id}`);
-      navigate(`/posts/${user.id}`, { state: { userId: user.id } });
+      navigate("/my-posts", { state: { userId: user.id } });
+      return;
     }
+    // 2) If user is private & not followed => show toast
+    if (user.private && !isFollowed) {
+      toast.error("User account is private. You cannot view their posts unless you're a friend.");
+      return;
+    }
+    // 3) Otherwise, navigate to posts
+    navigate(`/posts/${user.id}`, { state: { userId: user.id } });
   };
 
+  // Handler for "Message"
   const handleMessageClick = () => {
-    // Pass user in location state
+    // 1) If I'm the user => no problem
+    if (Number(loggedInUserId) === Number(user.id)) {
+      // If user wants to message themselves, you can allow or just show a toast
+      toast.info("You are viewing your own profile. Typically, you can't message yourself!");
+      return;
+    }
+    // 2) If user is private & not followed => show toast
+    if (user.private && !isFollowed) {
+      toast.error("User account is private. You cannot message them unless you're a friend.");
+      return;
+    }
+    // 3) Otherwise, navigate to the chat
     navigate("/chat", {
       state: {
         userToChat: user,
@@ -377,6 +389,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      <ToastContainer/>
     </div>
   );
 };
