@@ -23,6 +23,9 @@ import Settings from './components/Setting/Setting';
 import MyLikedPosts from './components/Setting/MyLikedPosts';
 import MySavedPosts from './components/Setting/MySavedPost';
 import MySchedulePost from './components/Setting/MySchedulePost';
+import UpdatePassword from './components/Setting/Updatepassword';
+
+
 function App() {
   return (
     <WebSocketProvider>
@@ -54,6 +57,7 @@ function App() {
         <Route path="/your-account/updatePassword" element={<UpdatePassword/>} />
         <Route path="/my-posts" element={<MyPosts />} />
         <Route path="/posts/:userId" element={<MyPosts />} />
+
 
         <Route path="/category/:categoryId" element={<PostViewByCategory />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
