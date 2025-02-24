@@ -40,6 +40,9 @@ const Settings = () => {
 
         if (response.status === 200) {
           const profileData = response.data;
+
+          // Make sure your backend returns `private` in profileData
+          // If your backend uses "isPrivate", rename below accordingly
           setUser(profileData);
           localStorage.setItem("cachedProfile", JSON.stringify(profileData));
         }
@@ -48,6 +51,7 @@ const Settings = () => {
       }
     };
 
+    // Check cached profile in local storage
     const cachedProfile = localStorage.getItem("cachedProfile");
     if (cachedProfile) {
       const parsedProfile = JSON.parse(cachedProfile);
@@ -56,6 +60,30 @@ const Settings = () => {
       fetchProfileData();
     }
   }, []);
+
+  // Function to handle toggle change
+  const togglePrivacy = async () => {
+    if (!user) return;
+    try {
+      const token = localStorage.getItem("jwtToken");
+      await axios.post(
+        `${API_BASE_URL}/api/users/${user.id}/toggle-privacy`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      // Locally toggle the `private` field
+      const updatedUser = { ...user, private: !user.private };
+      setUser(updatedUser);
+      localStorage.setItem("cachedProfile", JSON.stringify(updatedUser));
+    } catch (error) {
+      console.error("Error toggling privacy: ", error);
+      alert("Failed to update account privacy.");
+    }
+  };
 
   return (
     <div className="settings-container">
@@ -73,11 +101,24 @@ const Settings = () => {
           <LiaUserEditSolid className="icon" size={27} /> Edit Profile
         </li>
         <li className="settings-item" data-tooltip="Adjust your privacy preferences">
-          <RiGitRepositoryPrivateLine className="icon" size={27} /> Account Privacy
+          <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
+            <div>
+              <RiGitRepositoryPrivateLine className="icon" size={27} /> Account Privacy
+            </div>
+            <div style={{ marginLeft: "auto" }}>
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={user?.private || false}
+                  onChange={togglePrivacy}
+                />
+                <span className="slider"></span>
+              </label>
+            </div>
+          </div>
         </li>
 
         {/* Conditionally render Update Email and Update Password if oauthProvider is null */}
-        
         {user && user.oauthProvider === null && (
           <>
             <li className="settings-item" data-tooltip="Update your Email">
@@ -99,7 +140,11 @@ const Settings = () => {
         >
           <RiHeartsLine className="icon" size={27} /> My Liked
         </li>
-        <li className="settings-item" data-tooltip="Saved Post" onClick={() => navigate("/post-activity/my-SavedPosts")}>
+        <li
+          className="settings-item"
+          data-tooltip="Saved Post"
+          onClick={() => navigate("/post-activity/my-SavedPosts")}
+        >
           <BiBookmarkHeart className="icon" size={27} /> My Saved
         </li>
 
