@@ -124,7 +124,7 @@ const Settings = () => {
             <li className="settings-item" data-tooltip="Update your Email">
               <BiLogoGmail className="icon" size={27} /> Update Email
             </li>
-            <li className="settings-item" data-tooltip="Update your Password in case you forgot">
+            <li className="settings-item" data-tooltip="Update your Password in case you forgot"  onClick={() => navigate("/your-account/updatePassword")}>
               <MdLockReset className="icon" size={27} /> Update Password
             </li>
           </>
