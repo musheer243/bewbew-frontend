@@ -23,6 +23,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(!location.state?.user); // If user is not in location.state, set loading to true
   const [error, setError] = useState(null);
   const [isFollowed, setIsFollowed] = useState(false); // Local state to hold follow status
+  const [isRequested, setIsRequested] = useState(false); // <-- add this!
   const [showOptions, setShowOptions] = useState(false); // State for dropdown
 
   useEffect(() => {
@@ -56,19 +57,39 @@ const Profile = () => {
   // If viewing someone else's profile, hit the API to check follow status
   useEffect(() => {
     if (user && Number(loggedInUserId) !== Number(user.id)) {
+      const token = localStorage.getItem("jwtToken");
       axios
-        .get(
-          `${API_BASE_URL}/api/users/${user.id}/is-followed?followerid=${loggedInUserId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        )
+        .get(`${API_BASE_URL}/api/users/${user.id}/follow-status?viewerId=${loggedInUserId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         .then((response) => {
-          setIsFollowed(response.data.isFollowed);
+          // response.data => { followStatus: "followed" | "requested" | "none", isPrivate: boolean }
+          const { followStatus } = response.data;
+  
+          // Decide your button text based on followStatus:
+          // e.g., "followed" => "Friend added"
+          //       "requested" => "Friend request sent"
+          //       "none" => "Add Friend"
+          
+          if (followStatus === "followed") {
+            setIsFollowed(true);
+            setIsRequested(false);
+          } else if (followStatus === "requested") {
+            setIsFollowed(false);
+            setIsRequested(true);
+          } else {
+            setIsFollowed(false);
+            setIsRequested(false);
+          }
+          
+          
         })
         .catch((error) => {
           console.error("Error checking follow status:", error);
         });
     }
   }, [loggedInUserId, user, token]);
+  
 
   if (loading) {
     return (
@@ -96,42 +117,58 @@ const Profile = () => {
     console.log("Icon clicked!"); // Add this to check if the function gets called
   };
 
-  // Toggle follow status
+  // This function toggles follow or unfollow based on current state
   const handleFollowToggle = () => {
-    // If not currently following, call the follow API
-    if (!isFollowed) {
+    // 4A) If not followed & not requested => send a follow request
+    if (!isFollowed && !isRequested) {
       axios
         .post(
           `${API_BASE_URL}/api/follow/send/${loggedInUserId}/${user.id}`,
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         )
-        .then((response) => {
-          // The API can return either "Followed successfully" (if the profile is public)
-          // or "Follow request sent" (if the profile is private)
-          console.log(response.data);
-          setIsFollowed(true);
+        .then((resp) => {
+          // The server can return "Followed successfully" or "Follow request sent"
+          if (resp.data === "Follow request sent") {
+            // user must be private
+            setIsRequested(true);
+            setIsFollowed(false);
+          } else if (resp.data === "Followed successfully") {
+            // user is public
+            setIsRequested(false);
+            setIsFollowed(true);
+          } else {
+            console.log("Unexpected follow response:", resp.data);
+          }
         })
-        .catch((error) => {
-          console.error("Error sending follow request:", error);
+        .catch((err) => {
+          console.error("Error sending follow request:", err);
         });
-    } else {
-      // If already following, call the unfollow API
+    }
+    // 4B) If currently 'Requested', you might want to do "cancel request" or do nothing
+    else if (isRequested) {
+      // You might want to implement a "cancel request" endpoint, or do nothing
+      console.log("Follow request already pending; no further action here.");
+    }
+    // 4C) If currently followed => do unfollow
+    else if (isFollowed) {
       axios
         .post(
           `${API_BASE_URL}/api/follow/${loggedInUserId}/unfollow/${user.id}`,
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         )
-        .then((response) => {
-          console.log(response.data);
+        .then((resp) => {
+          console.log(resp.data); // "Unfollowed successfully" or similar
           setIsFollowed(false);
+          setIsRequested(false);
         })
-        .catch((error) => {
-          console.error("Error unfollowing user:", error);
+        .catch((err) => {
+          console.error("Error unfollowing user:", err);
         });
     }
   };
+
 
   //Logout
   const handleLogout = async () => {
@@ -314,16 +351,11 @@ const Profile = () => {
           {Number(loggedInUserId) !== Number(user.id) && (
             <div className={styles["buttons-container"]}>
               {/* Add Friend Button */}
-              <button
-                onClick={handleFollowToggle}
-                className={`${styles["add-friend-btn"]} ${
-                  isFollowed ? styles["followed"] : ""
-                }`}
-              >
+              <button onClick={handleFollowToggle} className={styles["add-friend-btn"]}>
                 {isFollowed
-                  ? user.isPrivate
-                    ? "Friend request sent"
-                    : "Friend added"
+                  ? "Friend added"
+                  : isRequested
+                  ? "Requested"
                   : "Add Friend"}
               </button>
 
