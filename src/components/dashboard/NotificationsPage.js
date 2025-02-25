@@ -35,6 +35,11 @@ const NotificationsPage = () => {
   const userId = localStorage.getItem("userId");
   const token = localStorage.getItem("jwtToken");
 
+  // 1) Fetch follow requests immediately on component mount
+  useEffect(() => {
+    fetchFollowRequests();
+  }, []);
+
   // fetch follow requests when user clicks on “Follow Requests” tab
   useEffect(() => {
     if (viewMode === "followRequests") {
@@ -109,7 +114,7 @@ const NotificationsPage = () => {
             className={`tab-btn ${viewMode === "followRequests" ? "active-tab" : ""}`}
             onClick={() => setViewMode("followRequests")}
           >
-            Follow Requests
+            Follow Requests ({followRequests.length})
           </button>
         </div>
         <hr className="divider" />
