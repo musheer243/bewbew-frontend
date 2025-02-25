@@ -308,7 +308,7 @@ const Dashboard = () => {
               <img
                 src={profile.profilepic}
                 alt="Profile"
-                className="profile-pic"
+                className="ds-profile-pic"
               />
               {/* <span className="profile-name">{profile.name}</span> */}
             </div>
