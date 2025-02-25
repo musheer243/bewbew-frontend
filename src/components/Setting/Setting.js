@@ -121,7 +121,7 @@ const Settings = () => {
         {/* Conditionally render Update Email and Update Password if oauthProvider is null */}
         {user && user.oauthProvider === null && (
           <>
-            <li className="settings-item" data-tooltip="Update your Email">
+            <li className="settings-item" data-tooltip="Update your Email" onClick={() => navigate("/your-account/updateEmail")}>
               <BiLogoGmail className="icon" size={27} /> Update Email
             </li>
             <li className="settings-item" data-tooltip="Update your Password in case you forgot"  onClick={() => navigate("/your-account/updatePassword")}>
