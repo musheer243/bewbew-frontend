@@ -152,3 +152,49 @@
   color: #888;
   margin-top: 4px;
 }
+
+.tabs-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.tab-btn {
+  background-color: #eee;
+  border: none;
+  padding: 8px 16px;
+  margin: 0 5px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+}
+
+.tab-btn:hover {
+  background-color: #ddd;
+}
+
+.active-tab {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.follow-requests-section .request-actions {
+  margin-top: 8px;
+}
+
+.follow-requests-section .accept-btn,
+.follow-requests-section .decline-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.follow-requests-section .accept-btn:hover {
+  color: green;
+}
+.follow-requests-section .decline-btn:hover {
+  color: red;
+}
