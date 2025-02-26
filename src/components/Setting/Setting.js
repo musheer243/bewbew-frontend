@@ -243,6 +243,7 @@ const Settings = () => {
           className="settings-item"
           data-tooltip="Learn more about us"
           style={{ alignItems: "center", justifyContent: "center", marginTop: "20px" }}
+          onClick={() => navigate("/about")}
         >
           About
         </li>

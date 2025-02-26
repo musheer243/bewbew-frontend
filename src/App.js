@@ -25,6 +25,7 @@ import MySavedPosts from './components/Setting/MySavedPost';
 import MySchedulePost from './components/Setting/MySchedulePost';
 import UpdatePassword from './components/Setting/Updatepassword';
 import UpdateEmail from './components/Setting/UpdateEmail';
+import About from './components/Setting/About';
 
 
 function App() {
@@ -57,6 +58,8 @@ function App() {
         <Route path="/post-activity/my-ScheduledPosts" element={<MySchedulePost/>}  />
         <Route path="/your-account/updatePassword" element={<UpdatePassword/>} />
         <Route path="/your-account/updateEmail" element={<UpdateEmail/>} />
+        <Route path="/about" element={< About/>}/>
+
         <Route path="/my-posts" element={<MyPosts />} />
         <Route path="/posts/:userId" element={<MyPosts />} />
 
