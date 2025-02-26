@@ -69,16 +69,54 @@
 .chat-page-users-list {
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .chat-page-user-item {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 12px 20px;
   border-bottom: 1px solid #eee;
   cursor: pointer;
   transition: background-color 0.2s;
 }
+
+.user-item-content {
+  display: flex;
+  align-items: center;
+}
+
+.user-item-menu {
+  position: relative;
+}
+
+.ellipsis-icon {
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.menu-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 100;
+  width: 140px;
+}
+
+.menu-item {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.menu-item:hover {
+  background-color: #f0f0f0;
+}
+
 
 .chat-page-user-item:hover {
   background-color: #f0f2f5;
@@ -128,7 +166,9 @@
 .chat-page-message.me {
   justify-content: flex-end;
   margin-right: 0; /* Removes any unintended margin */
-  margin-left: auto; /* Pushes the message bubble to the right */}
+  margin-left: auto; /* Pushes the message bubble to the right */
+  overflow: visible; /* Allow the delete icon to be visible outside the message bubble */
+}
 
 .chat-page-message-content {
   max-width: 70%;
@@ -203,4 +243,29 @@
 
 .chat-page-clear-icon:hover {
   color: #ff4444;
+}
+
+/* --- Delete Icon on My Messages --- */
+
+.delete-icon-container {
+  position: relative;
+    margin-top: 25px;
+    margin-right: 5px;
+    margin-left: auto;
+    /* transform: translateY(-50%); */
+    display: none;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 2px;
+    border-radius: 4px;
+}
+
+.chat-page-message.me:hover .delete-icon-container {
+  display: block;
+}
+
+.delete-message-icon {
+  font-size: 16px;
+  color: red;
+  cursor: pointer;
 }
