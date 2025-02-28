@@ -208,7 +208,7 @@ const ChatPage = () => {
   };
 
   const [newMessageMarker, setNewMessageMarker] = useState(null);
-const [highlightedMessages, setHighlightedMessages] = useState(new Set());
+  const [highlightedMessages, setHighlightedMessages] = useState(new Set());
 
   // Select user and load messages
   const handleUserClick = async (selectedUser) => {
@@ -353,28 +353,25 @@ const [highlightedMessages, setHighlightedMessages] = useState(new Set());
     }
   }, [messages]);
 
- function handleScroll() {
-  if (!messagesContainerRef.current) return;
-  const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
-  
+  function handleScroll() {
+    if (!messagesContainerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+    
+    // 1) If near the top => load older messages
+    if (scrollTop < 100) {
+      loadMoreMessages();  // <-- now we actually call it
+    }
 
-  // 1) If near the top => load older messages
-  if (scrollTop < 100) {
-    loadMoreMessages();  // <-- now we actually call it
+    // If near bottom, mark "other" unread as read
+    if (scrollTop + clientHeight >= scrollHeight - 20) {
+      messages.forEach(msg => {
+        if (msg.sender === 'other' && !msg.read && !readMessagesRef.current.has(msg.id)) {
+          stompClient.current.send('/app/read', {}, JSON.stringify({ id: msg.id }));
+          readMessagesRef.current.add(msg.id);
+        }
+      });
+    }
   }
-
-
-  // If near bottom, mark “other” unread as read
-  if (scrollTop + clientHeight >= scrollHeight - 20) {
-    messages.forEach(msg => {
-      if (msg.sender === 'other' && !msg.read && !readMessagesRef.current.has(msg.id)) {
-        stompClient.current.send('/app/read', {}, JSON.stringify({ id: msg.id }));
-        readMessagesRef.current.add(msg.id);
-      }
-    });
-  }
-}
-
 
   // Delete a single message
   const handleDeleteMessage = async (messageId) => {
@@ -457,8 +454,8 @@ const [highlightedMessages, setHighlightedMessages] = useState(new Set());
                   />
                   <span>{user.username}</span>
                   {user.unreadCount > 0 && (
-          <div className="unread-count-badge">{user.unreadCount}</div>
-        )}
+                    <div className="unread-count-badge">{user.unreadCount + " new messages"}</div>
+                  )}
                 </div>
                 <div className="user-item-menu">
                   <FaEllipsisV 
@@ -491,54 +488,54 @@ const [highlightedMessages, setHighlightedMessages] = useState(new Set());
                 </div>
               )}
               {messages.map((msg, index) => {
-    const isHighlighted = highlightedMessages.has(msg.id);
-    const isLastReadMessage = index === lastReadIndex && msg.read;
-    return (
-      <div 
-        key={index} 
-        className={`chat-page-message ${msg.sender} ${isHighlighted ? 'highlighted' : ''}`}
-      >
-        {msg.sender === 'other' ? (
-          <>
-            {newMessageMarker === index && (
-              <div className="new-messages-label">New messages ▼</div>
-            )}
-            <img
-              src={msg.senderProfilePic || '/default-profile.png'}
-              alt="Profile"
-              className="chat-page-message-profile-pic left"
-            />
-            <div className="chat-page-message-content">
-              <p>{msg.content}</p>
-              <span className="chat-page-timestamp">{msg.timestamp}</span>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="delete-icon-container">
-              <FaTrash 
-                className="delete-message-icon" 
-                onClick={(e) => handleDeleteMessage(msg.id)} 
-              />
-            </div>
-            <div className="chat-page-message-content">
-              <p>{msg.content}</p>
-              <span className="chat-page-timestamp">{msg.timestamp}</span>
-              {isLastReadMessage && (
-                <span className="seen-label">Seen</span>
-              )}
-            </div>
-            <img
-              src={profilePic || '/default-profile.png'}
-              alt="My Profile"
-              className="chat-page-message-profile-pic right"
-            />
-          </>
-        )}
-      </div>
-    );
-  })}
-
+                const isHighlighted = highlightedMessages.has(msg.id);
+                const isLastReadMessage = index === lastReadIndex && msg.read;
+                
+                // Add new message marker before the message, not inside it
+                return (
+                  <React.Fragment key={index}>
+                    {newMessageMarker === index && (
+                      <div className="new-messages-label">New messages ▼</div>
+                    )}
+                    <div className={`chat-page-message ${msg.sender} ${isHighlighted ? 'highlighted' : ''}`}>
+                      {msg.sender === 'other' ? (
+                        <>
+                          <img
+                            src={msg.senderProfilePic || '/default-profile.png'}
+                            alt="Profile"
+                            className="chat-page-message-profile-pic left"
+                          />
+                          <div className="chat-page-message-content">
+                            <p>{msg.content}</p>
+                            <span className="chat-page-timestamp">{msg.timestamp}</span>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="delete-icon-container">
+                            <FaTrash 
+                              className="delete-message-icon" 
+                              onClick={(e) => handleDeleteMessage(msg.id)} 
+                            />
+                          </div>
+                          <div className="chat-page-message-content">
+                            <p>{msg.content}</p>
+                            <span className="chat-page-timestamp">{msg.timestamp}</span>
+                            {isLastReadMessage && (
+                              <span className="seen-label">Seen</span>
+                            )}
+                          </div>
+                          <img
+                            src={profilePic || '/default-profile.png'}
+                            alt="My Profile"
+                            className="chat-page-message-profile-pic right"
+                          />
+                        </>
+                      )}
+                    </div>
+                  </React.Fragment>
+                );
+              })}
               <div ref={messagesEndRef} />
             </div>
             <div className="chat-page-message-input">

@@ -280,20 +280,17 @@
 
 /* Unread Count Badge */
 .unread-count-badge {
-  background: #ff4757;
+  background: #555152;
   color: white;
-  border-radius: 50%;
   padding: 2px 8px;
   font-size: 0.8rem;
-  margin-left: auto;
-  margin-right: 10px;
+  margin-left: 10px;
 }
 
 /* Message Highlight */
 .highlighted {
-  background: rgba(255, 235, 59, 0.3);
   position: relative;
-  border-left: 3px solid #ffd700}
+}
 
 .new-messages-label {
   color: #666;
