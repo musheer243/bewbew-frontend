@@ -269,3 +269,11 @@
   color: red;
   cursor: pointer;
 }
+
+.seen-label {
+  display: block;
+  font-size: 12px;
+  color: #999;
+  margin-top: 4px;
+  text-align: right;
+}

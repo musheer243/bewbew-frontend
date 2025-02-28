@@ -18,20 +18,22 @@ const ChatPage = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [openMenuUserId, setOpenMenuUserId] = useState(null);
-
-  const stompClient = useRef(null);
-  const messagesEndRef = useRef(null);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const messagesContainerRef = useRef(null);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+
+  const stompClient = useRef(null);
+  const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
+  const prevScrollHeightRef = useRef(0);
+  const prevScrollTopRef = useRef(0);
+  const loadingMoreRef = useRef(false);
 
   // Get user ID and token from localStorage
   const userId = localStorage.getItem('userId');
   const jwtToken = localStorage.getItem('jwtToken');
   const cachedProfile = localStorage.getItem('cachedProfile');
-
   let profilePic = '/default-profile.png';
   if (cachedProfile) {
     try {
@@ -49,56 +51,73 @@ const ChatPage = () => {
     }
   }, [userId, jwtToken, navigate]);
 
-  // WebSocket connection for receiving messages (for both sender and receiver)
+  // WebSocket connection & subscriptions (for messages and read-status)
   useEffect(() => {
     if (!userId) return;
-
     const socket = new SockJS(`${WEBSOCKET_URL}`);
     stompClient.current = Stomp.over(socket);
     const headers = { Authorization: `Bearer ${jwtToken}` };
 
     stompClient.current.connect(headers, () => {
-      stompClient.current.subscribe(
-        `/user/queue/messages`,
-        (message) => {
-          const receivedMessage = JSON.parse(message.body);
-          const isMyMessage = receivedMessage.senderId === parseInt(userId);
-          const newMsg = {
-            ...receivedMessage,
-            sender: isMyMessage ? 'me' : 'other',
-            timestamp: new Date(receivedMessage.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          };
+      // Subscription for incoming messages
+      stompClient.current.subscribe(`/user/queue/messages`, (message) => {
+        const receivedMessage = JSON.parse(message.body);
+        const isMyMessage = receivedMessage.senderId === parseInt(userId);
+        const newMsg = {
+          ...receivedMessage,
+          sender: isMyMessage ? 'me' : 'other',
+          timestamp: new Date(receivedMessage.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
 
-          // Append the new message (or update an existing one if needed)
-          setMessages(prev => {
-            const existingIndex = prev.findIndex(
-              m => m.senderId === receivedMessage.senderId && m.content === receivedMessage.content
-            );
-            if (existingIndex !== -1) {
-              if ((!prev[existingIndex].id || prev[existingIndex].id === 0) && newMsg.id && newMsg.id !== 0) {
-                const updatedMessages = [...prev];
-                updatedMessages[existingIndex] = { ...prev[existingIndex], ...newMsg };
-                return updatedMessages;
-              }
-              return prev;
+        setMessages(prev => {
+          const existingIndex = prev.findIndex(
+            m => m.senderId === receivedMessage.senderId && m.content === receivedMessage.content
+          );
+          if (existingIndex !== -1) {
+            if ((!prev[existingIndex].id || prev[existingIndex].id === 0) && newMsg.id && newMsg.id !== 0) {
+              const updatedMessages = [...prev];
+              updatedMessages[existingIndex] = { ...prev[existingIndex], ...newMsg };
+              return updatedMessages;
             }
-            return [...prev, newMsg];
-          });
+            return prev;
+          }
+          return [...prev, newMsg];
+        });
 
-          // Scroll to bottom on receiving a new message
-          setTimeout(() => {
-            if (messagesContainerRef.current) {
-              messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-            }
-          }, 0);
-        }
-      );
+        setTimeout(() => {
+          if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+          }
+        }, 0);
+      });
+
+      // Subscription for read-status notifications (from backend /read mapping)
+      stompClient.current.subscribe(`/user/queue/read-status`, (message) => {
+        const readUpdate = JSON.parse(message.body);
+        setMessages(prev =>
+          prev.map(m =>
+            m.id === readUpdate.id ? { ...m, read: true } : m
+          )
+        );
+      });
     });
 
     return () => {
       if (stompClient.current) stompClient.current.disconnect();
     };
   }, [userId, jwtToken]);
+
+  // Send read update via WebSocket for each unread message from the other user
+  useEffect(() => {
+    if (selectedUser && stompClient.current) {
+      messages.forEach((msg) => {
+        if (msg.sender === 'other' && !msg.read && msg.id && msg.id !== 0) {
+          const readDto = { id: msg.id };
+          stompClient.current.send('/app/read', {}, JSON.stringify(readDto));
+        }
+      });
+    }
+  }, [selectedUser, messages]);
 
   // Search users with sanitization
   const handleSearchChange = async (e) => {
@@ -145,12 +164,12 @@ const ChatPage = () => {
     if (!searchTerm) fetchRecentChats();
   }, [searchTerm, userId, jwtToken]);
 
-  // Toggle the three-dot menu for a chat item
+  // Toggle three-dot menu for a chat item
   const toggleMenu = (uId) => {
     setOpenMenuUserId(prev => (prev === uId ? null : uId));
   };
 
-  // Delete chat for me (only mark as deleted for current user)
+  // Delete chat for current user only
   const handleDeleteChatForMe = async (user) => {
     try {
       const response = await fetch(
@@ -168,7 +187,7 @@ const ChatPage = () => {
     setOpenMenuUserId(null);
   };
 
-  // Delete full chat (from both sides)
+  // Delete entire chat history for both users
   const handleDeleteFullChat = async (user) => {
     try {
       const response = await fetch(
@@ -210,7 +229,7 @@ const ChatPage = () => {
     }
   };
 
-  // Scroll to bottom when a new chat is loaded (on initial load)
+  // Scroll to bottom on initial chat load
   useEffect(() => {
     if (selectedUser && initialLoadComplete && page === 0 && messagesContainerRef.current) {
       setTimeout(() => {
@@ -226,8 +245,7 @@ const ChatPage = () => {
     }
   }, [userToChat]);
 
-  // handleSendMessage: send the message over WebSocket.
-  // With your new backend, the sender will also receive the complete message via WebSocket.
+  // Send message via WebSocket
   const handleSendMessage = () => {
     if (newMessage.trim() && stompClient.current) {
       const message = {
@@ -236,7 +254,6 @@ const ChatPage = () => {
         content: newMessage
       };
       stompClient.current.send('/app/chat', {}, JSON.stringify(message));
-      // Clear the input field; the message will be appended when the server response is received.
       setNewMessage('');
       setTimeout(() => {
         if (messagesContainerRef.current) {
@@ -246,7 +263,7 @@ const ChatPage = () => {
     }
   };
 
-  // Process messages: convert sentAt timestamp and set sender field.
+  // Process messages: convert sentAt timestamp and set sender field
   const processMessages = (msgs) => {
     return msgs.map(msg => {
       const [year, month, day, hour, minute, second, nano] = msg.sentAt;
@@ -260,11 +277,7 @@ const ChatPage = () => {
     });
   };
 
-  // Infinite scroll for loading more messages
-  const prevScrollHeightRef = useRef(0);
-  const prevScrollTopRef = useRef(0);
-  const loadingMoreRef = useRef(false);
-
+  // Infinite scroll: load more messages
   const loadMoreMessages = async () => {
     if (!hasMore || loadingMoreRef.current) return;
     loadingMoreRef.current = true;
@@ -314,7 +327,7 @@ const ChatPage = () => {
     }
   };
 
-  // Delete a single message using its proper ID.
+  // Delete a single message
   const handleDeleteMessage = async (messageId) => {
     if (!messageId || messageId === 0) {
       console.error("Cannot delete message: Invalid message ID", messageId);
@@ -334,6 +347,11 @@ const ChatPage = () => {
       console.error("Error deleting message:", error);
     }
   };
+
+  // Determine the index of the last "read" message you sent
+  const lastReadIndex = messages.reduce((lastIndex, msg, index) => {
+    return msg.sender === 'me' && msg.read ? index : lastIndex;
+  }, -1);
 
   return (
     <div className="chat-page">
@@ -450,6 +468,9 @@ const ChatPage = () => {
                       <div className="chat-page-message-content">
                         <p>{msg.content}</p>
                         <span className="chat-page-timestamp">{msg.timestamp}</span>
+                        {index === lastReadIndex && (
+                          <span className="seen-label">Seen</span>
+                        )}
                       </div>
                       <img
                         src={profilePic || '/default-profile.png'}
