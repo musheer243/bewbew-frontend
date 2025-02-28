@@ -107,17 +107,26 @@ const ChatPage = () => {
     };
   }, [userId, jwtToken]);
 
+
+  const readMessagesRef = useRef(new Set());
+
   // Send read update via WebSocket for each unread message from the other user
   useEffect(() => {
-    if (selectedUser && stompClient.current) {
-      messages.forEach((msg) => {
-        if (msg.sender === 'other' && !msg.read && msg.id && msg.id !== 0) {
-          const readDto = { id: msg.id };
-          stompClient.current.send('/app/read', {}, JSON.stringify(readDto));
-        }
-      });
-    }
-  }, [selectedUser, messages]);
+    if (!selectedUser || !stompClient.current) return;
+  
+    messages.forEach((msg) => {
+      // We only want to read "other" messages that are not yet read
+      // and we haven't already triggered a read event for.
+      if (msg.sender === "other" && !msg.read && msg.id && !readMessagesRef.current.has(msg.id)) {
+        // Send read event once
+        stompClient.current.send('/app/read', {}, JSON.stringify({ id: msg.id }));
+        
+        // Add to the set so we don't re-send next time
+        readMessagesRef.current.add(msg.id);
+      }
+    });
+  }, [messages, selectedUser, stompClient]);
+
 
   // Search users with sanitization
   const handleSearchChange = async (e) => {
@@ -317,15 +326,21 @@ const ChatPage = () => {
     }
   }, [messages]);
 
-  const handleScroll = () => {
-    if (!initialLoadComplete) return;
-    if (messagesContainerRef.current) {
-      const { scrollTop } = messagesContainerRef.current;
-      if (scrollTop < 100) {
-        loadMoreMessages();
+ function handleScroll() {
+  if (!messagesContainerRef.current) return;
+  const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+  
+  // If near bottom, mark “other” unread as read
+  if (scrollTop + clientHeight >= scrollHeight - 20) {
+    messages.forEach(msg => {
+      if (msg.sender === 'other' && !msg.read && !readMessagesRef.current.has(msg.id)) {
+        stompClient.current.send('/app/read', {}, JSON.stringify({ id: msg.id }));
+        readMessagesRef.current.add(msg.id);
       }
-    }
-  };
+    });
+  }
+}
+
 
   // Delete a single message
   const handleDeleteMessage = async (messageId) => {
