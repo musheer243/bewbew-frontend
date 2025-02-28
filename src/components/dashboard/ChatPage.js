@@ -59,30 +59,28 @@ const ChatPage = () => {
     const headers = { Authorization: `Bearer ${jwtToken}` };
 
     stompClient.current.connect(headers, () => {
-      // Subscription for incoming messages
       stompClient.current.subscribe(`/user/queue/messages`, (message) => {
         const receivedMessage = JSON.parse(message.body);
         const isMyMessage = receivedMessage.senderId === parseInt(userId);
+
+        // Update recent chats unread count for received messages
+        if (!isMyMessage) {
+          setRecentChats(prevChats => prevChats.map(chat => {
+            if (chat.id === receivedMessage.senderId) {
+              return { ...chat, unreadCount: (chat.unreadCount || 0) + 1 };
+            }
+            return chat;
+          }));
+        }
+
         const newMsg = {
           ...receivedMessage,
           sender: isMyMessage ? 'me' : 'other',
-          timestamp: new Date(receivedMessage.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          timestamp: new Date(receivedMessage.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          read: isMyMessage ? receivedMessage.read : false
         };
 
-        setMessages(prev => {
-          const existingIndex = prev.findIndex(
-            m => m.senderId === receivedMessage.senderId && m.content === receivedMessage.content
-          );
-          if (existingIndex !== -1) {
-            if ((!prev[existingIndex].id || prev[existingIndex].id === 0) && newMsg.id && newMsg.id !== 0) {
-              const updatedMessages = [...prev];
-              updatedMessages[existingIndex] = { ...prev[existingIndex], ...newMsg };
-              return updatedMessages;
-            }
-            return prev;
-          }
-          return [...prev, newMsg];
-        });
+        setMessages(prev => [...prev, newMsg]);
 
         setTimeout(() => {
           if (messagesContainerRef.current) {
@@ -147,24 +145,19 @@ const ChatPage = () => {
     }
   };
 
-  // Fetch recent chats
+  // Modified fetchRecentChats effect
   useEffect(() => {
     const fetchRecentChats = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/v1/messages/${userId}/chats`, {
           headers: { Authorization: `Bearer ${jwtToken}` }
         });
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`HTTP ${response.status}: ${errorText}`);
-        }
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          const text = await response.text();
-          throw new Error(`Invalid content type: ${contentType} - Response: ${text}`);
-        }
+        // ... (existing error handling)
         const data = await response.json();
-        setRecentChats(data);
+        setRecentChats(data.map(chat => ({
+          ...chat,
+          unreadCount: chat.unreadCount || 0
+        })));
       } catch (error) {
         console.error('Error fetching recent chats:', error);
         setRecentChats([]);
@@ -214,13 +207,23 @@ const ChatPage = () => {
     setOpenMenuUserId(null);
   };
 
+  const [newMessageMarker, setNewMessageMarker] = useState(null);
+const [highlightedMessages, setHighlightedMessages] = useState(new Set());
+
   // Select user and load messages
   const handleUserClick = async (selectedUser) => {
+    // Reset unread count when opening chat
+    setRecentChats(prevChats => prevChats.map(chat => 
+      chat.id === selectedUser.id ? { ...chat, unreadCount: 0 } : chat
+    ));
+
+    // Existing loading logic
     setSelectedUser(selectedUser);
     setPage(0);
     setHasMore(true);
     setIsLoading(true);
     setInitialLoadComplete(false);
+    
     try {
       const response = await fetch(
         `${API_BASE_URL}/api/v1/messages/page/${userId}/${selectedUser.id}?page=0&size=20`,
@@ -228,6 +231,28 @@ const ChatPage = () => {
       );
       const data = await response.json();
       const orderedMessages = processMessages(data.content).reverse();
+
+      // Highlighting logic
+      const firstUnreadIndex = orderedMessages.findIndex(msg => 
+        msg.sender === 'other' && !msg.read
+      );
+      
+      if (firstUnreadIndex !== -1) {
+        setNewMessageMarker(firstUnreadIndex);
+        const newHighlight = new Set();
+        orderedMessages.forEach((msg, index) => {
+          if (index >= firstUnreadIndex && msg.sender === 'other' && !msg.read) {
+            newHighlight.add(msg.id);
+          }
+        });
+        setHighlightedMessages(newHighlight);
+        
+        setTimeout(() => {
+          setHighlightedMessages(new Set());
+          setNewMessageMarker(null);
+        }, 5000);
+      }
+
       setMessages(orderedMessages);
       setHasMore(!data.last);
       setInitialLoadComplete(true);
@@ -281,10 +306,12 @@ const ChatPage = () => {
       return {
         ...msg,
         sender: msg.senderId === parseInt(userId) ? 'me' : 'other',
-        timestamp: dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        timestamp: dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        read: msg.read || false
       };
     });
   };
+
 
   // Infinite scroll: load more messages
   const loadMoreMessages = async () => {
@@ -429,6 +456,9 @@ const ChatPage = () => {
                     className="chat-page-profile-pic"
                   />
                   <span>{user.username}</span>
+                  {user.unreadCount > 0 && (
+          <div className="unread-count-badge">{user.unreadCount}</div>
+        )}
                 </div>
                 <div className="user-item-menu">
                   <FaEllipsisV 
@@ -461,48 +491,54 @@ const ChatPage = () => {
                 </div>
               )}
               {messages.map((msg, index) => {
-                if (msg.sender === 'other') {
-                  return (
-                    <div key={index} className="chat-page-message other">
-                      <img
-                        src={msg.senderProfilePic || '/default-profile.png'}
-                        alt="Profile"
-                        className="chat-page-message-profile-pic left"
-                      />
-                      <div className="chat-page-message-content">
-                        <p>{msg.content}</p>
-                        <span className="chat-page-timestamp">{msg.timestamp}</span>
-                      </div>
-                    </div>
-                  );
-                } else {
-                  return (
-                    <div key={index} className="chat-page-message me">
-                      <div className="delete-icon-container">
-                        <FaTrash 
-                          className="delete-message-icon" 
-                          onClick={(e) => { 
-                            e.stopPropagation(); 
-                            handleDeleteMessage(msg.id); 
-                          }} 
-                        />
-                      </div>
-                      <div className="chat-page-message-content">
-                        <p>{msg.content}</p>
-                        <span className="chat-page-timestamp">{msg.timestamp}</span>
-                        {index === lastReadIndex && (
-                          <span className="seen-label">Seen</span>
-                        )}
-                      </div>
-                      <img
-                        src={profilePic || '/default-profile.png'}
-                        alt="My Profile"
-                        className="chat-page-message-profile-pic right"
-                      />
-                    </div>
-                  );
-                }
-              })}
+    const isHighlighted = highlightedMessages.has(msg.id);
+    const isLastReadMessage = index === lastReadIndex && msg.read;
+    return (
+      <div 
+        key={index} 
+        className={`chat-page-message ${msg.sender} ${isHighlighted ? 'highlighted' : ''}`}
+      >
+        {msg.sender === 'other' ? (
+          <>
+            {newMessageMarker === index && (
+              <div className="new-messages-label">New messages ▼</div>
+            )}
+            <img
+              src={msg.senderProfilePic || '/default-profile.png'}
+              alt="Profile"
+              className="chat-page-message-profile-pic left"
+            />
+            <div className="chat-page-message-content">
+              <p>{msg.content}</p>
+              <span className="chat-page-timestamp">{msg.timestamp}</span>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="delete-icon-container">
+              <FaTrash 
+                className="delete-message-icon" 
+                onClick={(e) => handleDeleteMessage(msg.id)} 
+              />
+            </div>
+            <div className="chat-page-message-content">
+              <p>{msg.content}</p>
+              <span className="chat-page-timestamp">{msg.timestamp}</span>
+              {isLastReadMessage && (
+                <span className="seen-label">Seen</span>
+              )}
+            </div>
+            <img
+              src={profilePic || '/default-profile.png'}
+              alt="My Profile"
+              className="chat-page-message-profile-pic right"
+            />
+          </>
+        )}
+      </div>
+    );
+  })}
+
               <div ref={messagesEndRef} />
             </div>
             <div className="chat-page-message-input">
