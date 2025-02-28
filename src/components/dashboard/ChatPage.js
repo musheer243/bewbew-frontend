@@ -268,7 +268,7 @@ const ChatPage = () => {
         if (messagesContainerRef.current) {
           messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
         }
-      }, 0);
+      }, 50);
     }
   };
 
@@ -329,6 +329,13 @@ const ChatPage = () => {
  function handleScroll() {
   if (!messagesContainerRef.current) return;
   const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+  
+
+  // 1) If near the top => load older messages
+  if (scrollTop < 100) {
+    loadMoreMessages();  // <-- now we actually call it
+  }
+
   
   // If near bottom, mark “other” unread as read
   if (scrollTop + clientHeight >= scrollHeight - 20) {
