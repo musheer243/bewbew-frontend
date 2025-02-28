@@ -88,7 +88,7 @@ const ChatPage = () => {
           if (messagesContainerRef.current) {
             messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
           }
-        }, 0);
+        }, 100);
       });
 
       // Subscription for read-status notifications (from backend /read mapping)
@@ -336,7 +336,7 @@ const ChatPage = () => {
     loadMoreMessages();  // <-- now we actually call it
   }
 
-  
+
   // If near bottom, mark “other” unread as read
   if (scrollTop + clientHeight >= scrollHeight - 20) {
     messages.forEach(msg => {
