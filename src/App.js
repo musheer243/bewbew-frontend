@@ -26,6 +26,7 @@ import MySchedulePost from './components/Setting/MySchedulePost';
 import UpdatePassword from './components/Setting/Updatepassword';
 import UpdateEmail from './components/Setting/UpdateEmail';
 import About from './components/Setting/About';
+import Friends from './components/dashboard/Friends';
 
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/search" element={<Search />} />
+        <Route path="/friends" element={<Friends/>}/>
 
         <Route path="/setting" element = {<Settings/>}/>
 

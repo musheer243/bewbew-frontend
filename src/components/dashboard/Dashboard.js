@@ -231,7 +231,7 @@ const Dashboard = () => {
       if (!token) {
         console.error("No token found, user may not be logged in.");
         localStorage.clear();
-        navigate("/login");
+        navigate("/");
         return;
       }
 

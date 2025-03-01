@@ -1,0 +1,257 @@
+/* New wrapper to center the main search container */
+.search-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+/* Container for the entire search page */
+.search-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    background-color: #f4f4f499;
+    min-height: 100vh;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+   }
+  
+  /* Header with back arrow and search input */
+  .search-header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 650px;
+    margin-bottom: 20px;
+  }
+  
+  .back-button {
+    cursor: pointer;
+    margin-right: 15px;
+    color: #333;
+    transition: color 0.2s ease;
+  }
+  
+  .back-button:hover {
+    color: #007bff;
+  }
+  
+  .back-icon {
+    font-size: 24px;
+  }
+  
+  .search-input {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    font-size: 16px;
+  }
+  
+  /* Tabs to choose search type */
+  .search-tabs {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 600px;
+    background: #fff;
+    border-radius: 25px;
+    padding: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .search-tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 10px 0;
+    font-size: 16px;
+    color: #555;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  
+  .search-tab.active {
+    background: #007bff;
+    color: #fff;
+    border-radius: 20px;
+  }
+  
+  /* Results container */
+  .search-results {
+    width: 100%;
+    max-width: 700px;
+    /* background: #fff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
+  }
+  
+  .no-search,
+  .no-results {
+    text-align: center;
+    color: #888;
+    padding: 20px;
+  }
+  
+  /* List of results */
+  .results-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .result-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;  /* Ensures button is at the right side */
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  
+  .result-item:last-child {
+    border-bottom: none;
+  }
+  
+  .result-item:hover {
+    background: #f9f9f9;
+  }
+  
+  /* Styling for user search result */
+  .result-user {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .result-user-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  
+  .result-username {
+    font-size: 16px;
+    color: #333;
+  }
+  
+  /* Styling for post search result */
+  .result-post-title {
+    font-size: 18px;
+    margin: 0 0 5px 0;
+    color: #333;
+  }
+  
+  .result-post-snippet {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  /* Styling for category search result */
+  .result-category-name {
+    font-size: 16px;
+    color: #333;
+  }
+
+  /* Follow / Unfollow / Add Friend Button styling */
+.follow-toggle-btn {
+  background-color: #1da1f2;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  min-width: 100px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+.follow-toggle-btn:hover {
+  background-color: #0d8ce0;
+}
+
+/* Add Close Friend button styling */
+.add-close-friend-btn {
+  background-color: #27ae60;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+.add-close-friend-btn:hover {
+  background-color: #219150;
+}
+
+/* Popup overlay and box styling for confirmation */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.popup-box {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  width: 300px;
+}
+.confirm-btn {
+  background-color: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  margin: 10px;
+  cursor: pointer;
+}
+.cancel-btn {
+  background-color: #95a5a6;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  margin: 10px;
+  cursor: pointer;
+}
+
+/* Container for the button group */
+.button-group {
+  display: flex;
+  align-items: center;
+}
+
+
+
+/* Heart Crack Icon Button Styling */
+.heart-crack-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  margin-left: 8px;
+  color: #e74c3c;
+  transition: color 0.3s ease;
+}
+.heart-crack-btn:hover {
+  color: #c0392b;
+}
+
+  
