@@ -226,7 +226,8 @@ const Settings = () => {
         <li className="settings-item" data-tooltip="See blocked users">
           <ImBlocked className="icon" size={27} /> Blocked
         </li>
-        <li className="settings-item" data-tooltip="Manage your close friends list">
+        <li className="settings-item" data-tooltip="Manage your close friends list"   onClick={() => navigate("/friends", { state: { initialTab: "close" } })}
+        >
           <IoHeartCircleOutline className="icon" size={27} /> Close Friends
         </li>
 

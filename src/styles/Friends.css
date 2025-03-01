@@ -20,8 +20,7 @@
     font-family: Arial, sans-serif;
    }
   
-  /* Header with back arrow and search input */
-  .search-header {
+   .friends-search-header {
     display: flex;
     align-items: center;
     width: 100%;
@@ -29,7 +28,8 @@
     margin-bottom: 20px;
   }
   
-  .back-button {
+  .friend-back-button {
+    flex-shrink: 0; /* Prevents the back arrow from shrinking */
     cursor: pointer;
     margin-right: 15px;
     color: #333;
@@ -44,13 +44,14 @@
     font-size: 24px;
   }
   
-  .search-input {
-    flex: 1;
+  .friends-search-input {
+    flex: 1; /* Takes up the remaining space */
     padding: 10px 15px;
     border: 1px solid #ddd;
     border-radius: 25px;
     font-size: 16px;
   }
+  
   
   /* Tabs to choose search type */
   .search-tabs {
@@ -188,7 +189,9 @@
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.3s ease;
+  float: right;
 }
+
 .add-close-friend-btn:hover {
   background-color: #219150;
 }
@@ -254,4 +257,4 @@
   color: #c0392b;
 }
 
-  
+
