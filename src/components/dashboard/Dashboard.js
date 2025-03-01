@@ -32,7 +32,7 @@ const Dashboard = () => {
   const postsContainerRef = useRef(null); // Reference for the posts container
   const navigate = useNavigate();
   const location = useLocation();
-  const { notificationCount } =
+  const { notificationCount, unreadChatCount } =
     useContext(WebSocketContext);
 
     // ********** New Post Integration **********
@@ -359,6 +359,9 @@ const Dashboard = () => {
         <div className="add-post-container">
           <button className="add-post-btn" onClick={() => navigate("/chat")}>
             <LuMessageCircleHeart size={34} />
+            {unreadChatCount > 0 && (
+      <span className="badge">{unreadChatCount}</span>
+    )}
           </button>
         </div>
       </div>

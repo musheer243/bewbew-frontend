@@ -1,6 +1,6 @@
 // WebSocketContext.js (or NotificationContext.js, naming is flexible)
-import React, { createContext, useState, useEffect, useCallback } from "react";
-import { Client } from "@stomp/stompjs";
+import React, { createContext, useState, useEffect, useCallback, useMemo } from "react";
+import { Client, Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { WEBSOCKET_URL, API_BASE_URL } from "../config";
 
@@ -9,6 +9,8 @@ export const WebSocketContext = createContext();
 export const WebSocketProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);    // Entire notifications list
   const [notificationCount, setNotificationCount] = useState(0); // Number of unread
+  const [recentChats, setRecentChats] = useState([]);
+  const [chatStompClient, setChatStompClient] = useState(null);
   const token = localStorage.getItem("jwtToken");
   const userId = localStorage.getItem("userId");
 
@@ -41,11 +43,6 @@ export const WebSocketProvider = ({ children }) => {
     }
   }, [userId, token]);
 
-  // // "Expose" this method under a different name so it's clear it can be called
-  // const refetchNotifications = () => {
-  //   fetchNotifications();
-  // };
-
   // 2) Connect WebSocket
   useEffect(() => {
     if (!userId || !token) return;
@@ -68,7 +65,7 @@ export const WebSocketProvider = ({ children }) => {
           const newNotification = JSON.parse(message.body);
           // Insert at top
           setNotifications((prev) => [newNotification, ...prev]);
-          // If it’s unread, increment count
+          // If it's unread, increment count
           if (!newNotification.read) {
             setNotificationCount((prev) => prev + 1);
           }
@@ -101,7 +98,7 @@ export const WebSocketProvider = ({ children }) => {
         setNotifications((prev) =>
           prev.map((n) => {
             if (n.id === notificationId) {
-              // If we’re changing from unread -> read, decrement the count
+              // If we're changing from unread -> read, decrement the count
               if (!n.read) setNotificationCount((count) => Math.max(count - 1, 0));
               return { ...n, read: true };
             }
@@ -137,6 +134,121 @@ export const WebSocketProvider = ({ children }) => {
     }
   };
 
+  // Calculate total unread messages from all chats
+  const unreadChatCount = useMemo(
+    () => recentChats.reduce((sum, chat) => sum + (chat.unreadCount || 0), 0),
+    [recentChats]
+  );
+
+  // Fetch recent chats - this now gets unread counts from the server
+  const fetchRecentChats = useCallback(async () => {
+    if (!userId || !token) return;
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/messages/${userId}/chats`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Store the chat data with unread counts from server
+        setRecentChats(data.map(chat => ({ 
+          ...chat, 
+          unreadCount: chat.unreadCount || 0,
+          username: chat.username || chat.senderUsername || "Unknown User" // Add username fallbacks
+        })));
+      } else {
+        console.error('Failed to fetch recent chats:', response.status);
+      }
+    } catch (error) {
+      console.error('Error fetching recent chats:', error);
+    }
+  }, [userId, token]);
+
+  // Initialize chat WebSocket connection
+  useEffect(() => {
+    if (!userId || !token) return;
+
+    const socket = new SockJS(`${WEBSOCKET_URL}`);
+    const client = Stomp.over(socket);
+    
+    client.connect({ Authorization: `Bearer ${token}` }, () => {
+      // Subscribe to new messages
+      client.subscribe(`/user/queue/messages`, (message) => {
+        const receivedMessage = JSON.parse(message.body);
+        const isMyMessage = receivedMessage.senderId === parseInt(userId);
+
+        // Update recent chats
+        setRecentChats(prev => {
+          const existing = prev.find(c => c.id === receivedMessage.chatId || 
+                                      c.id === receivedMessage.senderId || 
+                                      c.id === receivedMessage.receiverId);
+          if (existing) {
+            return prev.map(c => (c.id === receivedMessage.chatId || 
+                               c.id === receivedMessage.senderId || 
+                               c.id === receivedMessage.receiverId)
+              ? { 
+                  ...c, 
+                  username: c.username || receivedMessage.senderUsername, // Keep existing username if present
+                  profilepic: c.profilepic || receivedMessage.senderProfilePic,
+                  unreadCount: isMyMessage ? c.unreadCount : (c.unreadCount || 0) + 1 
+                }
+              : c
+            );
+          }
+          
+          return [...prev, {
+            id: receivedMessage.senderId,
+            username: receivedMessage.senderUsername,
+            profilepic: receivedMessage.senderProfilePic,
+            unreadCount: isMyMessage ? 0 : 1
+          }];
+        });
+      });
+
+      // Subscribe to read status updates to update unread count
+      client.subscribe(`/user/queue/read-status`, (message) => {
+        const readUpdate = JSON.parse(message.body);
+        // No need to update recentChats here as we'll do it in markChatAsRead
+      });
+    });
+
+    setChatStompClient(client);
+    return () => client.disconnect();
+  }, [userId, token]);
+
+  // Mark chat as read function - update server AND local state
+  const markChatAsRead = useCallback(async (chatUserId) => {
+    // First update local state
+    setRecentChats(prev => 
+      prev.map(chat => 
+        chat.id === chatUserId ? { ...chat, unreadCount: 0 } : chat
+      )
+    );
+    
+    // Then update server (Add an API endpoint if needed)
+    // This is where we need to add code to persist the read status on the server
+    try {
+      // You might need to implement this endpoint in your backend
+      await fetch(`${API_BASE_URL}/api/v1/messages/mark-chat-read/${userId}/${chatUserId}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        }
+      });
+    } catch (error) {
+      console.error('Error marking chat as read on server:', error);
+    }
+  }, [userId, token]);
+
+  // In WebSocketProvider.js, add this effect to load chats when component mounts
+  useEffect(() => {
+    if (userId && token) {
+      fetchRecentChats();
+    }
+  }, [userId, token, fetchRecentChats]);
+
   return (
     <WebSocketContext.Provider
       value={{
@@ -144,7 +256,11 @@ export const WebSocketProvider = ({ children }) => {
         notificationCount,
         markNotificationAsRead,
         markAllAsRead,
-        // refetchNotifications,
+        recentChats,
+        unreadChatCount,
+        markChatAsRead,
+        chatStompClient,
+        fetchRecentChats // Export this so components can call it when needed
       }}
     >
       {children}

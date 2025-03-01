@@ -1,19 +1,24 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Stomp } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
 import { FaArrowLeft, FaSearch, FaTimes, FaEllipsisV, FaTrash } from 'react-icons/fa';
 import '../../styles/ChatPage.css';
-import { API_BASE_URL, WEBSOCKET_URL } from '../../config';
+import { API_BASE_URL } from '../../config';
+import { WebSocketContext } from "../../context/WebSocketContext";
 
 const ChatPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const userToChat = location.state?.userToChat || null;
 
+  // Get values from WebSocket context
+  const { 
+    recentChats,
+    chatStompClient,
+    markChatAsRead
+  } = useContext(WebSocketContext);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [users, setUsers] = useState([]);
-  const [recentChats, setRecentChats] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
@@ -22,13 +27,15 @@ const ChatPage = () => {
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  const [newMessageMarker, setNewMessageMarker] = useState(null);
+  const [highlightedMessages, setHighlightedMessages] = useState(new Set());
 
-  const stompClient = useRef(null);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const prevScrollHeightRef = useRef(0);
   const prevScrollTopRef = useRef(0);
   const loadingMoreRef = useRef(false);
+  const readMessagesRef = useRef(new Set());
 
   // Get user ID and token from localStorage
   const userId = localStorage.getItem('userId');
@@ -51,80 +58,62 @@ const ChatPage = () => {
     }
   }, [userId, jwtToken, navigate]);
 
-  // WebSocket connection & subscriptions (for messages and read-status)
+  // Listen for new messages from WebSocketContext
   useEffect(() => {
-    if (!userId) return;
-    const socket = new SockJS(`${WEBSOCKET_URL}`);
-    stompClient.current = Stomp.over(socket);
-    const headers = { Authorization: `Bearer ${jwtToken}` };
+    if (!chatStompClient || !selectedUser) return;
 
-    stompClient.current.connect(headers, () => {
-      stompClient.current.subscribe(`/user/queue/messages`, (message) => {
-        const receivedMessage = JSON.parse(message.body);
-        const isMyMessage = receivedMessage.senderId === parseInt(userId);
+    const messageSubscription = chatStompClient.subscribe(`/user/queue/messages`, (message) => {
+      const receivedMessage = JSON.parse(message.body);
+      const isMyMessage = receivedMessage.senderId === parseInt(userId);
 
-        // Update recent chats unread count for received messages
-        if (!isMyMessage) {
-          setRecentChats(prevChats => prevChats.map(chat => {
-            if (chat.id === receivedMessage.senderId) {
-              return { ...chat, unreadCount: (chat.unreadCount || 0) + 1 };
-            }
-            return chat;
-          }));
+      const newMsg = {
+        ...receivedMessage,
+        sender: isMyMessage ? 'me' : 'other',
+        timestamp: new Date(receivedMessage.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        read: isMyMessage ? receivedMessage.read : false
+      };
+
+      setMessages(prev => [...prev, newMsg]);
+
+      setTimeout(() => {
+        if (messagesContainerRef.current) {
+          messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
         }
+      }, 100);
+    });
 
-        const newMsg = {
-          ...receivedMessage,
-          sender: isMyMessage ? 'me' : 'other',
-          timestamp: new Date(receivedMessage.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          read: isMyMessage ? receivedMessage.read : false
-        };
-
-        setMessages(prev => [...prev, newMsg]);
-
-        setTimeout(() => {
-          if (messagesContainerRef.current) {
-            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-          }
-        }, 100);
-      });
-
-      // Subscription for read-status notifications (from backend /read mapping)
-      stompClient.current.subscribe(`/user/queue/read-status`, (message) => {
-        const readUpdate = JSON.parse(message.body);
-        setMessages(prev =>
-          prev.map(m =>
-            m.id === readUpdate.id ? { ...m, read: true } : m
-          )
-        );
-      });
+    // Subscription for read-status notifications
+    const readStatusSubscription = chatStompClient.subscribe(`/user/queue/read-status`, (message) => {
+      const readUpdate = JSON.parse(message.body);
+      setMessages(prev =>
+        prev.map(m =>
+          m.id === readUpdate.id ? { ...m, read: true } : m
+        )
+      );
     });
 
     return () => {
-      if (stompClient.current) stompClient.current.disconnect();
+      messageSubscription.unsubscribe();
+      readStatusSubscription.unsubscribe();
     };
-  }, [userId, jwtToken]);
-
-
-  const readMessagesRef = useRef(new Set());
+  }, [chatStompClient, selectedUser, userId]);
 
   // Send read update via WebSocket for each unread message from the other user
   useEffect(() => {
-    if (!selectedUser || !stompClient.current) return;
+    if (!selectedUser || !chatStompClient) return;
   
     messages.forEach((msg) => {
       // We only want to read "other" messages that are not yet read
       // and we haven't already triggered a read event for.
       if (msg.sender === "other" && !msg.read && msg.id && !readMessagesRef.current.has(msg.id)) {
         // Send read event once
-        stompClient.current.send('/app/read', {}, JSON.stringify({ id: msg.id }));
+        chatStompClient.send('/app/read', {}, JSON.stringify({ id: msg.id }));
         
         // Add to the set so we don't re-send next time
         readMessagesRef.current.add(msg.id);
       }
     });
-  }, [messages, selectedUser, stompClient]);
-
+  }, [messages, selectedUser, chatStompClient]);
 
   // Search users with sanitization
   const handleSearchChange = async (e) => {
@@ -145,27 +134,6 @@ const ChatPage = () => {
     }
   };
 
-  // Modified fetchRecentChats effect
-  useEffect(() => {
-    const fetchRecentChats = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/messages/${userId}/chats`, {
-          headers: { Authorization: `Bearer ${jwtToken}` }
-        });
-        // ... (existing error handling)
-        const data = await response.json();
-        setRecentChats(data.map(chat => ({
-          ...chat,
-          unreadCount: chat.unreadCount || 0
-        })));
-      } catch (error) {
-        console.error('Error fetching recent chats:', error);
-        setRecentChats([]);
-      }
-    };
-    if (!searchTerm) fetchRecentChats();
-  }, [searchTerm, userId, jwtToken]);
-
   // Toggle three-dot menu for a chat item
   const toggleMenu = (uId) => {
     setOpenMenuUserId(prev => (prev === uId ? null : uId));
@@ -179,7 +147,11 @@ const ChatPage = () => {
         { method: 'DELETE', headers: { Authorization: `Bearer ${jwtToken}` } }
       );
       if (response.ok) {
-        setRecentChats(prev => prev.filter(u => u.id !== user.id));
+        // We'll let the context handle the actual update by refetching
+        // But we can clear selected user if it was the deleted one
+        if (selectedUser && selectedUser.id === user.id) {
+          setSelectedUser(null);
+        }
       } else {
         console.error("Failed to delete chat for me");
       }
@@ -197,7 +169,11 @@ const ChatPage = () => {
         { method: 'DELETE', headers: { Authorization: `Bearer ${jwtToken}` } }
       );
       if (response.ok) {
-        setRecentChats(prev => prev.filter(u => u.id !== user.id));
+        // We'll let the context handle the actual update by refetching
+        // But we can clear selected user if it was the deleted one
+        if (selectedUser && selectedUser.id === user.id) {
+          setSelectedUser(null);
+        }
       } else {
         console.error("Failed to delete full chat");
       }
@@ -207,15 +183,10 @@ const ChatPage = () => {
     setOpenMenuUserId(null);
   };
 
-  const [newMessageMarker, setNewMessageMarker] = useState(null);
-  const [highlightedMessages, setHighlightedMessages] = useState(new Set());
-
   // Select user and load messages
   const handleUserClick = async (selectedUser) => {
-    // Reset unread count when opening chat
-    setRecentChats(prevChats => prevChats.map(chat => 
-      chat.id === selectedUser.id ? { ...chat, unreadCount: 0 } : chat
-    ));
+    // Mark chat as read in the context
+    markChatAsRead(selectedUser.id);
 
     // Existing loading logic
     setSelectedUser(selectedUser);
@@ -281,13 +252,13 @@ const ChatPage = () => {
 
   // Send message via WebSocket
   const handleSendMessage = () => {
-    if (newMessage.trim() && stompClient.current) {
+    if (newMessage.trim() && chatStompClient && selectedUser) {
       const message = {
         senderId: parseInt(userId),
         receiverId: selectedUser.id,
         content: newMessage
       };
-      stompClient.current.send('/app/chat', {}, JSON.stringify(message));
+      chatStompClient.send('/app/chat', {}, JSON.stringify(message));
       setNewMessage('');
       setTimeout(() => {
         if (messagesContainerRef.current) {
@@ -312,10 +283,9 @@ const ChatPage = () => {
     });
   };
 
-
   // Infinite scroll: load more messages
   const loadMoreMessages = async () => {
-    if (!hasMore || loadingMoreRef.current) return;
+    if (!hasMore || loadingMoreRef.current || !selectedUser) return;
     loadingMoreRef.current = true;
     setIsLoading(true);
     const container = messagesContainerRef.current;
@@ -359,14 +329,14 @@ const ChatPage = () => {
     
     // 1) If near the top => load older messages
     if (scrollTop < 100) {
-      loadMoreMessages();  // <-- now we actually call it
+      loadMoreMessages();
     }
 
     // If near bottom, mark "other" unread as read
-    if (scrollTop + clientHeight >= scrollHeight - 20) {
+    if (scrollTop + clientHeight >= scrollHeight - 20 && chatStompClient) {
       messages.forEach(msg => {
         if (msg.sender === 'other' && !msg.read && !readMessagesRef.current.has(msg.id)) {
-          stompClient.current.send('/app/read', {}, JSON.stringify({ id: msg.id }));
+          chatStompClient.send('/app/read', {}, JSON.stringify({ id: msg.id }));
           readMessagesRef.current.add(msg.id);
         }
       });
@@ -491,7 +461,6 @@ const ChatPage = () => {
                 const isHighlighted = highlightedMessages.has(msg.id);
                 const isLastReadMessage = index === lastReadIndex && msg.read;
                 
-                // Add new message marker before the message, not inside it
                 return (
                   <React.Fragment key={index}>
                     {newMessageMarker === index && (
