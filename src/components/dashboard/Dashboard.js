@@ -74,9 +74,10 @@ const Dashboard = () => {
         setError("User ID or token is missing.");
         return;
       }
-
-      setLoading(true); // Set loading to true before the API call
-
+  
+      setLoading(true);
+  
+      // Fetch posts from followed users
       const response = await axios.get(
         `${API_BASE_URL}/api/post/byfollowing/${userId}`,
         {
@@ -91,17 +92,59 @@ const Dashboard = () => {
           },
         }
       );
-
+  
       if (response.status === 200) {
         const newPosts = response.data.content || [];
-        setPosts((prevPosts) => [
-          ...prevPosts.filter(
-            (post) =>
-              !newPosts.some((newPost) => newPost.postId === post.postId)
-          ),
-          ...newPosts,
-        ]);
-        setTotalPages(response.data.totalPages);
+  
+        // If no posts from followed users on the first page, fetch recommendations
+        if (newPosts.length === 0 && pageNumber === 0) {
+          // Call both recommendation endpoints concurrently
+          const [recByCollaborativeResponse, recForUserResponse] = await Promise.all([
+            axios.get(`${API_BASE_URL}/api/recommendations/byCollaborative`, {
+              headers: { Authorization: `Bearer ${token}` },
+              params: { howMany: 10 },
+            }),
+            axios.get(`${API_BASE_URL}/api/recommendations/user`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+          ]);
+  
+          let combinedPosts = [];
+          if (
+            recByCollaborativeResponse.status === 200 &&
+            recByCollaborativeResponse.data
+          ) {
+            combinedPosts = recByCollaborativeResponse.data;
+          }
+          if (
+            recForUserResponse.status === 200 &&
+            recForUserResponse.data
+          ) {
+            combinedPosts = [...combinedPosts, ...recForUserResponse.data];
+          }
+  
+          // Remove duplicate posts based on postId
+          const uniquePosts = [];
+          const seenPostIds = new Set();
+          combinedPosts.forEach((post) => {
+            if (!seenPostIds.has(post.postId)) {
+              uniquePosts.push(post);
+              seenPostIds.add(post.postId);
+            }
+          });
+          setPosts(uniquePosts);
+          // Assume recommendations are a single page
+          setTotalPages(1);
+        } else {
+          // If followed users have posts, merge them into posts state
+          setPosts((prevPosts) => [
+            ...prevPosts.filter(
+              (post) => !newPosts.some((newPost) => newPost.postId === post.postId)
+            ),
+            ...newPosts,
+          ]);
+          setTotalPages(response.data.totalPages);
+        }
       } else {
         setError("Failed to fetch posts.");
       }
@@ -109,10 +152,10 @@ const Dashboard = () => {
       console.error("Error fetching posts:", err);
       setError("An error occurred while fetching posts.");
     } finally {
-      setLoading(false); // Set loading to false after the API call
+      setLoading(false);
     }
   }, [pageNumber]);
-
+  
   // Trigger fetchPosts when pageNumber changes
   useEffect(() => {
     fetchPosts();
