@@ -303,6 +303,7 @@ function CreatePostPage() {
     canvas.toBlob((blob) => {
       if (blob) {
         const file = new File([blob], "captured-image.jpg", { type: "image/jpeg" });
+        const previewUrl = URL.createObjectURL(file);
         // Add to allMedia as "new"
         setAllMedia((prev) => [...prev, { type: "new", file }]);
         handleCloseCamera();
@@ -321,15 +322,23 @@ function CreatePostPage() {
     if (allMedia.length === 0) return;
     setAllMedia((prev) => {
       const updated = [...prev];
-      updated.splice(currentIndex, 1);
-      let newIndex = currentIndex;
-      if (newIndex >= updated.length) {
-        newIndex = updated.length - 1;
-      }
-      setCurrentIndex(Math.max(newIndex, 0));
-      return updated;
-    });
-  }
+
+      const removedItem = updated.splice(currentIndex, 1)[0];
+
+      // updated.splice(currentIndex, 1);
+
+     // Revoke the object URL if it exists to free up memory
+    if (removedItem && removedItem.previewUrl) {
+      URL.revokeObjectURL(removedItem.previewUrl);
+    }
+    let newIndex = currentIndex;
+    if (newIndex >= updated.length) {
+      newIndex = updated.length - 1;
+    }
+    setCurrentIndex(Math.max(newIndex, 0));
+    return updated;
+  });
+}
 
   function handleFileUpload(e) {
     const files = Array.from(e.target.files);
@@ -337,6 +346,7 @@ function CreatePostPage() {
       const newItems = files.map((file) => ({
         type: "new",
         file: file,
+        previewUrl: URL.createObjectURL(file), // create URL once here
       }));
       setAllMedia((prev) => [...prev, ...newItems]);
       // Move currentIndex to the newly added item if you want,
@@ -378,7 +388,9 @@ function CreatePostPage() {
       }
     } else {
       // It's a new file
-      const src = URL.createObjectURL(item.file);
+      // const src = URL.createObjectURL(item.file);
+       // Use the stored previewUrl instead of creating a new one each render.
+    const src = item.previewUrl;
       if (item.file.type.startsWith("image/")) {
         return <img src={src} alt="NewMedia" className="media-preview-content" />;
       } else {
