@@ -59,6 +59,11 @@ const ChatPage = () => {
     }
   }, [userId, jwtToken, navigate]);
 
+  useEffect(() => {
+    fetchRecentChats();
+  }, [fetchRecentChats]);
+  
+
   // Listen for new messages from WebSocketContext
   useEffect(() => {
     if (!chatStompClient || !selectedUser) return;
