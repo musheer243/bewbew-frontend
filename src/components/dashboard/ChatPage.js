@@ -14,7 +14,8 @@ const ChatPage = () => {
   const { 
     recentChats,
     chatStompClient,
-    markChatAsRead
+    markChatAsRead,
+    fetchRecentChats  // Add this line to get the function
   } = useContext(WebSocketContext);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -152,6 +153,7 @@ const ChatPage = () => {
         if (selectedUser && selectedUser.id === user.id) {
           setSelectedUser(null);
         }
+        fetchRecentChats();
       } else {
         console.error("Failed to delete chat for me");
       }
@@ -174,6 +176,7 @@ const ChatPage = () => {
         if (selectedUser && selectedUser.id === user.id) {
           setSelectedUser(null);
         }
+        fetchRecentChats();
       } else {
         console.error("Failed to delete full chat");
       }
