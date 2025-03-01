@@ -1,3 +1,4 @@
+// Settings.js
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -16,9 +17,13 @@ import { LiaHandsHelpingSolid } from "react-icons/lia";
 import { FaArrowLeft } from "react-icons/fa";
 import { MdLockReset } from "react-icons/md";
 import { BiLogoGmail } from "react-icons/bi";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { IoClose } from "react-icons/io5";
 
 const Settings = () => {
   const [user, setUser] = useState(null);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [deleteConfirmationText, setDeleteConfirmationText] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,9 +45,6 @@ const Settings = () => {
 
         if (response.status === 200) {
           const profileData = response.data;
-
-          // Make sure your backend returns `private` in profileData
-          // If your backend uses "isPrivate", rename below accordingly
           setUser(profileData);
           localStorage.setItem("cachedProfile", JSON.stringify(profileData));
         }
@@ -54,14 +56,13 @@ const Settings = () => {
     // Check cached profile in local storage
     const cachedProfile = localStorage.getItem("cachedProfile");
     if (cachedProfile) {
-      const parsedProfile = JSON.parse(cachedProfile);
-      setUser(parsedProfile);
+      setUser(JSON.parse(cachedProfile));
     } else {
       fetchProfileData();
     }
   }, []);
 
-  // Function to handle toggle change
+  // Function to handle toggle change for privacy
   const togglePrivacy = async () => {
     if (!user) return;
     try {
@@ -75,13 +76,60 @@ const Settings = () => {
           },
         }
       );
-      // Locally toggle the `private` field
       const updatedUser = { ...user, private: !user.private };
       setUser(updatedUser);
       localStorage.setItem("cachedProfile", JSON.stringify(updatedUser));
     } catch (error) {
       console.error("Error toggling privacy: ", error);
       alert("Failed to update account privacy.");
+    }
+  };
+
+  // Open the delete account confirmation popup
+  const handleDeleteAccountClick = () => {
+    setShowDeletePopup(true);
+  };
+
+  // Close the delete account popup and reset the text field
+  const closeDeletePopup = () => {
+    setShowDeletePopup(false);
+    setDeleteConfirmationText("");
+  };
+
+  // Call the API to delete the user if the typed text is "DELETE"
+  const handleConfirmDeleteAccount = async () => {
+    if (deleteConfirmationText.trim().toUpperCase() === "DELETE") {
+      try {
+        const token = localStorage.getItem("jwtToken");
+        if (!token) {
+          console.error("JWT token is missing");
+          return;
+        }
+        // Call the backend DELETE API using axios
+        const response = await axios.delete(
+          `${API_BASE_URL}/api/users/${user.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.status === 200) {
+          alert("Account deleted successfully.");
+          // Clear user data and redirect to login (or home)
+          localStorage.clear();
+          navigate("/");
+        } else {
+          console.error("Failed to delete account.");
+        }
+      } catch (error) {
+        console.error("Error deleting account:", error);
+        alert("An error occurred while deleting the account.");
+      } finally {
+        closeDeletePopup();
+      }
+    } else {
+      alert('Please type "DELETE" exactly to confirm.');
     }
   };
 
@@ -121,14 +169,30 @@ const Settings = () => {
         {/* Conditionally render Update Email and Update Password if oauthProvider is null */}
         {user && user.oauthProvider === null && (
           <>
-            <li className="settings-item" data-tooltip="Update your Email" onClick={() => navigate("/your-account/updateEmail")}>
+            <li
+              className="settings-item"
+              data-tooltip="Update your Email"
+              onClick={() => navigate("/your-account/updateEmail")}
+            >
               <BiLogoGmail className="icon" size={27} /> Update Email
             </li>
-            <li className="settings-item" data-tooltip="Update your Password in case you forgot"  onClick={() => navigate("/your-account/updatePassword")}>
+            <li
+              className="settings-item"
+              data-tooltip="Update your Password in case you forgot"
+              onClick={() => navigate("/your-account/updatePassword")}
+            >
               <MdLockReset className="icon" size={27} /> Update Password
             </li>
           </>
         )}
+
+        <li
+          className="settings-item"
+          data-tooltip="If incase you want to delete your account permanently!"
+          onClick={handleDeleteAccountClick}
+        >
+          <RiDeleteBin6Line className="icon" size={27} /> Delete Account
+        </li>
 
         <h1 className="settings-title" style={{ marginTop: "30px" }}>
           Post Activity
@@ -179,10 +243,44 @@ const Settings = () => {
           className="settings-item"
           data-tooltip="Learn more about us"
           style={{ alignItems: "center", justifyContent: "center", marginTop: "20px" }}
+          onClick={() => navigate("/about")}
         >
           About
         </li>
       </ul>
+
+      {/* Delete Account Confirmation Popup */}
+      {showDeletePopup && (
+        <div className="SinglePost-delete-popup-overlay">
+          <div className="SinglePost-delete-popup">
+            <button
+              className="SinglePost-delete-popup-close-btn"
+              onClick={closeDeletePopup}
+            >
+              <IoClose size={20} />
+            </button>
+            <h3 className="SinglePost-delete-popup-title">
+              Are you sure you want to delete your account?
+            </h3>
+            <p className="SinglePost-delete-popup-instruction">
+              Type <strong>DELETE</strong> in the box below to confirm.
+            </p>
+            <input
+              type="text"
+              value={deleteConfirmationText}
+              onChange={(e) => setDeleteConfirmationText(e.target.value)}
+              className="SinglePost-delete-input"
+              placeholder='Type "DELETE" here'
+            />
+            <button
+              className="SinglePost-delete-confirm-btn"
+              onClick={handleConfirmDeleteAccount}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
