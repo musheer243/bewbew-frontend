@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef, useCallback, useContext } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useContext,
+} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
@@ -19,6 +25,7 @@ import { IoIosNotificationsOutline } from "react-icons/io";
 import { LuMessageCircleHeart } from "react-icons/lu";
 import { WebSocketContext } from "../../context/WebSocketContext"; // Import the context
 import { MdLeaderboard } from "react-icons/md";
+import AdSenseComponent from "../../AdSenseComponent";
 
 const Dashboard = () => {
   const [profile, setProfile] = useState(null); // State to store profile data
@@ -32,10 +39,9 @@ const Dashboard = () => {
   const postsContainerRef = useRef(null); // Reference for the posts container
   const navigate = useNavigate();
   const location = useLocation();
-  const { notificationCount, unreadChatCount } =
-    useContext(WebSocketContext);
+  const { notificationCount, unreadChatCount } = useContext(WebSocketContext);
 
-    // ********** New Post Integration **********
+  // ********** New Post Integration **********
   // If a new post is passed via navigation state, add it to the posts list.
   useEffect(() => {
     if (location.state?.newPost) {
@@ -74,9 +80,9 @@ const Dashboard = () => {
         setError("User ID or token is missing.");
         return;
       }
-  
+
       setLoading(true);
-  
+
       // Fetch posts from followed users
       const response = await axios.get(
         `${API_BASE_URL}/api/post/byfollowing/${userId}`,
@@ -92,23 +98,24 @@ const Dashboard = () => {
           },
         }
       );
-  
+
       if (response.status === 200) {
         const newPosts = response.data.content || [];
-  
+
         // If no posts from followed users on the first page, fetch recommendations
         if (newPosts.length === 0 && pageNumber === 0) {
           // Call both recommendation endpoints concurrently
-          const [recByCollaborativeResponse, recForUserResponse] = await Promise.all([
-            axios.get(`${API_BASE_URL}/api/recommendations/byCollaborative`, {
-              headers: { Authorization: `Bearer ${token}` },
-              params: { howMany: 10 },
-            }),
-            axios.get(`${API_BASE_URL}/api/recommendations/user`, {
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-          ]);
-  
+          const [recByCollaborativeResponse, recForUserResponse] =
+            await Promise.all([
+              axios.get(`${API_BASE_URL}/api/recommendations/byCollaborative`, {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { howMany: 10 },
+              }),
+              axios.get(`${API_BASE_URL}/api/recommendations/user`, {
+                headers: { Authorization: `Bearer ${token}` },
+              }),
+            ]);
+
           let combinedPosts = [];
           if (
             recByCollaborativeResponse.status === 200 &&
@@ -116,13 +123,10 @@ const Dashboard = () => {
           ) {
             combinedPosts = recByCollaborativeResponse.data;
           }
-          if (
-            recForUserResponse.status === 200 &&
-            recForUserResponse.data
-          ) {
+          if (recForUserResponse.status === 200 && recForUserResponse.data) {
             combinedPosts = [...combinedPosts, ...recForUserResponse.data];
           }
-  
+
           // Remove duplicate posts based on postId
           const uniquePosts = [];
           const seenPostIds = new Set();
@@ -139,7 +143,8 @@ const Dashboard = () => {
           // If followed users have posts, merge them into posts state
           setPosts((prevPosts) => [
             ...prevPosts.filter(
-              (post) => !newPosts.some((newPost) => newPost.postId === post.postId)
+              (post) =>
+                !newPosts.some((newPost) => newPost.postId === post.postId)
             ),
             ...newPosts,
           ]);
@@ -155,7 +160,7 @@ const Dashboard = () => {
       setLoading(false);
     }
   }, [pageNumber]);
-  
+
   // Trigger fetchPosts when pageNumber changes
   useEffect(() => {
     fetchPosts();
@@ -328,7 +333,7 @@ const Dashboard = () => {
             style={{ cursor: "pointer" }}
             onClick={() => navigate("/search")}
           />
-           {/* Notification Icon with Badge */}
+          {/* Notification Icon with Badge */}
           <div
             style={{
               position: "relative",
@@ -345,7 +350,7 @@ const Dashboard = () => {
               <span className="badge">{notificationCount}</span>
             )}
           </div>
-          
+
           {profile && (
             <div className="profile" onClick={handleGoToProfile}>
               <img
@@ -381,17 +386,15 @@ const Dashboard = () => {
           <div className="loading-indicator">Loading...</div>
         )}
 
-        {/* Display posts */}
+        {/* Display posts with an ad after every 4 posts */}
         {posts.length > 0
-          ? posts.map((post) => (
-              <SinglePost
-                key={post.postId}
-                post={post}
-                darkModeFromDashboard={darkMode}
-              />
+          ? posts.map((post, index) => (
+              <React.Fragment key={post.postId}>
+                <SinglePost post={post} darkModeFromDashboard={darkMode} />
+                {(index + 1) % 4 === 0 && <AdSenseComponent />}
+              </React.Fragment>
             ))
-          : /* No posts message, only when not loading */
-            !loading && <p className="no-posts-message">No posts available</p>}
+          : !loading && <p className="no-posts-message">No posts available</p>}
 
         {/* Loading indicator for additional posts (infinite scroll) */}
         {loading && posts.length > 0 && (
@@ -403,8 +406,8 @@ const Dashboard = () => {
           <button className="add-post-btn" onClick={() => navigate("/chat")}>
             <LuMessageCircleHeart size={34} />
             {unreadChatCount > 0 && (
-      <span className="badge">{unreadChatCount}</span>
-    )}
+              <span className="badge">{unreadChatCount}</span>
+            )}
           </button>
         </div>
       </div>
@@ -460,10 +463,12 @@ const Dashboard = () => {
               icon: <TfiGallery size={20} />,
               onClick: () => {
                 const loggedInUserId = localStorage.getItem("userId");
-                navigate(`/my-posts`, { state: { userId: loggedInUserId, darkMode } });
+                navigate(`/my-posts`, {
+                  state: { userId: loggedInUserId, darkMode },
+                });
               },
             },
-            
+
             {
               name: "Create Post",
               icon: <BiImageAdd size={20} />,
