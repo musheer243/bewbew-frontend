@@ -4,6 +4,7 @@ import SinglePost from "../shared/SinglePost"; // Adjust path if needed
 import { API_BASE_URL } from "../../config";
 import "../../styles/PostViewByCategory.css";
 import { FaArrowLeft } from "react-icons/fa";
+import AdSenseComponent from "../../AdSenseComponent";
 
 function PostViewByCategory() {
   const { categoryId } = useParams();

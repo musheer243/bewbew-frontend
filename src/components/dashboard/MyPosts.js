@@ -4,7 +4,7 @@ import axios from "axios";
 import SinglePost from "../shared/SinglePost"; // Import the SinglePost component
 import "../../styles/MyPosts.css";
 import { API_BASE_URL } from "../../config";
-
+import AdSenseComponent from "../../AdSenseComponent";
 const MyPosts = () => {
 
 
