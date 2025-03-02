@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_BASE_URL } from '../../config';
 import { toast, ToastContainer } from 'react-toastify';
@@ -15,6 +16,9 @@ const EditProfile = () => {
   });
   const [selectedImage, setSelectedImage] = useState(null);
   const [preview, setPreview] = useState('');
+  const [originalUsername, setOriginalUsername] = useState('');
+const navigate = useNavigate();
+
 
   useEffect(() => {
     // Auto-fill user details on mount from cached data or API call
@@ -27,6 +31,7 @@ const EditProfile = () => {
         about: profileData.about || '',
         profilepic: profileData.profilepic || ''
       });
+      setOriginalUsername(profileData.username || '');
       setPreview(profileData.profilepic || '');
     } else {
       const fetchUser = async () => {
@@ -48,6 +53,7 @@ const EditProfile = () => {
               about: profileData.about || '',
               profilepic: profileData.profilepic || ''
             });
+            setOriginalUsername(profileData.username || '');
             setPreview(profileData.profilepic || '');
           }
         } catch (error) {
@@ -85,14 +91,19 @@ const EditProfile = () => {
 
     // Create a FormData object for the multipart/form-data request
     const formData = new FormData();
-    formData.append("userDto", JSON.stringify({
-      name: user.name,
-      username: user.username,
-      about: user.about
-    }));
-    if (selectedImage) {
-      formData.append("image", selectedImage);
-    }
+    // Build the userDto object without username if unchanged
+  const userDtoData = {
+    name: user.name,
+    about: user.about
+  };
+  if (user.username !== originalUsername) {
+    userDtoData.username = user.username;
+  }
+  
+  formData.append("userDto", JSON.stringify(userDtoData));
+  if (selectedImage) {
+    formData.append("image", selectedImage);
+  }
 
     try {
       const response = await axios.put(`${API_BASE_URL}/api/users/${userId}`, formData, {
@@ -108,6 +119,7 @@ const EditProfile = () => {
           ...user,
           profilepic: response.data.profilepic
         });
+        navigate("/dashboard");
       }
     } catch (error) {
       console.error("Error updating profile", error);
