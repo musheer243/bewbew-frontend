@@ -144,10 +144,15 @@ const MyPosts = () => {
       <div className="loading-indicator">Loading...</div>
     )}
 
-    {/* Posts Display */}
-    {posts.length > 0 ? (
-      posts.map((post) => <SinglePost key={post.postId} post={post} darkModeFromDashboard={darkMode} onDelete={handlePostDelete} />)
-    ) : (
+     {/* Posts Display with Ad after every 4 posts */}
+     {posts.length > 0 ? (
+        posts.map((post, index) => (
+          <React.Fragment key={post.postId}>
+            <SinglePost post={post} darkModeFromDashboard={darkMode} onDelete={handlePostDelete} />
+            {(index + 1) % 4 === 0 && <AdSenseComponent />}
+          </React.Fragment>
+        ))
+      ) : (
       /* No Posts Message */
       !loading && <div className="no-posts">You have not created any posts yet.</div>
     )}

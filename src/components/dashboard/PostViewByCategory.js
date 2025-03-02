@@ -110,10 +110,13 @@ function PostViewByCategory() {
           </p>
         )}
 
-        {/* Render each post with your SinglePost component */}
-        {posts.map((post) => (
-          <SinglePost key={post.postId} post={post} />
-        ))}
+       {/* Render each post with an ad after every 4 posts */}
+      {posts.map((post, index) => (
+        <React.Fragment key={post.postId}>
+          <SinglePost post={post} />
+          {(index + 1) % 4 === 0 && <AdSenseComponent />}
+        </React.Fragment>
+      ))}
 
         {/* Loading indicator at the bottom */}
         {loading && <div className="postViewCategoryLoadingIndicator">Loading...</div>}
