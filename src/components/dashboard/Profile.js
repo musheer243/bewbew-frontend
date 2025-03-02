@@ -280,13 +280,13 @@ const Profile = () => {
             <div className={styles["dropdown-menu"]}>
               <div
                 className={styles["dropdown-item"]}
-                onClick={() => alert("Edit Profile")}
+                // onClick={() => alert("Edit Profile")}
               >
-                <FaUserEdit className={styles["dropdown-icon"]} /> Edit Profile
+                <FaUserEdit className={styles["dropdown-icon"]} onClick={() => navigate("/your-account/editprofile")}/> Edit Profile
               </div>
               <div
                 className={styles["dropdown-item"]}
-                onClick={() => navigate("/account-setting")}
+                onClick={() => navigate("/setting")}
               >
                 <GrUserSettings className={styles["dropdown-icon"]} /> Account
                 Settings

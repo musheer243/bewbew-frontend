@@ -145,7 +145,7 @@ const Settings = () => {
 
       <ul className="settings-list">
         <h1 className="settings-title">Your Account</h1>
-        <li className="settings-item" data-tooltip="Edit your details"               onClick={() => navigate("/your-account/editprofile")}
+        <li className="settings-item" data-tooltip="Edit your details" onClick={() => navigate("/your-account/editprofile")}
         >
           <LiaUserEditSolid className="icon" size={27} /> Edit Profile
         </li>
