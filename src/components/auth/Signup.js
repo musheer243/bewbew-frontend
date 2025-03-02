@@ -148,7 +148,7 @@ function Signup(){
                 {/* Google login button */}
             <div id="Google-button">
               <a
-                href="https://example.com/google-login"
+  href={`${API_BASE_URL}/api/v1/oauth2/google/login`} 
                 id="google-login-link"
                 className="google-login-btn"
               >
