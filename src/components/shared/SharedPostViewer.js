@@ -62,6 +62,7 @@ function SharedPostViewer() {
       {post ? (
         <SinglePost
           post={post}
+          darkModeFromDashboard={false}
           highlightCommentId={highlightCommentId}
           highlightReplyId={highlightReplyId}
         />
