@@ -72,94 +72,65 @@ const Dashboard = () => {
   );
 
   // Fetch posts function with useCallback
-  const fetchPosts = useCallback(async () => {
-    try {
-      const userId = localStorage.getItem("userId");
-      const token = localStorage.getItem("jwtToken");
-      if (!userId || !token) {
-        setError("User ID or token is missing.");
-        return;
-      }
+  // ...
+// Within your Dashboard.js
 
-      setLoading(true);
-
-      // Fetch posts from followed users
-      const response = await axios.get(
-        `${API_BASE_URL}/api/post/byfollowing/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          params: {
-            pageNumber: pageNumber,
-            pageSize: 10,
-            sortBy: "addedDate",
-            sortDir: "desc",
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        const newPosts = response.data.content || [];
-
-        // If no posts from followed users on the first page, fetch recommendations
-        if (newPosts.length === 0 && pageNumber === 0) {
-          // Call both recommendation endpoints concurrently
-          const [recByCollaborativeResponse, recForUserResponse] =
-            await Promise.all([
-              axios.get(`${API_BASE_URL}/api/recommendations/byCollaborative`, {
-                headers: { Authorization: `Bearer ${token}` },
-                params: { howMany: 10 },
-              }),
-              axios.get(`${API_BASE_URL}/api/recommendations/user`, {
-                headers: { Authorization: `Bearer ${token}` },
-              }),
-            ]);
-
-          let combinedPosts = [];
-          if (
-            recByCollaborativeResponse.status === 200 &&
-            recByCollaborativeResponse.data
-          ) {
-            combinedPosts = recByCollaborativeResponse.data;
-          }
-          if (recForUserResponse.status === 200 && recForUserResponse.data) {
-            combinedPosts = [...combinedPosts, ...recForUserResponse.data];
-          }
-
-          // Remove duplicate posts based on postId
-          const uniquePosts = [];
-          const seenPostIds = new Set();
-          combinedPosts.forEach((post) => {
-            if (!seenPostIds.has(post.postId)) {
-              uniquePosts.push(post);
-              seenPostIds.add(post.postId);
-            }
-          });
-          setPosts(uniquePosts);
-          // Assume recommendations are a single page
-          setTotalPages(1);
-        } else {
-          // If followed users have posts, merge them into posts state
-          setPosts((prevPosts) => [
-            ...prevPosts.filter(
-              (post) =>
-                !newPosts.some((newPost) => newPost.postId === post.postId)
-            ),
-            ...newPosts,
-          ]);
-          setTotalPages(response.data.totalPages);
-        }
-      } else {
-        setError("Failed to fetch posts.");
-      }
-    } catch (err) {
-      console.error("Error fetching posts:", err);
-      setError("An error occurred while fetching posts.");
-    } finally {
-      setLoading(false);
+// 1) Remove the recommendation logic in fetchPosts.
+const fetchPosts = useCallback(async () => {
+  try {
+    const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("jwtToken");
+    if (!userId || !token) {
+      setError("User ID or token is missing.");
+      return;
     }
-  }, [pageNumber]);
+
+    setLoading(true);
+
+    // Fetch posts from followed users
+    const response = await axios.get(
+      `${API_BASE_URL}/api/post/byfollowing/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          pageNumber: pageNumber,
+          pageSize: 10,
+          sortBy: "addedDate",
+          sortDir: "desc",
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      const newPosts = response.data.content || [];
+
+      // 2) If no posts and we are on page 0 => just empty
+      if (newPosts.length === 0 && pageNumber === 0) {
+        setPosts([]);
+        setTotalPages(1); // so we don't keep trying to fetch more
+      } else {
+        // If there are posts, merge them in
+        setPosts((prevPosts) => [
+          ...prevPosts.filter(
+            (post) =>
+              !newPosts.some((newPost) => newPost.postId === post.postId)
+          ),
+          ...newPosts,
+        ]);
+        setTotalPages(response.data.totalPages);
+      }
+    } else {
+      setError("Failed to fetch posts.");
+    }
+  } catch (err) {
+    console.error("Error fetching posts:", err);
+    setError("An error occurred while fetching posts.");
+  } finally {
+    setLoading(false);
+  }
+}, [pageNumber]);
 
   // Trigger fetchPosts when pageNumber changes
   useEffect(() => {
